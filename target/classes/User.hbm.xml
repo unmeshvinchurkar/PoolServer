@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2015 5:38:28 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="com.pool.spring.model.User" table="users">
+		<id name="userId" type="string">
+			<column name="UserId" length="100" />
+			<generator class="increment" />
+		</id>
+		<property name="passwd" type="string">
+			<column name="passwd" />
+		</property>
+		<property name="username" type="string">
+			<column name="username" />
+		</property>
+		<property name="email" type="string">
+			<column name="email" not-null="true" />
+		</property>
+		<property name="firstName" type="string">
+			<column name="First_Name" />
+		</property>
+		<property name="lastName" type="string">
+			<column name="Last_Name" />
+		</property>
+		<property name="address" type="string">
+			<column name="Address" />
+		</property>
+		<property name="city" type="string">
+			<column name="City" />
+		</property>
+		<property name="pin" type="java.lang.Integer">
+			<column name="PIN" />
+		</property>
+		<property name="state" type="string">
+			<column name="state" />
+		</property>
+		<property name="officeAddress" type="string">
+			<column name="office_address" />
+		</property>
+		<property name="gender" type="string">
+			<column name="Gender" length="2" />
+		</property>
+		<set name="carpools" table="carpool" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="owner_id" length="100" not-null="true" />
+			</key>
+			<one-to-many class="com.pool.spring.model.Carpool" />
+		</set>
+		<set name="vehicles" table="vehicle" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="owner_id" length="100" />
+			</key>
+			<one-to-many class="com.pool.spring.model.Vehicle" />
+		</set>
+	</class>
+</hibernate-mapping>

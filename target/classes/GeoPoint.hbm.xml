@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2015 5:38:28 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="com.pool.spring.model.GeoPoint" table="points">
+		<id name="pointId" type="long">
+			<column name="pointId" length="100" />
+			<generator class="increment" />
+		</id>
+		<property name="latitude" type="java.lang.Double">
+			<column name="latitude" not-null="true" />
+		</property>
+		<property name="longitude" type="java.lang.Double">
+			<column name="longitude" not-null="true" />
+		</property>
+		<property name="pointOrder" type="int">
+			<column name="Point_order" not-null="true" />
+		</property>
+		<property name="carPoolId" type="long">
+			<column name="car_pool_id" length="200" not-null="true" />
+		</property>
+	</class>
+
+	<query name="fetchPoints">
+        <![CDATA[from com.pool.spring.model.Points point1 where point1.longitude < :maxLongitude and point1.longitude > :minLongitude and point1.latitude > :minLattitude and point1.latitude <:maxLattitude and point1.carPoolId in (:carPoolIds)]]>
+	</query>
+</hibernate-mapping>

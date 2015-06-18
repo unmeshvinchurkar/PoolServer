@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.pool.spring.model.Vehicle" table="vehicle">
+		<id name="vehicleId" type="string">
+			<column name="VehicleId" length="100" />
+			<generator class="increment" />
+		</id>
+		
+		<property name="ownerIdId" type="string">
+            <column name="owner_id" length="200" />
+        </property>
+		
+		<property name="vehicleNo" type="string">
+			<column name="Vehicle_no" />
+		</property>
+		<property name="vehicleType" type="string">
+			<column name="vehicle_type" length="50" />
+		</property>
+		<property name="licenseNo" type="string">
+			<column name="license_no" length="50" />
+		</property>
+	</class>
+</hibernate-mapping>

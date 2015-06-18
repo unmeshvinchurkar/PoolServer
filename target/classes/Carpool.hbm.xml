@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2015 5:38:28 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="com.pool.spring.model.Carpool" table="carpool">
+		<id name="carPoolId" type="long">
+			<column name="carPoolId" length="100" not-null="true" />
+			<generator class="increment" />
+		</id>
+		<property name="ownerId" type="string">
+			<column name="owner_id" length="100" not-null="true" />
+		</property>
+		<property name="carpoolName" type="string">
+			<column name="carpool_name" length="100" />
+		</property>
+		<property name="srcLongitude" type="string">
+			<column name="src_longitude" length="10" not-null="true" />
+		</property>
+		<property name="srcLattitude" type="string">
+			<column name="src_lattitude" length="10" not-null="true" />
+		</property>
+		<property name="destLongitude" type="string">
+			<column name="dest_longitude" length="10" not-null="true" />
+		</property>
+		<property name="destLattitude" type="string">
+			<column name="dest_lattitude" length="10" not-null="true" />
+		</property>
+		<property name="startTime" type="timestamp">
+			<column name="start_time" length="0" not-null="true" />
+		</property>
+		<property name="exptdEndTime" type="timestamp">
+			<column name="exptd_end_time" length="0" not-null="true" />
+		</property>
+		<property name="createDate" type="date">
+			<column name="create_date" length="0" not-null="true" />
+		</property>
+		<property name="startDate" type="date">
+			<column name="start_date" length="0" not-null="true" />
+		</property>
+		<property name="endDate" type="date">
+			<column name="end_date" length="0" />
+		</property>
+
+		<property name="vehicleId" type="string">
+			<column name="vehicleId" length="100" not-null="true" />
+		</property>
+	</class>
+</hibernate-mapping>

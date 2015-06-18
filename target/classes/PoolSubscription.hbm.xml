@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2015 5:38:28 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.pool.spring.model.PoolSubscription" table="pool_subscription">
+        <id name="subscriptionId" type="string">
+            <column name="subscriptionId" length="100" />
+            <generator class="increment" />
+        </id>
+        <property name="carPoolId" type="string">
+            <column name="car_pool_id" length="200" not-null="true" />
+        </property>
+        <property name="travellerId" type="string">
+            <column name="traveller_id" length="200" />
+        </property>
+    </class>
+</hibernate-mapping>
