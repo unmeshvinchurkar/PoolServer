@@ -23,6 +23,6 @@
 	</class>
 
 	<query name="fetchPoints">
-        <![CDATA[from com.pool.spring.model.Points point1 where point1.longitude < :maxLongitude and point1.longitude > :minLongitude and point1.latitude > :minLattitude and point1.latitude <:maxLattitude and point1.carPoolId in (:carPoolIds)]]>
+        <![CDATA[from com.pool.spring.model.GeoPoint point1 where point1.longitude < :maxLongitude and point1.longitude > :minLongitude and point1.latitude > :minLattitude and point1.latitude <:maxLattitude and point1.carPoolId in (:carPoolIds)]]>
 	</query>
 </hibernate-mapping>

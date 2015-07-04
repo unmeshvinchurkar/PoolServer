@@ -37,10 +37,10 @@ public class CarPoolRestService {
 	private HttpServletRequest request;
 
 	@GET
-	@Path("/{param}")
-	public Response getMsg(@PathParam("param") String msg) {
+	@Path("/test")
+	public Response getMsg() {
 
-		String output = "Jersey say : " + msg;
+		String output = "Jersey say : ";
 
 		return Response.status(200).entity(output).build();
 
@@ -55,8 +55,7 @@ public class CarPoolRestService {
 			@FormParam("firstName") String firstName,
 			@FormParam("lastName") String lastName,
 			@FormParam("pincode") String pincode,
-			@FormParam("email") String email, 
-			@FormParam("city") String city,
+			@FormParam("email") String email, @FormParam("city") String city,
 			@FormParam("state") String state,
 			@FormParam("gender") String gender,
 			@FormParam("address") String address,
@@ -123,7 +122,7 @@ public class CarPoolRestService {
 			@FormParam("password") String password) {
 
 		try {
-			String vPassword = ESAPI.validator().getValidInput("repassword",
+			String vPassword = ESAPI.validator().getValidInput("password",
 					password, "Password", 25, false);
 			String vUsername = ESAPI.validator().getValidInput("username",
 					username, "UserName", 25, false);
@@ -137,8 +136,13 @@ public class CarPoolRestService {
 
 		} catch (ValidationException e) {
 			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).build();
 		} catch (IntrusionException e) {
+			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		} catch (Exception e) {
 			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.build();
 		}
 		return Response.status(Response.Status.OK).build();
 	}

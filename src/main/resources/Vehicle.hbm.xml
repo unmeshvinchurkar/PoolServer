@@ -8,7 +8,7 @@
 			<generator class="increment" />
 		</id>
 		
-		<property name="ownerIdId" type="string">
+		<property name="ownerId" type="string">
             <column name="owner_id" length="200" />
         </property>
 		
