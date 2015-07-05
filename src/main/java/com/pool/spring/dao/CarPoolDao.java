@@ -34,7 +34,44 @@ public class CarPoolDao extends AbstractDao {
 
 	}
 
-	public Carpool createCarPool(String userId, String vehicleId, List<Point> points) {
+	public Carpool createCarPool(Carpool pool, List<Point> points) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = this.openSession();
+			tx = session.beginTransaction();
+
+			pool.setDestLattitude(points.get(points.size() - 1).getLattitude());
+			pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
+			pool.setSrcLattitude(points.get(0).getLattitude());
+			pool.setSrcLongitude(points.get(0).getLongitude());
+			pool.setExptdEndTime(new Date());
+			pool.setCreateDate(new Date());
+			session.save(pool);
+			session.flush();
+
+			for (int i = 0; i < points.size(); i++) {
+				GeoPoint point = new GeoPoint();
+				point.setCarPoolId(pool.getCarPoolId());
+				point.setLatitude(Double.valueOf(points.get(i).getLattitude()));
+				point.setLongitude(Double.valueOf(points.get(i).getLongitude()));
+				point.setPointOrder(i);
+				session.save(point);
+			}
+			tx.commit();
+
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+
+		return pool;
+	}
+
+	public Carpool createCarPool(String userId, String vehicleId,
+			List<Point> points) {
 		Transaction tx = null;
 		Session session = null;
 		Carpool pool = null;

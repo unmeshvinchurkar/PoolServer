@@ -1,6 +1,7 @@
 package com.pool.rest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -211,29 +212,24 @@ public class CarPoolRestService {
 	}
 
 	@POST
-	@Path("/createpool")
+	@Path("/createPool")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createPool(@FormParam("points") String points,
-			@FormParam("vehicleId") String vehicleId) {
+	public Response createPool(@FormParam("route") String route,
+			@FormParam("vehicleId") String vehicleId,
+			@FormParam("startDate") String startDateInMilis,
+			@FormParam("endDate") String endDateInMilis,
+			@FormParam("startTime") String startTimeInSec) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
+		CarPoolService service = new CarPoolService();
 
 		List<Point> pointList = null;
 		Carpool carPool = null;
 		try {
-			pointList = new ArrayList<Point>();
-			JSONArray array = new JSONArray(points);
-			for (int i = 0; i < array.length(); i++) {
-
-				JSONObject jsonpoint = array.getJSONObject(i);
-				Point point = new Point(jsonpoint.getString("lattitude"),
-						jsonpoint.getString("longitude"));
-				pointList.add(point);
-			}
-
-			CarPoolService service = new CarPoolService();
+			vehicleId = "1";
+			pointList = service.convertRouteToPoints(route);
 
 			if (vehicleId == null) {
 				Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
@@ -241,10 +237,10 @@ public class CarPoolRestService {
 			}
 
 			carPool = service.createCarPool(user.getUserId().toString(),
-					vehicleId, pointList);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return Response.status(Response.Status.BAD_REQUEST).build();
+					vehicleId, pointList,
+					new Date(Long.valueOf(startDateInMilis)),
+					Integer.valueOf(startTimeInSec));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

@@ -3,11 +3,16 @@ package com.pool.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.pool.DeltaLatLong;
 import com.pool.DistanceComparator;
@@ -20,8 +25,48 @@ import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.Vehicle;
+import com.run.GoogleConstants;
 
 public class CarPoolService {
+
+	public List<Point> convertRouteToPoints(String routeStr) {
+		List<Point> points = new ArrayList<Point>();
+
+		try {
+			JSONObject route = new JSONObject(routeStr);
+
+			JSONArray legs = route.getJSONArray(GoogleConstants.LEGS);
+
+			for (int i = 0; i < legs.length(); i++) {
+
+				JSONObject leg = legs.getJSONObject(i);
+
+				JSONArray steps = leg.getJSONArray(GoogleConstants.STEPS);
+
+				for (int j = 0; j < steps.length(); j++) {
+					JSONObject step = steps.getJSONObject(j);
+					JSONObject location = step
+							.getJSONObject(GoogleConstants.START_LOCATION);
+					points.add(new Point(location
+							.getString(GoogleConstants.LATTITUDE), location
+							.getString(GoogleConstants.LONGITUDE)));
+				}
+			}
+
+			JSONObject lastLeg = legs.getJSONObject(legs.length() - 1);
+
+			JSONObject endLocation = lastLeg
+					.getJSONObject(GoogleConstants.END_LOCATION);
+			points.add(new Point(endLocation
+					.getString(GoogleConstants.LATTITUDE), endLocation
+					.getString(GoogleConstants.LONGITUDE)));
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return points;
+	}
 
 	public void addVehicle(Vehicle vh) {
 		VehicleDao vDao = (VehicleDao) SpringBeanProvider.getBean("vehicleDao");
@@ -40,10 +85,18 @@ public class CarPoolService {
 	}
 
 	public Carpool createCarPool(String userId, String vehicleId,
-			List<Point> points) {
+			List<Point> points, Date startDate, int startTime) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-		return poolDao.createCarPool(userId, vehicleId, points);
+
+		Carpool pool = new Carpool();
+		pool.setOwnerId(userId);
+		pool.setCarpoolName("test");
+		pool.setPath(points.toString());
+		pool.setStartDate(startDate);
+		pool.setStartTime(new Date());
+
+		return poolDao.createCarPool(pool, points);
 	}
 
 	public List<Long> findNearestPools2(Point srcPoint, Point destPoint) {
