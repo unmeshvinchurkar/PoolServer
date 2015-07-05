@@ -214,7 +214,8 @@ public class CarPoolRestService {
 	@POST
 	@Path("/createPool")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createPool(@FormParam("route") String route,
+	public Response saveOrUpdatePool(@FormParam("carPoolId") String carPoolId,
+			@FormParam("route") String route,
 			@FormParam("vehicleId") String vehicleId,
 			@FormParam("startDate") String startDateInMilis,
 			@FormParam("endDate") String endDateInMilis,
@@ -236,10 +237,17 @@ public class CarPoolRestService {
 				vehicleId = vh.getVehicleId();
 			}
 
-			carPool = service.createCarPool(user.getUserId().toString(),
-					vehicleId, pointList,
-					new Date(Long.valueOf(startDateInMilis)),
-					Integer.valueOf(startTimeInSec));
+			if (carPoolId == null) {
+				carPool = service.createCarPool(user.getUserId().toString(),
+						vehicleId, pointList,
+						new Date(Long.valueOf(startDateInMilis)),
+						Integer.valueOf(startTimeInSec));
+			} else {
+				carPool = service.findPoolById(carPoolId);
+				service.updatePool(carPool, vehicleId, pointList,
+						new Date(Long.valueOf(startDateInMilis)),
+						Integer.valueOf(startTimeInSec));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

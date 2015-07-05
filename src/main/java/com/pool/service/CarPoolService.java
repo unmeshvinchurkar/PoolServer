@@ -29,6 +29,14 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public Carpool findPoolById(String carPoolId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		return poolDao.findPoolById(carPoolId);
+
+	}
+
 	public List<Point> convertRouteToPoints(String routeStr) {
 		List<Point> points = new ArrayList<Point>();
 
@@ -97,6 +105,19 @@ public class CarPoolService {
 		pool.setStartTime(new Date());
 
 		return poolDao.createCarPool(pool, points);
+	}
+
+	public void updatePool(Carpool pool, String vehicleId, List<Point> points,
+			Date startDate, int startTime) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		
+		pool.setPath(points.toString());
+		pool.setStartDate(startDate);
+		pool.setStartTime(new Date());
+		pool.setVehicleId(Long.valueOf(vehicleId));
+
+		poolDao.updatePool(pool, points);
 	}
 
 	public List<Long> findNearestPools2(Point srcPoint, Point destPoint) {

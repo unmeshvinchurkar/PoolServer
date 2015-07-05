@@ -1,5 +1,6 @@
 package com.pool.spring.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.pool.Point;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolSubscription;
+import com.pool.spring.model.User;
 
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
@@ -28,6 +30,37 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			session.saveOrUpdate(subs);
+		} finally {
+			session.close();
+		}
+
+	}
+
+	public void updatePool(Carpool pool, List<Point> points) {
+
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = this.openSession();
+			tx = session.beginTransaction();
+			Query q = session
+					.createQuery("delete from GeoPoint geoPoint where geoPoint.carPoolId = :carPoolId");
+			q.setParameter("carPoolId", pool.getCarPoolId());
+			q.executeUpdate();
+
+			for (int i = 0; i < points.size(); i++) {
+				GeoPoint point = new GeoPoint();
+				point.setCarPoolId(pool.getCarPoolId());
+				point.setLatitude(Double.valueOf(points.get(i).getLattitude()));
+				point.setLongitude(Double.valueOf(points.get(i).getLongitude()));
+				point.setPointOrder(i);
+				session.save(point);
+			}
+
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
 		} finally {
 			session.close();
 		}
@@ -111,6 +144,19 @@ public class CarPoolDao extends AbstractDao {
 			session.close();
 		}
 
+		return pool;
+	}
+
+	public Carpool findPoolById(String carPoolId) {
+		Session session = null;
+		Carpool pool = null;
+		try {
+			session = this.openSession();
+			pool = (Carpool) session.get(Carpool.class, carPoolId);
+
+		} finally {
+			session.close();
+		}
 		return pool;
 	}
 
