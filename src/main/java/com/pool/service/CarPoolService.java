@@ -56,8 +56,10 @@ public class CarPoolService {
 					JSONObject location = step
 							.getJSONObject(GoogleConstants.START_LOCATION);
 					points.add(new Point(location
-							.getString(GoogleConstants.LATTITUDE), location
-							.getString(GoogleConstants.LONGITUDE)));
+							.getString( "A"/*GoogleConstants.LONGITUDE*/), 
+							
+							location
+							.getString("F"/*GoogleConstants.LONGITUDE*/)));
 				}
 			}
 
@@ -66,8 +68,9 @@ public class CarPoolService {
 			JSONObject endLocation = lastLeg
 					.getJSONObject(GoogleConstants.END_LOCATION);
 			points.add(new Point(endLocation
-					.getString(GoogleConstants.LATTITUDE), endLocation
-					.getString(GoogleConstants.LONGITUDE)));
+					.getString("A"/*GoogleConstants.LONGITUDE*/), 
+					
+					endLocation.getString("F"/*GoogleConstants.LONGITUDE*/)));
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -103,6 +106,7 @@ public class CarPoolService {
 		pool.setPath(points.toString());
 		pool.setStartDate(startDate);
 		pool.setStartTime(new Date());
+		pool.setVehicleId(vehicleId);
 
 		return poolDao.createCarPool(pool, points);
 	}
@@ -115,7 +119,7 @@ public class CarPoolService {
 		pool.setPath(points.toString());
 		pool.setStartDate(startDate);
 		pool.setStartTime(new Date());
-		pool.setVehicleId(Long.valueOf(vehicleId));
+		pool.setVehicleId(vehicleId);
 
 		poolDao.updatePool(pool, points);
 	}

@@ -6,7 +6,7 @@ public class Carpool implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long carPoolId;
-	private Long vehicleId;
+	private String vehicleId;
 	private String ownerId;
 	private String carpoolName;
 	private String srcLongitude;
@@ -23,11 +23,11 @@ public class Carpool implements java.io.Serializable {
 	public Carpool() {
 	}
 
-	public Long getVehicleId() {
+	public String getVehicleId() {
 		return vehicleId;
 	}
 
-	public void setVehicleId(Long vehicleId) {
+	public void setVehicleId(String vehicleId) {
 		this.vehicleId = vehicleId;
 	}
 

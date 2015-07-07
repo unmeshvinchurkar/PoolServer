@@ -123,7 +123,7 @@ public class CarPoolDao extends AbstractDao {
 			pool.setStartTime(new Date());
 			pool.setOwnerId(userId);
 			pool.setExptdEndTime(new Date());
-			pool.setVehicleId(Long.valueOf(vehicleId));
+			pool.setVehicleId(vehicleId);
 			session.save(pool);
 			session.flush();
 

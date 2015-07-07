@@ -255,7 +255,8 @@ public class CarPoolRestService {
 					.build();
 		}
 
-		return Response.status(Response.Status.OK).build();
+		System.err.println(carPool.getCarPoolId());
+		return Response.status(Response.Status.OK).entity(carPool.getCarPoolId()).build();
 	}
 
 	@POST
