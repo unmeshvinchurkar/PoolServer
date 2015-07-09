@@ -25,11 +25,12 @@ public class CarPoolDao extends AbstractDao {
 		Session session = null;
 		List carPoolList = null;
 		try {
-			session = this.openSession();// PoolSubscription
+			session = this.openSession();
 
 			Query q = session
-					.createQuery("select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
-			q.setParameter("carPoolId", userId);
+					.createQuery("select carpool from Carpool carpool where ownerId =(:userId) union "
+							+ " select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
+			q.setParameter("userId", userId);
 			carPoolList = q.list();
 
 		} finally {

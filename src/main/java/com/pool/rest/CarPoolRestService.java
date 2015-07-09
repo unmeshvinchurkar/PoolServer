@@ -288,7 +288,7 @@ public class CarPoolRestService {
 
 		_validateSession();
 
-		HttpSession session = request.getSession(true);
+		HttpSession session = request.getSession(false);
 		User usr = (User) session.getAttribute(PoolConstants.USER_SESSION_ATTR);
 
 		CarPoolService service = new CarPoolService();
