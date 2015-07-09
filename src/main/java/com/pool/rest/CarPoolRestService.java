@@ -25,6 +25,7 @@ import org.owasp.esapi.errors.IntrusionException;
 import org.owasp.esapi.errors.ValidationException;
 
 import com.pool.Point;
+import com.pool.PoolConstants;
 import com.pool.service.CarPoolService;
 import com.pool.service.UserService;
 import com.pool.spring.model.Carpool;
@@ -132,7 +133,7 @@ public class CarPoolRestService {
 			User usr = service.getUser(vUsername, vPassword);
 			if (usr != null) {
 				HttpSession session = request.getSession(true);
-				session.setAttribute("USER", usr);
+				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
 			}
 
 		} catch (ValidationException e) {
@@ -219,7 +220,8 @@ public class CarPoolRestService {
 			@FormParam("vehicleId") String vehicleId,
 			@FormParam("startDate") String startDateInMilis,
 			@FormParam("endDate") String endDateInMilis,
-			@FormParam("startTime") String startTimeInSec) {
+			@FormParam("startTime") String startTimeInSec,
+			@FormParam("poolName") String poolName) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
@@ -238,10 +240,10 @@ public class CarPoolRestService {
 			}
 
 			if (carPoolId == null) {
-				carPool = service.createCarPool(user.getUserId().toString(),
-						vehicleId, pointList,
-						new Date(Long.valueOf(startDateInMilis)),
-						Integer.valueOf(startTimeInSec));
+				carPool = service.createCarPool(poolName, user.getUserId()
+						.toString(), vehicleId, pointList,
+						new Date(Long.valueOf(startDateInMilis)), Integer
+								.valueOf(startTimeInSec));
 			} else {
 				carPool = service.findPoolById(carPoolId);
 				service.updatePool(carPool, vehicleId, pointList,
@@ -256,7 +258,8 @@ public class CarPoolRestService {
 		}
 
 		System.err.println(carPool.getCarPoolId());
-		return Response.status(Response.Status.OK).entity(carPool.getCarPoolId()).build();
+		return Response.status(Response.Status.OK)
+				.entity(carPool.getCarPoolId()).build();
 	}
 
 	@POST
@@ -276,6 +279,21 @@ public class CarPoolRestService {
 		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint);
 
 		return Response.status(Response.Status.OK).entity(poolIds).build();
+	}
+
+	@POST
+	@Path("/myPools")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getMyPools() {
+
+		_validateSession();
+
+		HttpSession session = request.getSession(true);
+		User usr = (User) session.getAttribute(PoolConstants.USER_SESSION_ATTR);
+
+		CarPoolService service = new CarPoolService();
+		List<Carpool> carPools = service.findPoolsByUserId(usr.getUserId());
+		return Response.status(Response.Status.OK).entity(carPools).build();
 	}
 
 	private void _validateSession() {

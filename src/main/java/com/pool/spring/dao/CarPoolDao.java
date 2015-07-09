@@ -20,6 +20,25 @@ import com.pool.spring.model.User;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
+	public List findPoolsByUserId(String userId) {
+
+		Session session = null;
+		List carPoolList = null;
+		try {
+			session = this.openSession();// PoolSubscription
+
+			Query q = session
+					.createQuery("select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
+			q.setParameter("carPoolId", userId);
+			carPoolList = q.list();
+
+		} finally {
+			session.close();
+		}
+
+		return carPoolList;
+	}
+
 	public void subscribeToPool(String carPoolId, String travellerId) {
 
 		PoolSubscription subs = new PoolSubscription();
@@ -152,7 +171,8 @@ public class CarPoolDao extends AbstractDao {
 		Carpool pool = null;
 		try {
 			session = this.openSession();
-			pool = (Carpool) session.get(Carpool.class, carPoolId);
+			pool = (Carpool) session
+					.get(Carpool.class, Long.valueOf(carPoolId));
 
 		} finally {
 			session.close();

@@ -29,6 +29,14 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public List findPoolsByUserId(String userId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		return poolDao.findPoolsByUserId(userId);
+
+	}
+
 	public Carpool findPoolById(String carPoolId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
@@ -55,11 +63,12 @@ public class CarPoolService {
 					JSONObject step = steps.getJSONObject(j);
 					JSONObject location = step
 							.getJSONObject(GoogleConstants.START_LOCATION);
-					points.add(new Point(location
-							.getString( "A"/*GoogleConstants.LONGITUDE*/), 
-							
-							location
-							.getString("F"/*GoogleConstants.LONGITUDE*/)));
+					points.add(new Point(location.getString("A"/*
+																 * GoogleConstants.
+																 * LONGITUDE
+																 */),
+
+					location.getString("F"/* GoogleConstants.LONGITUDE */)));
 				}
 			}
 
@@ -67,10 +76,11 @@ public class CarPoolService {
 
 			JSONObject endLocation = lastLeg
 					.getJSONObject(GoogleConstants.END_LOCATION);
-			points.add(new Point(endLocation
-					.getString("A"/*GoogleConstants.LONGITUDE*/), 
-					
-					endLocation.getString("F"/*GoogleConstants.LONGITUDE*/)));
+			points.add(new Point(endLocation.getString("A"/*
+														 * GoogleConstants.LONGITUDE
+														 */),
+
+			endLocation.getString("F"/* GoogleConstants.LONGITUDE */)));
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -95,14 +105,14 @@ public class CarPoolService {
 		poolDao.subscribeToPool(carPoolId, travellerId);
 	}
 
-	public Carpool createCarPool(String userId, String vehicleId,
-			List<Point> points, Date startDate, int startTime) {
+	public Carpool createCarPool(String poolName, String userId,
+			String vehicleId, List<Point> points, Date startDate, int startTime) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
 		Carpool pool = new Carpool();
 		pool.setOwnerId(userId);
-		pool.setCarpoolName("test");
+		pool.setCarpoolName(poolName);
 		pool.setPath(points.toString());
 		pool.setStartDate(startDate);
 		pool.setStartTime(new Date());
@@ -115,7 +125,7 @@ public class CarPoolService {
 			Date startDate, int startTime) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-		
+
 		pool.setPath(points.toString());
 		pool.setStartDate(startDate);
 		pool.setStartTime(new Date());
