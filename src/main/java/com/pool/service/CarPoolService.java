@@ -126,16 +126,13 @@ public class CarPoolService {
 		return poolDao.createCarPool(pool, points);
 	}
 
-	public void updatePool(Carpool pool, String vehicleId, List<Point> points,
-			Date startDate, int startTime) {
+	public void updatePool(Carpool pool, List<Point> points) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-
-		pool.setPath(points.toString());
-		pool.setStartDate(startDate);
-		pool.setStartTime(new Date());
-		pool.setVehicleId(vehicleId);
-
+		pool.setDestLattitude(points.get(points.size() - 1).getLattitude());
+		pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
+		pool.setSrcLattitude(points.get(0).getLattitude());
+		pool.setSrcLongitude(points.get(0).getLongitude());
 		poolDao.updatePool(pool, points);
 	}
 

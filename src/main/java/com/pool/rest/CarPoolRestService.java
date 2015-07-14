@@ -114,21 +114,21 @@ public class CarPoolRestService {
 			@FormParam("password") String password) {
 
 		try {
-			
-			System.out.println("********************* Login: "+username);
-			System.out.println("********************* password: "+password);
-			
-			System.err.println("********************* Login: "+username);
-			System.err.println("********************* password: "+password);
-			
+
+			System.out.println("********************* Login: " + username);
+			System.out.println("********************* password: " + password);
+
+			System.err.println("********************* Login: " + username);
+			System.err.println("********************* password: " + password);
+
 			String vPassword = password;
-			
+
 			String vUsername = username;
-			
-//			String vPassword = ESAPI.validator().getValidInput("Password",
-//					password, "Password", 25, false);
-//			String vUsername = ESAPI.validator().getValidInput("UserName",
-//					username, "UserName", 25, false);
+
+			// String vPassword = ESAPI.validator().getValidInput("Password",
+			// password, "Password", 25, false);
+			// String vUsername = ESAPI.validator().getValidInput("UserName",
+			// username, "UserName", 25, false);
 
 			UserService service = new UserService();
 			User usr = service.getUser(vUsername, vPassword);
@@ -137,15 +137,15 @@ public class CarPoolRestService {
 				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
 			}
 
-		} 
-//		
-//		catch (ValidationException e) {
-//			e.printStackTrace();
-//			return Response.status(Response.Status.BAD_REQUEST).build();
-//		} catch (IntrusionException e) {
-//			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-//		} 
-//		
+		}
+		//
+		// catch (ValidationException e) {
+		// e.printStackTrace();
+		// return Response.status(Response.Status.BAD_REQUEST).build();
+		// } catch (IntrusionException e) {
+		// return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+		// }
+		//
 		catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -230,7 +230,8 @@ public class CarPoolRestService {
 	@POST
 	@Path("/createPool")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createOrUpdatePool(@FormParam("carPoolId") String carPoolId,
+	public Response createOrUpdatePool(
+			@FormParam("carPoolId") String carPoolId,
 			@FormParam("route") String route,
 			@FormParam("vehicleId") String vehicleId,
 			@FormParam("startDate") String startDateInMilis,
@@ -274,9 +275,11 @@ public class CarPoolRestService {
 				carPool = service.findPoolById(carPoolId);
 				carPool.setSrcArea(srcArea);
 				carPool.setDestArea(destArea);
-				service.updatePool(carPool, vehicleId, pointList,
-						new Date(Long.valueOf(startDateInMilis)),
-						Integer.valueOf(startTimeInSec));
+				carPool.setVehicleId(vehicleId);
+				carPool.setPath(pointList.toString());
+				carPool.setStartDate(new Date(Long.valueOf(startDateInMilis)));
+				carPool.setStartTime(new Date());
+				service.updatePool(carPool, pointList);
 			}
 
 		} catch (Exception e) {

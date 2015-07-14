@@ -20,7 +20,6 @@ import com.pool.spring.model.User;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
-	
 	public void deletePool(String carPoolId) {
 		Session session = null;
 		try {
@@ -92,6 +91,8 @@ public class CarPoolDao extends AbstractDao {
 				point.setPointOrder(i);
 				session.save(point);
 			}
+
+			session.saveOrUpdate(pool);
 
 			tx.commit();
 		} catch (Exception e) {
