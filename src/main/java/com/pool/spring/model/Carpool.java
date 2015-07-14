@@ -1,6 +1,8 @@
 package com.pool.spring.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Carpool implements java.io.Serializable {
 
@@ -19,8 +21,44 @@ public class Carpool implements java.io.Serializable {
 	private Date createDate;
 	private Date startDate;
 	private Date endDate;
+	private List geoPoints = new ArrayList();;
+	private Integer deleted = null;
+	private String srcArea;
+	private String destArea;
 
 	public Carpool() {
+	}
+
+	public String getSrcArea() {
+		return srcArea;
+	}
+
+	public void setSrcArea(String srcArea) {
+		this.srcArea = srcArea;
+	}
+
+	public String getDestArea() {
+		return destArea;
+	}
+
+	public void setDestArea(String destArea) {
+		this.destArea = destArea;
+	}
+
+	public Integer getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Integer deleted) {
+		this.deleted = deleted;
+	}
+
+	public List getGeoPoints() {
+		return geoPoints;
+	}
+
+	public void setGeoPoints(List geoPoints) {
+		this.geoPoints = geoPoints;
 	}
 
 	public String getVehicleId() {

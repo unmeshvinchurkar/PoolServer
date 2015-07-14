@@ -38,16 +38,6 @@ public class CarPoolRestService {
 	@Context
 	private HttpServletRequest request;
 
-	@GET
-	@Path("/test")
-	public Response getMsg() {
-
-		String output = "Jersey say : ";
-
-		return Response.status(200).entity(output).build();
-
-	}
-
 	@POST
 	// @Consumes("application/x-www-form-urlencoded")
 	@Path("/signup")
@@ -124,10 +114,21 @@ public class CarPoolRestService {
 			@FormParam("password") String password) {
 
 		try {
-			String vPassword = ESAPI.validator().getValidInput("password",
-					password, "Password", 25, false);
-			String vUsername = ESAPI.validator().getValidInput("username",
-					username, "UserName", 25, false);
+			
+			System.out.println("********************* Login: "+username);
+			System.out.println("********************* password: "+password);
+			
+			System.err.println("********************* Login: "+username);
+			System.err.println("********************* password: "+password);
+			
+			String vPassword = password;
+			
+			String vUsername = username;
+			
+//			String vPassword = ESAPI.validator().getValidInput("Password",
+//					password, "Password", 25, false);
+//			String vUsername = ESAPI.validator().getValidInput("UserName",
+//					username, "UserName", 25, false);
 
 			UserService service = new UserService();
 			User usr = service.getUser(vUsername, vPassword);
@@ -136,12 +137,16 @@ public class CarPoolRestService {
 				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
 			}
 
-		} catch (ValidationException e) {
-			e.printStackTrace();
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		} catch (IntrusionException e) {
-			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-		} catch (Exception e) {
+		} 
+//		
+//		catch (ValidationException e) {
+//			e.printStackTrace();
+//			return Response.status(Response.Status.BAD_REQUEST).build();
+//		} catch (IntrusionException e) {
+//			return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+//		} 
+//		
+		catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.build();
@@ -154,6 +159,16 @@ public class CarPoolRestService {
 	public Response logout() {
 		HttpSession session = request.getSession(false);
 		session.invalidate();
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/deletepool/{poolId}")
+	public Response deletePool(@PathParam("poolId") String poolId) {
+		_validateSession();
+		CarPoolService service = new CarPoolService();
+		service.deletePool(poolId);
+
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -215,13 +230,14 @@ public class CarPoolRestService {
 	@POST
 	@Path("/createPool")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response saveOrUpdatePool(@FormParam("carPoolId") String carPoolId,
+	public Response createOrUpdatePool(@FormParam("carPoolId") String carPoolId,
 			@FormParam("route") String route,
 			@FormParam("vehicleId") String vehicleId,
 			@FormParam("startDate") String startDateInMilis,
 			@FormParam("endDate") String endDateInMilis,
 			@FormParam("startTime") String startTimeInSec,
-			@FormParam("poolName") String poolName) {
+			@FormParam("srcArea") String srcArea,
+			@FormParam("destArea") String destArea) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
@@ -240,12 +256,24 @@ public class CarPoolRestService {
 			}
 
 			if (carPoolId == null) {
-				carPool = service.createCarPool(poolName, user.getUserId()
-						.toString(), vehicleId, pointList,
-						new Date(Long.valueOf(startDateInMilis)), Integer
-								.valueOf(startTimeInSec));
+				carPool = new Carpool();
+				carPool.setOwnerId(user.getUserId().toString());
+				carPool.setCarpoolName(user.getFirstName());
+				carPool.setPath(pointList.toString());
+				carPool.setStartDate(new Date(Long.valueOf(startDateInMilis)));
+				carPool.setStartTime(new Date());
+				carPool.setVehicleId(vehicleId);
+				carPool.setSrcArea(srcArea);
+				carPool.setDestArea(destArea);
+
+				carPool = service.createCarPool(carPool, pointList);
+
+				System.err.println("############### Src area: " + srcArea);
+				System.err.println("############### Dest area: " + destArea);
 			} else {
 				carPool = service.findPoolById(carPoolId);
+				carPool.setSrcArea(srcArea);
+				carPool.setDestArea(destArea);
 				service.updatePool(carPool, vehicleId, pointList,
 						new Date(Long.valueOf(startDateInMilis)),
 						Integer.valueOf(startTimeInSec));
@@ -260,6 +288,18 @@ public class CarPoolRestService {
 		System.err.println(carPool.getCarPoolId());
 		return Response.status(Response.Status.OK)
 				.entity(carPool.getCarPoolId()).build();
+	}
+
+	@GET
+	@Path("{poolId}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getPoolById(@PathParam("poolId") String poolId) {
+
+		CarPoolService service = new CarPoolService();
+
+		Carpool carPool = service.findPoolById(poolId);
+
+		return Response.status(Response.Status.OK).entity(carPool).build();
 	}
 
 	@POST

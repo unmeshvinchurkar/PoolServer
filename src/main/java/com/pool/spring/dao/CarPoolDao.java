@@ -20,6 +20,22 @@ import com.pool.spring.model.User;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
+	
+	public void deletePool(String carPoolId) {
+		Session session = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("update CarPool pool set pool.deleted=1 where pool.carPoolId=:carPoolId");
+			q.setParameter("carPoolId", Long.valueOf(carPoolId));
+			q.executeUpdate();
+
+		} finally {
+			session.close();
+		}
+	}
+
 	public List findPoolsByUserId(String userId) {
 
 		Session session = null;
@@ -170,10 +186,20 @@ public class CarPoolDao extends AbstractDao {
 	public Carpool findPoolById(String carPoolId) {
 		Session session = null;
 		Carpool pool = null;
+		List points = null;
+
 		try {
 			session = this.openSession();
 			pool = (Carpool) session
 					.get(Carpool.class, Long.valueOf(carPoolId));
+
+			if (pool != null) {
+				Query queryPool = session
+						.createQuery("from GeoPoint point where point.carPoolId =:carPoolId order by point.pointOrder");
+				queryPool.setParameter("carPoolId", Long.valueOf(carPoolId));
+				points = queryPool.list();
+				pool.setGeoPoints(points);
+			}
 
 		} finally {
 			session.close();

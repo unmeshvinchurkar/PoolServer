@@ -29,6 +29,20 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public void saveOrUpdate(Object obj) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		poolDao.save(obj);
+
+	}
+
+	public void deletePool(String carPoolId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		poolDao.deletePool(carPoolId);
+
+	}
+
 	public List findPoolsByUserId(String userId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
@@ -105,18 +119,9 @@ public class CarPoolService {
 		poolDao.subscribeToPool(carPoolId, travellerId);
 	}
 
-	public Carpool createCarPool(String poolName, String userId,
-			String vehicleId, List<Point> points, Date startDate, int startTime) {
+	public Carpool createCarPool(Carpool pool, List<Point> points) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-
-		Carpool pool = new Carpool();
-		pool.setOwnerId(userId);
-		pool.setCarpoolName(poolName);
-		pool.setPath(points.toString());
-		pool.setStartDate(startDate);
-		pool.setStartTime(new Date());
-		pool.setVehicleId(vehicleId);
 
 		return poolDao.createCarPool(pool, points);
 	}

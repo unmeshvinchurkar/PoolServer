@@ -45,5 +45,18 @@
 		<property name="vehicleId" type="string">
 			<column name="vehicleId" length="100" not-null="true" />
 		</property>
+
+		<property name="srcArea" type="string">
+			<column name="src_area" length="100" />
+		</property>
+
+		<property name="destArea" type="string">
+			<column name="dest_area" length="100" />
+		</property>
+
+		<property name="deleted" type="int">
+			<column name="DELETED" length="1" />
+		</property>
+
 	</class>
 </hibernate-mapping>

@@ -26,6 +26,30 @@ public abstract class AbstractDao {
 		getSession().delete(entity);
 	}
 
+	public void save(Object obj) {
+
+		Session session = null;
+		try {
+			session = this.openSession();
+			session.save(obj);
+
+		} finally {
+			session.close();
+		}
+	}
+	
+	public void saveOrUpdate(Object obj) {
+
+		Session session = null;
+		try {
+			session = this.openSession();
+			session.saveOrUpdate(obj);
+
+		} finally {
+			session.close();
+		}
+	}
+
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
