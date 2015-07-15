@@ -26,7 +26,7 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("update CarPool pool set pool.deleted=1 where pool.carPoolId=:carPoolId");
+					.createQuery("update Carpool pool set pool.deleted=1 where pool.carPoolId=:carPoolId");
 			q.setParameter("carPoolId", Long.valueOf(carPoolId));
 			q.executeUpdate();
 
@@ -43,7 +43,7 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("select carpool from Carpool carpool where ownerId =(:userId) union "
+					.createQuery("select carpool from Carpool carpool where ownerId =(:userId) and (carpool.deleted = 0 or carpool.deleted is Null) union "
 							+ " select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
 			q.setParameter("userId", userId);
 			carPoolList = q.list();

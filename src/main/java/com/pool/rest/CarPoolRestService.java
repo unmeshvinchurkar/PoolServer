@@ -162,7 +162,7 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).build();
 	}
 
-	@POST
+	@GET
 	@Path("/deletepool/{poolId}")
 	public Response deletePool(@PathParam("poolId") String poolId) {
 		_validateSession();
