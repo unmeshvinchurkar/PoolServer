@@ -64,45 +64,14 @@ public class CarPoolService {
 
 		try {
 			JSONObject route = new JSONObject(routeStr);
-			//
-			// JSONArray legs = route.getJSONArray(GoogleConstants.LEGS);
-			//
-			// for (int i = 0; i < legs.length(); i++) {
-			//
-			// JSONObject leg = legs.getJSONObject(i);
-			//
-			// JSONArray steps = leg.getJSONArray(GoogleConstants.STEPS);
-			//
-			// for (int j = 0; j < steps.length(); j++) {
-			// JSONObject step = steps.getJSONObject(j);
-			// JSONObject location = step
-			// .getJSONObject(GoogleConstants.START_LOCATION);
-			// points.add(new Point(location.getString("G"/*
-			// * GoogleConstants.
-			// * LONGITUDE
-			// */),
-			//
-			// location.getString("K"/* GoogleConstants.LONGITUDE */)));
-			// }
-			// }
-			//
-			// JSONObject lastLeg = legs.getJSONObject(legs.length() - 1);
-			//
-			// JSONObject endLocation = lastLeg
-			// .getJSONObject(GoogleConstants.END_LOCATION);
-			// points.add(new Point(endLocation.getString("G"/*
-			// * GoogleConstants.LONGITUDE
-			// */),
-			//
-			// endLocation.getString("K"/* GoogleConstants.LONGITUDE */)));
 
 			JSONArray path = route.getJSONArray("overview_path");
 
 			for (int j = 0; j < path.length(); j++) {
 				JSONObject location = path.getJSONObject(j);
-				
-				points.add(new Point(location.getString("G"),
-				location.getString("K")));
+
+				points.add(new Point(location.getString("G"), location
+						.getString("K")));
 			}
 
 		} catch (JSONException e) {

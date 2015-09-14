@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -305,13 +306,13 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).entity(carPool).build();
 	}
 
-	@POST
-	@Path("/search")
+	@GET
+	@Path("/searchPools")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response findNearestPools(@FormParam("srcLat") String srcLat,
-			@FormParam("srcLng") String srcLng,
-			@FormParam("destLat") String destLat,
-			@FormParam("destLng") String destLng) {
+	public Response findNearestPools(@QueryParam("srcLat") String srcLat,
+			@QueryParam("srcLng") String srcLng,
+			@QueryParam("destLat") String destLat,
+			@QueryParam("destLng") String destLng) {
 
 		_validateSession();
 
@@ -319,7 +320,12 @@ public class CarPoolRestService {
 		Point destPoint = new Point(destLat, destLng);
 
 		CarPoolService service = new CarPoolService();
+		
+		System.err.println("Before searching pools ***********************");
+		
 		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint);
+		
+		System.err.println("Afters searching pools ***********************: "+poolIds);
 
 		return Response.status(Response.Status.OK).entity(poolIds).build();
 	}
