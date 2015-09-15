@@ -316,8 +316,8 @@ public class CarPoolRestService {
 
 		_validateSession();
 
-		Point srcPoint = new Point(srcLat, srcLng);
-		Point destPoint = new Point(destLat, destLng);
+		Point srcPoint = new Point(Double.parseDouble(srcLat), Double.parseDouble(srcLng));
+		Point destPoint = new Point(Double.parseDouble(destLat), Double.parseDouble(destLng));
 
 		CarPoolService service = new CarPoolService();
 		

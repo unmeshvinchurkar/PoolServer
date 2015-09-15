@@ -14,16 +14,16 @@
 		<property name="carpoolName" type="string">
 			<column name="carpool_name" length="100" />
 		</property>
-		<property name="srcLongitude" type="string">
+		<property name="srcLongitude" type="java.lang.Double">
 			<column name="src_longitude" length="10" not-null="true" />
 		</property>
-		<property name="srcLattitude" type="string">
+		<property name="srcLattitude" type="java.lang.Double">
 			<column name="src_lattitude" length="10" not-null="true" />
 		</property>
-		<property name="destLongitude" type="string">
+		<property name="destLongitude" type="java.lang.Double">
 			<column name="dest_longitude" length="10" not-null="true" />
 		</property>
-		<property name="destLattitude" type="string">
+		<property name="destLattitude" type="java.lang.Double">
 			<column name="dest_lattitude" length="10" not-null="true" />
 		</property>
 		<property name="startTime" type="timestamp">

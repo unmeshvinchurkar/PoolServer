@@ -266,17 +266,17 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 			Query queryPool = session
 					.createQuery("select pool.carPoolId from Carpool pool where (pool.srcLongitude < :maxLongitude and pool.srcLongitude > :minLongitude and pool.srcLattitude > :minLattitude and  pool.srcLattitude < :maxLattitude) or "
-							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude < :minLongitude "
+							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude > :minLongitude "
 							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)");
 
 			queryPool.setParameter("minLongitude", delta.getMinLongitude()
-					.toString());
+					);
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude()
-					.toString());
+					);
 			queryPool.setParameter("minLattitude", delta.getMinLattitude()
-					.toString());
+					);
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude()
-					.toString());
+					);
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
 			e.printStackTrace();

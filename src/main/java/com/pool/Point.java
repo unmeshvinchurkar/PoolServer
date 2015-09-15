@@ -2,20 +2,20 @@ package com.pool;
 
 public class Point {
 
-	private String lattitude = null;
-	private String longitude = null;
+	private Double lattitude = null;
+	private Double longitude = null;
 
-	public Point(String lattitude, String longitude) {
+	public Point(Double lattitude, Double longitude) {
 		super();
 		this.lattitude = lattitude;
 		this.longitude = longitude;
 	}
 
-	public String getLattitude() {
+	public Double getLattitude() {
 		return lattitude;
 	}
 
-	public String getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 

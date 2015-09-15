@@ -11,10 +11,10 @@ public class Carpool implements java.io.Serializable {
 	private String vehicleId;
 	private String ownerId;
 	private String carpoolName;
-	private String srcLongitude;
-	private String srcLattitude;
-	private String destLongitude;
-	private String destLattitude;
+	private Double srcLongitude;
+	private Double srcLattitude;
+	private Double destLongitude;
+	private Double destLattitude;
 	private String path;
 	private Date startTime;
 	private Date exptdEndTime;
@@ -91,37 +91,37 @@ public class Carpool implements java.io.Serializable {
 
 	public void setCarpoolName(String carpoolName) {
 		this.carpoolName = carpoolName;
-	}
+	}	
 
-	public String getSrcLongitude() {
+	public Double getSrcLongitude() {
 		return srcLongitude;
 	}
 
-	public void setSrcLongitude(String srcLongitude) {
+	public void setSrcLongitude(Double srcLongitude) {
 		this.srcLongitude = srcLongitude;
 	}
 
-	public String getSrcLattitude() {
+	public Double getSrcLattitude() {
 		return srcLattitude;
 	}
 
-	public void setSrcLattitude(String srcLattitude) {
+	public void setSrcLattitude(Double srcLattitude) {
 		this.srcLattitude = srcLattitude;
 	}
 
-	public String getDestLongitude() {
+	public Double getDestLongitude() {
 		return destLongitude;
 	}
 
-	public void setDestLongitude(String destLongitude) {
+	public void setDestLongitude(Double destLongitude) {
 		this.destLongitude = destLongitude;
 	}
 
-	public String getDestLattitude() {
+	public Double getDestLattitude() {
 		return destLattitude;
 	}
 
-	public void setDestLattitude(String destLattitude) {
+	public void setDestLattitude(Double destLattitude) {
 		this.destLattitude = destLattitude;
 	}
 
