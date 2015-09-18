@@ -16,11 +16,11 @@ public class Carpool implements java.io.Serializable {
 	private Double destLongitude;
 	private Double destLattitude;
 	private String path;
-	private Date startTime;
-	private Date exptdEndTime;
-	private Date createDate;
-	private Date startDate;
-	private Date endDate;
+	private Long startTime;
+	private Long exptdEndTime;
+	private Long createDate;
+	private Long startDate;
+	private Long endDate;
 	private List geoPoints = new ArrayList();;
 	private Integer deleted = null;
 	private String srcArea;
@@ -133,43 +133,43 @@ public class Carpool implements java.io.Serializable {
 		this.path = path;
 	}
 
-	public Date getStartTime() {
+	public Long getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime) {
+	public void setStartTime(Long startTime) {
 		this.startTime = startTime;
 	}
 
-	public Date getExptdEndTime() {
+	public Long getExptdEndTime() {
 		return exptdEndTime;
 	}
 
-	public void setExptdEndTime(Date exptdEndTime) {
+	public void setExptdEndTime(Long exptdEndTime) {
 		this.exptdEndTime = exptdEndTime;
 	}
 
-	public Date getCreateDate() {
+	public Long getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(Long createDate) {
 		this.createDate = createDate;
 	}
 
-	public Date getStartDate() {
+	public Long getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(Long startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public Long getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
 	}
 

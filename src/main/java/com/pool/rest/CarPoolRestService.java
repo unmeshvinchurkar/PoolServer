@@ -250,7 +250,8 @@ public class CarPoolRestService {
 		Carpool carPool = null;
 		try {
 			vehicleId = "1";
-			pointList = service.convertRouteToPoints(route);
+			pointList = route != null ? service.convertRouteToPoints(route)
+					: null;
 
 			if (vehicleId == null) {
 				Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
@@ -262,8 +263,9 @@ public class CarPoolRestService {
 				carPool.setOwnerId(user.getUserId().toString());
 				carPool.setCarpoolName(user.getFirstName());
 				carPool.setPath(pointList.toString());
-				carPool.setStartDate(new Date(Long.valueOf(startDateInMilis)));
-				carPool.setStartTime(new Date());
+				carPool.setStartDate(Long.valueOf(startDateInMilis)/1000);
+				carPool.setEndDate(Long.valueOf(endDateInMilis)/1000);
+				carPool.setStartTime(Long.parseLong(startTimeInSec));
 				carPool.setVehicleId(vehicleId);
 				carPool.setSrcArea(srcArea);
 				carPool.setDestArea(destArea);
@@ -278,8 +280,19 @@ public class CarPoolRestService {
 				carPool.setDestArea(destArea);
 				carPool.setVehicleId(vehicleId);
 				carPool.setPath(pointList.toString());
-				carPool.setStartDate(new Date(Long.valueOf(startDateInMilis)));
-				carPool.setStartTime(new Date());
+				carPool.setStartDate(Long.valueOf(startDateInMilis)/1000);
+				carPool.setEndDate(Long.valueOf(endDateInMilis)/1000);
+				carPool.setStartTime(Long.parseLong(startTimeInSec));
+
+				if (pointList != null && pointList.size() > 0) {
+					carPool.setDestLattitude(pointList
+							.get(pointList.size() - 1).getLattitude());
+					carPool.setDestLongitude(pointList
+							.get(pointList.size() - 1).getLongitude());
+					carPool.setSrcLattitude(pointList.get(0).getLattitude());
+					carPool.setSrcLongitude(pointList.get(0).getLongitude());
+				}
+
 				service.updatePool(carPool, pointList);
 			}
 
@@ -316,16 +329,19 @@ public class CarPoolRestService {
 
 		_validateSession();
 
-		Point srcPoint = new Point(Double.parseDouble(srcLat), Double.parseDouble(srcLng));
-		Point destPoint = new Point(Double.parseDouble(destLat), Double.parseDouble(destLng));
+		Point srcPoint = new Point(Double.parseDouble(srcLat),
+				Double.parseDouble(srcLng));
+		Point destPoint = new Point(Double.parseDouble(destLat),
+				Double.parseDouble(destLng));
 
 		CarPoolService service = new CarPoolService();
-		
+
 		System.err.println("Before searching pools ***********************");
-		
+
 		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint);
-		
-		System.err.println("Afters searching pools ***********************: "+poolIds);
+
+		System.err.println("Afters searching pools ***********************: "
+				+ poolIds);
 
 		return Response.status(Response.Status.OK).entity(poolIds).build();
 	}

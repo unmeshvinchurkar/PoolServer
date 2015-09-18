@@ -26,20 +26,20 @@
 		<property name="destLattitude" type="java.lang.Double">
 			<column name="dest_lattitude" length="10" not-null="true" />
 		</property>
-		<property name="startTime" type="timestamp">
-			<column name="start_time" length="0" not-null="true" />
+		<property name="startTime" type="java.lang.Long">
+			<column name="start_time"  not-null="true" />
 		</property>
-		<property name="exptdEndTime" type="timestamp">
-			<column name="exptd_end_time" length="0" not-null="true" />
+		<property name="exptdEndTime" type="java.lang.Long">
+			<column name="exptd_end_time"  not-null="true" />
 		</property>
-		<property name="createDate" type="date">
-			<column name="create_date" length="0" not-null="true" />
+		<property name="createDate" type="java.lang.Long">
+			<column name="create_date"  not-null="true" />
 		</property>
-		<property name="startDate" type="date">
-			<column name="start_date" length="0" not-null="true" />
+		<property name="startDate" type="java.lang.Long">
+			<column name="start_date"  not-null="true" />
 		</property>
-		<property name="endDate" type="date">
-			<column name="end_date" length="0" />
+		<property name="endDate" type="java.lang.Long">
+			<column name="end_date" />
 		</property>
 
 		<property name="vehicleId" type="string">

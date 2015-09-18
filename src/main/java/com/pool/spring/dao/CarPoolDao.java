@@ -78,18 +78,24 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			tx = session.beginTransaction();
-			Query q = session
-					.createQuery("delete from GeoPoint geoPoint where geoPoint.carPoolId = :carPoolId");
-			q.setParameter("carPoolId", pool.getCarPoolId());
-			q.executeUpdate();
 
-			for (int i = 0; i < points.size(); i++) {
-				GeoPoint point = new GeoPoint();
-				point.setCarPoolId(pool.getCarPoolId());
-				point.setLatitude(Double.valueOf(points.get(i).getLattitude()));
-				point.setLongitude(Double.valueOf(points.get(i).getLongitude()));
-				point.setPointOrder(i);
-				session.save(point);
+			if (points != null && points.size() > 0) {
+
+				Query q = session
+						.createQuery("delete from GeoPoint geoPoint where geoPoint.carPoolId = :carPoolId");
+				q.setParameter("carPoolId", pool.getCarPoolId());
+				q.executeUpdate();
+
+				for (int i = 0; i < points.size(); i++) {
+					GeoPoint point = new GeoPoint();
+					point.setCarPoolId(pool.getCarPoolId());
+					point.setLatitude(Double.valueOf(points.get(i)
+							.getLattitude()));
+					point.setLongitude(Double.valueOf(points.get(i)
+							.getLongitude()));
+					point.setPointOrder(i);
+					session.save(point);
+				}
 			}
 
 			session.saveOrUpdate(pool);
@@ -115,8 +121,8 @@ public class CarPoolDao extends AbstractDao {
 			pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
 			pool.setSrcLattitude(points.get(0).getLattitude());
 			pool.setSrcLongitude(points.get(0).getLongitude());
-			pool.setExptdEndTime(new Date());
-			pool.setCreateDate(new Date());
+			pool.setExptdEndTime(new Date().getTime()/1000);
+			pool.setCreateDate(new Date().getTime()/1000);
 			session.save(pool);
 			session.flush();
 
@@ -151,15 +157,15 @@ public class CarPoolDao extends AbstractDao {
 
 			pool = new Carpool();
 			pool.setCarpoolName("Test");
-			pool.setCreateDate(new Date());
+			pool.setCreateDate(new Date().getTime());
 			pool.setDestLattitude(points.get(points.size() - 1).getLattitude());
 			pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
 			pool.setSrcLattitude(points.get(0).getLattitude());
 			pool.setSrcLongitude(points.get(0).getLongitude());
-			pool.setStartDate(new Date());
-			pool.setStartTime(new Date());
+			pool.setStartDate(new Date().getTime());
+			pool.setStartTime(11111l);
 			pool.setOwnerId(userId);
-			pool.setExptdEndTime(new Date());
+			pool.setExptdEndTime(new Date().getTime()/1000);
 			pool.setVehicleId(vehicleId);
 			session.save(pool);
 			session.flush();
@@ -269,14 +275,10 @@ public class CarPoolDao extends AbstractDao {
 							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude > :minLongitude "
 							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)");
 
-			queryPool.setParameter("minLongitude", delta.getMinLongitude()
-					);
-			queryPool.setParameter("maxLongitude", delta.getMaxLongitude()
-					);
-			queryPool.setParameter("minLattitude", delta.getMinLattitude()
-					);
-			queryPool.setParameter("maxLattitude", delta.getMaxLattitude()
-					);
+			queryPool.setParameter("minLongitude", delta.getMinLongitude());
+			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
+			queryPool.setParameter("minLattitude", delta.getMinLattitude());
+			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
 			e.printStackTrace();

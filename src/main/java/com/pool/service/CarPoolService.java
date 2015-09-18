@@ -70,8 +70,9 @@ public class CarPoolService {
 			for (int j = 0; j < path.length(); j++) {
 				JSONObject location = path.getJSONObject(j);
 
-				points.add(new Point(Double.parseDouble(location.getString("G")), Double.parseDouble(location
-						.getString("K"))));
+				points.add(new Point(
+						Double.parseDouble(location.getString("H")), Double
+								.parseDouble(location.getString("L"))));
 			}
 
 		} catch (JSONException e) {
@@ -107,10 +108,7 @@ public class CarPoolService {
 	public void updatePool(Carpool pool, List<Point> points) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-		pool.setDestLattitude(points.get(points.size() - 1).getLattitude());
-		pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
-		pool.setSrcLattitude(points.get(0).getLattitude());
-		pool.setSrcLongitude(points.get(0).getLongitude());
+
 		poolDao.updatePool(pool, points);
 	}
 
@@ -227,20 +225,19 @@ public class CarPoolService {
 			}
 		}
 
-		/**if (carPools.size() > 0 && destPoint != null) {
-			Collection<Long> pools = findPoolsGngToDestination(carPools,
-					destPoint);
-			carPools.clear();
-			carPools.addAll(pools);
-		}*/
+		/**
+		 * if (carPools.size() > 0 && destPoint != null) { Collection<Long>
+		 * pools = findPoolsGngToDestination(carPools, destPoint);
+		 * carPools.clear(); carPools.addAll(pools); }
+		 */
 
 		return carPools;
 	}
 
 	private static Collection<Long> findPoolsGngToDestination(
 			List<Long> carPoolIds, Point point) {
-		DeltaLatLong delta = PoolUtils.findDelta(2.0, point.getLattitude().toString(),
-				point.getLongitude().toString());
+		DeltaLatLong delta = PoolUtils.findDelta(2.0, point.getLattitude()
+				.toString(), point.getLongitude().toString());
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
