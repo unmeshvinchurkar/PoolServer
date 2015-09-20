@@ -4,8 +4,8 @@
 <!-- Generated May 28, 2015 5:38:28 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
 	<class name="com.pool.spring.model.User" table="users">
-		<id name="userId" type="string">
-			<column name="UserId" length="100" />
+		<id name="userId" type="long">
+			<column name="UserId" length="100"  />
 			<generator class="increment" />
 		</id>
 		<property name="passwd" type="string">
@@ -32,11 +32,14 @@
 		<property name="pin" type="java.lang.Integer">
 			<column name="PIN" />
 		</property>
+		<property name="birthDate" type="java.lang.Long">
+			<column name="birth_date" />
+		</property>
 		<property name="state" type="string">
 			<column name="state" />
 		</property>
-		<property name="officeAddress" type="string">
-			<column name="office_address" />
+		<property name="country" type="string">
+			<column name="country" />
 		</property>
 		<property name="gender" type="string">
 			<column name="Gender" length="2" />

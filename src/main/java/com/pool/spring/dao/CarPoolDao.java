@@ -35,7 +35,7 @@ public class CarPoolDao extends AbstractDao {
 		}
 	}
 
-	public List findPoolsByUserId(String userId) {
+	public List findPoolsByUserId(Long userId) {
 
 		Session session = null;
 		List carPoolList = null;

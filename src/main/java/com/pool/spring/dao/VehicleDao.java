@@ -24,7 +24,7 @@ public class VehicleDao extends AbstractDao {
 		}
 	}
 
-	public Vehicle getVehicleByOwnerId(String ownerId) {
+	public Vehicle getVehicleByOwnerId(Long ownerId) {
 		Session session = null;
 		Vehicle vehicle = null;
 		try {

@@ -3,10 +3,10 @@ package com.pool.spring.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public class User  implements java.io.Serializable {
+public class User implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String userId;
+	private Long userId;
 	private String passwd;
 	private String username;
 	private String email;
@@ -16,19 +16,28 @@ public class User  implements java.io.Serializable {
 	private String city;
 	private Integer pin;
 	private String state;
-	private String officeAddress;
+	private String country;
 	private String gender;
+	private Long birthDate;
 	private Set<Carpool> carpools = new HashSet<Carpool>(0);
-	private Set<Vehicle> vehicles = new HashSet<Vehicle> (0);
+	private Set<Vehicle> vehicles = new HashSet<Vehicle>(0);
 
 	public User() {
 	}
 
-	public String getUserId() {
+	public Long getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Long birthDate) {
+		this.birthDate = birthDate;
+	}
+
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -104,12 +113,12 @@ public class User  implements java.io.Serializable {
 		this.state = state;
 	}
 
-	public String getOfficeAddress() {
-		return officeAddress;
+	public String getCountry() {
+		return country;
 	}
 
-	public void setOfficeAddress(String officeAddress) {
-		this.officeAddress = officeAddress;
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public String getGender() {
@@ -160,7 +169,5 @@ public class User  implements java.io.Serializable {
 			return false;
 		return true;
 	}
-
-	
 
 }

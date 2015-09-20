@@ -7,11 +7,27 @@
 	<version>1.0</version>
 	<name>PoolServer</name>
 	<url>http://maven.apache.org</url>
+
 	<dependencies>
 		<!-- <dependency> <groupId>ldapjdk</groupId> <artifactId>ldapjdk</artifactId> 
 			<scope>system</scope> <version>1.0</version> <systemPath>${basedir}\lib\ldapjdk.jar</systemPath> 
 			</dependency> <repositories> <repository> <id>my-local-repo</id> <url>file://${basedir}/my-repo</url> 
 			</repository> </repositories> -->
+
+		<dependency>
+			<groupId>com.carpool.code</groupId>
+			<artifactId>simplecaptcha</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+
+		<!-- 
+		<dependency>
+			<groupId>com.octo.captcha</groupId>
+			<artifactId>jcaptcha</artifactId>
+			<version>1.0</version>
+		</dependency>
+		-->
+
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
@@ -85,6 +101,7 @@
 	</dependencies>
 	<build>
 		<plugins>
+		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -94,7 +111,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-				<plugin>
+			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.7</version>
 				<executions>

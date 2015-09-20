@@ -7,16 +7,16 @@ public class Vehicle implements java.io.Serializable {
 	private String vehicleNo;
 	private String vehicleType;
 	private String licenseNo;
-	private String ownerId;
+	private Long ownerId;
 
 	public Vehicle() {
 	}
 
-	public String getOwnerId() {
+	public Long getOwnerId() {
 		return ownerId;
 	}
 
-	public void setOwnerId(String ownerId) {
+	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
 

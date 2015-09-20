@@ -43,7 +43,7 @@ public class CarPoolService {
 
 	}
 
-	public List findPoolsByUserId(String userId) {
+	public List findPoolsByUserId(Long userId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
@@ -87,7 +87,7 @@ public class CarPoolService {
 		vDao.addvehicle(vh);
 	}
 
-	public Vehicle getVehicleByOwnerId(String ownerId) {
+	public Vehicle getVehicleByOwnerId(Long ownerId) {
 		VehicleDao vDao = (VehicleDao) SpringBeanProvider.getBean("vehicleDao");
 		return vDao.getVehicleByOwnerId(ownerId);
 	}

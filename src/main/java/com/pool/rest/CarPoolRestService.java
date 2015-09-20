@@ -1,12 +1,10 @@
 package com.pool.rest;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,15 +16,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.owasp.esapi.ESAPI;
-import org.owasp.esapi.errors.IntrusionException;
-import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.errors.AuthenticationCredentialsException;
+
+import nl.captcha.Captcha;
 
 import com.pool.Point;
 import com.pool.PoolConstants;
+import com.pool.esapi.EsapiUtils;
+import com.pool.esapi.FieldValidationException;
+import com.pool.esapi.IntrusionDetectedException;
+import com.pool.esapi.Validator;
 import com.pool.service.CarPoolService;
 import com.pool.service.UserService;
 import com.pool.spring.model.Carpool;
@@ -40,72 +39,90 @@ public class CarPoolRestService {
 	private HttpServletRequest request;
 
 	@POST
-	// @Consumes("application/x-www-form-urlencoded")
 	@Path("/signup")
 	public Response signup(@FormParam("username") String username,
-			@FormParam("password") String password,
-			@FormParam("repassword") String repassword,
-			@FormParam("firstName") String firstName,
-			@FormParam("lastName") String lastName,
-			@FormParam("pincode") String pincode,
-			@FormParam("email") String email, @FormParam("city") String city,
-			@FormParam("state") String state,
-			@FormParam("gender") String gender,
-			@FormParam("address") String address,
-			@FormParam("officeAddress") String officeAddress) {
+
+	@FormParam("password") String password,
+
+	@FormParam("firstName") String firstName,
+
+	@FormParam("lastName") String lastName,
+
+	@FormParam("email") String email, @FormParam("state") String state,
+
+	@FormParam("gender") String gender,
+
+	@FormParam("streetAddress") String streetAddress,
+
+	@FormParam("city") String city, @FormParam("pin") String pin,
+
+	@FormParam("country") String country, @FormParam("answer") String answer,
+
+	@FormParam("birthDate") String birthDate) {
+
+		Captcha captcha = (Captcha) request.getSession().getAttribute(
+				Captcha.NAME);
 
 		try {
-
-			String vPassword = ESAPI.validator().getValidInput("password",
-					password, "Password", 25, false);
-			String vRepassword = ESAPI.validator().getValidInput("repassword",
-					repassword, "Password", 25, false);
-			String vUsername = ESAPI.validator().getValidInput("username",
-					username, "UserName", 25, false);
-			String vFirstName = ESAPI.validator().getValidInput("firstName",
-					firstName, "Name", 20, false);
-			String vLastName = ESAPI.validator().getValidInput("lastName",
-					lastName, "Name", 20, false);
-			String vEmail = ESAPI.validator().getValidInput("email", email,
-					"Email", 100, false);
-			String vAddress = ESAPI.validator().getValidInput("address",
-					address, "SafeString", 200, false);
-			String vOffAddress = ESAPI.validator().getValidInput(
-					"officeAddress", officeAddress, "SafeString", 200, false);
-			String vGender = ESAPI.validator().getValidInput("gender", gender,
-					"Gender", 1, false);
-			String vPin = ESAPI.validator().getValidInput("pincode", pincode,
-					"Pincode", 6, false);
-			String vState = ESAPI.validator().getValidInput("state", state,
-					"Name", 20, false);
-			String vCity = ESAPI.validator().getValidInput("state", state,
-					"Name", 20, false);
-
-			if (vPassword != null && vRepassword != null
-					&& vRepassword.equals(vPassword)) {
-				User usr = new User();
-				usr.setUsername(vUsername);
-				usr.setPasswd(vPassword);
-				usr.setCity(vCity);
-				usr.setEmail(vEmail);
-				usr.setPin(Integer.valueOf(vPin));
-				usr.setFirstName(vFirstName);
-				usr.setLastName(vLastName);
-				usr.setState(vState);
-				usr.setGender(vGender);
-				usr.setAddress(vAddress);
-				usr.setOfficeAddress(vOffAddress);
-
-				UserService service = new UserService();
-				service.createUser(usr);
-			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (ValidationException e) {
-			e.printStackTrace();
-		} catch (IntrusionException e) {
-			e.printStackTrace();
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e1) {
 		}
+
+		if (!captcha.isCorrect(answer)) {
+			
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity("Incorrect capcha").build();
+		}
+
+	
+		try {
+			EsapiUtils.verifyPasswordStrength(password, username);
+			
+			username = Validator.validateUserName("username", username);
+			firstName = Validator.validateName("firstName", firstName);
+			lastName = Validator.validateName("lastName", lastName);
+			email = Validator.validateEmail("email", email);
+			streetAddress = Validator.validateString("streetAddress",
+					streetAddress);
+			state = Validator.validateName("state", state);
+			city = Validator.validateName("city", city);
+			gender = Validator.validateGender("gender", gender);
+			answer = Validator.validateString("answer", answer);
+			pin = Validator.validatePin("pin", pin);
+
+			User usr = new User();
+			usr.setUsername(username);
+			usr.setPasswd(password);
+			usr.setCity(city);
+			usr.setEmail(email);
+			usr.setPin(Integer.valueOf(pin));
+			usr.setFirstName(firstName);
+			usr.setLastName(lastName);
+			usr.setState(state);
+			usr.setGender(gender);
+			usr.setAddress(streetAddress);
+			usr.setPasswd(password);
+			usr.setBirthDate(Long.valueOf(birthDate) / 1000);
+			usr.setCountry(country);
+			UserService service = new UserService();
+			service.createUser(usr);
+
+		} catch (FieldValidationException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity(e.getMessage()).build();
+		} catch (IntrusionDetectedException e) {
+			return Response.status(Response.Status.FORBIDDEN)
+					.entity(e.getMessage()).build();
+		} catch (AuthenticationCredentialsException e) {
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity(e.getMessage()).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(e.getMessage()).build();
+		}
+
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -119,38 +136,26 @@ public class CarPoolRestService {
 			System.out.println("********************* Login: " + username);
 			System.out.println("********************* password: " + password);
 
-			System.err.println("********************* Login: " + username);
-			System.err.println("********************* password: " + password);
-
-			String vPassword = password;
-
-			String vUsername = username;
-
-			// String vPassword = ESAPI.validator().getValidInput("Password",
-			// password, "Password", 25, false);
-			// String vUsername = ESAPI.validator().getValidInput("UserName",
-			// username, "UserName", 25, false);
+			// password = Validator.validatePassword("password", password);
+			// username = Validator.validateUserName("username", username);
 
 			UserService service = new UserService();
-			User usr = service.getUser(vUsername, vPassword);
+			User usr = service.getUser(username, password);
 			if (usr != null) {
 				HttpSession session = request.getSession(true);
 				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
 			}
-
 		}
-		//
-		// catch (ValidationException e) {
-		// e.printStackTrace();
-		// return Response.status(Response.Status.BAD_REQUEST).build();
-		// } catch (IntrusionException e) {
-		// return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-		// }
-		//
-		catch (Exception e) {
-			e.printStackTrace();
+
+		catch (FieldValidationException e) {
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity(e.getMessage()).build();
+		} catch (IntrusionDetectedException e) {
+			return Response.status(Response.Status.FORBIDDEN)
+					.entity(e.getMessage()).build();
+		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.build();
+					.entity(e.getMessage()).build();
 		}
 		return Response.status(Response.Status.OK).build();
 	}
@@ -159,7 +164,9 @@ public class CarPoolRestService {
 	@Path("/logout")
 	public Response logout() {
 		HttpSession session = request.getSession(false);
-		session.invalidate();
+		if (session != null) {
+			session.invalidate();
+		}
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -263,8 +270,8 @@ public class CarPoolRestService {
 				carPool.setOwnerId(user.getUserId().toString());
 				carPool.setCarpoolName(user.getFirstName());
 				carPool.setPath(pointList.toString());
-				carPool.setStartDate(Long.valueOf(startDateInMilis)/1000);
-				carPool.setEndDate(Long.valueOf(endDateInMilis)/1000);
+				carPool.setStartDate(Long.valueOf(startDateInMilis) / 1000);
+				carPool.setEndDate(Long.valueOf(endDateInMilis) / 1000);
 				carPool.setStartTime(Long.parseLong(startTimeInSec));
 				carPool.setVehicleId(vehicleId);
 				carPool.setSrcArea(srcArea);
@@ -280,8 +287,8 @@ public class CarPoolRestService {
 				carPool.setDestArea(destArea);
 				carPool.setVehicleId(vehicleId);
 				carPool.setPath(pointList.toString());
-				carPool.setStartDate(Long.valueOf(startDateInMilis)/1000);
-				carPool.setEndDate(Long.valueOf(endDateInMilis)/1000);
+				carPool.setStartDate(Long.valueOf(startDateInMilis) / 1000);
+				carPool.setEndDate(Long.valueOf(endDateInMilis) / 1000);
 				carPool.setStartTime(Long.parseLong(startTimeInSec));
 
 				if (pointList != null && pointList.size() > 0) {
