@@ -112,9 +112,11 @@ public class CarPoolRestService {
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity(e.getMessage()).build();
 		} catch (IntrusionDetectedException e) {
+			e.printStackTrace();
 			return Response.status(Response.Status.FORBIDDEN)
 					.entity(e.getMessage()).build();
 		} catch (AuthenticationCredentialsException e) {
+			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity(e.getMessage()).build();
 		} catch (Exception e) {

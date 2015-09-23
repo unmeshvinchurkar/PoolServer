@@ -30,6 +30,7 @@ public class UserDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			session.saveOrUpdate(usr);
+			session.flush();
 
 		} finally {
 			session.close();

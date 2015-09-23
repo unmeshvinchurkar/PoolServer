@@ -45,7 +45,7 @@ public class CarPoolDao extends AbstractDao {
 			Query q = session
 					.createQuery("select carpool from Carpool carpool where ownerId =(:userId) and (carpool.deleted = 0 or carpool.deleted is Null) union "
 							+ " select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
-			q.setParameter("userId", userId);
+			q.setParameter("userId", userId.toString());
 			carPoolList = q.list();
 
 		} finally {
