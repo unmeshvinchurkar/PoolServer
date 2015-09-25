@@ -4,12 +4,24 @@ public class Vehicle implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String vehicleId;
-	private String vehicleNo;
-	private String vehicleType;
-	private String licenseNo;
 	private Long ownerId;
+	private String registrationNo;
+	private String vehicleType;
+	private String fuelType;
+	private String model;
+	private String color;
+	private String manufacturer;
+	private Integer noOfSeats;
 
 	public Vehicle() {
+	}
+
+	public String getVehicleId() {
+		return vehicleId;
+	}
+
+	public void setVehicleId(String vehicleId) {
+		this.vehicleId = vehicleId;
 	}
 
 	public Long getOwnerId() {
@@ -20,45 +32,68 @@ public class Vehicle implements java.io.Serializable {
 		this.ownerId = ownerId;
 	}
 
-	public String getVehicleId() {
-		return this.vehicleId;
+	public String getRegistrationNo() {
+		return registrationNo;
 	}
 
-	public void setVehicleId(String vehicleId) {
-		this.vehicleId = vehicleId;
-	}
-
-	public String getVehicleNo() {
-		return this.vehicleNo;
-	}
-
-	public void setVehicleNo(String vehicleNo) {
-		this.vehicleNo = vehicleNo;
+	public void setRegistrationNo(String registrationNo) {
+		this.registrationNo = registrationNo;
 	}
 
 	public String getVehicleType() {
-		return this.vehicleType;
+		return vehicleType;
 	}
 
 	public void setVehicleType(String vehicleType) {
 		this.vehicleType = vehicleType;
 	}
 
-	public String getLicenseNo() {
-		return this.licenseNo;
+	public String getFuelType() {
+		return fuelType;
 	}
 
-	public void setLicenseNo(String licenseNo) {
-		this.licenseNo = licenseNo;
+	public void setFuelType(String fuelType) {
+		this.fuelType = fuelType;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public String getManufacturer() {
+		return manufacturer;
+	}
+
+	public void setManufacturer(String manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+
+	public Integer getNoOfSeats() {
+		return noOfSeats;
+	}
+
+	public void setNoOfSeats(Integer noOfSeats) {
+		this.noOfSeats = noOfSeats;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
 		result = prime * result
-				+ ((vehicleNo == null) ? 0 : vehicleNo.hashCode());
+				+ ((registrationNo == null) ? 0 : registrationNo.hashCode());
 		return result;
 	}
 
@@ -71,17 +106,11 @@ public class Vehicle implements java.io.Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Vehicle other = (Vehicle) obj;
-		if (ownerId == null) {
-			if (other.ownerId != null)
+		if (registrationNo == null) {
+			if (other.registrationNo != null)
 				return false;
-		} else if (!ownerId.equals(other.ownerId))
-			return false;
-		if (vehicleNo == null) {
-			if (other.vehicleNo != null)
-				return false;
-		} else if (!vehicleNo.equals(other.vehicleNo))
+		} else if (!registrationNo.equals(other.registrationNo))
 			return false;
 		return true;
 	}
-
 }

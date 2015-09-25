@@ -3,23 +3,34 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 	<class name="com.pool.spring.model.Vehicle" table="vehicle">
-		<id name="vehicleId" type="string">
-			<column name="VehicleId" length="100" />
+
+		<id name="vehicleId" type="long">
+			<column name="VehicleId" />
 			<generator class="increment" />
 		</id>
-		
-		<property name="ownerId" type="string">
-            <column name="owner_id" length="200" />
-        </property>
-		
-		<property name="vehicleNo" type="string">
-			<column name="Vehicle_no" />
+		<property name="ownerId" type="long">
+			<column name="owner_id" />
+		</property>
+		<property name="registrationNo" type="string">
+			<column name="registration_no" />
 		</property>
 		<property name="vehicleType" type="string">
-			<column name="vehicle_type" length="50" />
+			<column name="vehicle_type" />
 		</property>
-		<property name="licenseNo" type="string">
-			<column name="license_no" length="50" />
+		<property name="fuelType" type="string">
+			<column name="fuel_type" />
+		</property>
+		<property name="color" type="string">
+			<column name="color" />
+		</property>
+		<property name="manufacturer" type="string">
+			<column name="manufacturer" />
+		</property>
+		<property name="model" type="string">
+			<column name="model" />
+		</property>
+		<property name="noOfSeats" type="int">
+			<column name="no_of_seats" />
 		</property>
 	</class>
 </hibernate-mapping>
