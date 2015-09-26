@@ -246,7 +246,8 @@ public class CarPoolRestService {
 			@FormParam("endDate") String endDateInMilis,
 			@FormParam("startTime") String startTimeInSec,
 			@FormParam("srcArea") String srcArea,
-			@FormParam("destArea") String destArea) {
+			@FormParam("destArea") String destArea,
+			@FormParam("totalSeats") String totalSeats) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
@@ -276,6 +277,7 @@ public class CarPoolRestService {
 				carPool.setVehicleId(vehicleId);
 				carPool.setSrcArea(srcArea);
 				carPool.setDestArea(destArea);
+				carPool.setNoOfAvblSeats(Integer.valueOf(totalSeats));
 
 				carPool = service.createCarPool(carPool, pointList);
 
@@ -322,6 +324,7 @@ public class CarPoolRestService {
 		CarPoolService service = new CarPoolService();
 
 		Carpool carPool = service.findPoolById(poolId);
+		carPool.setCalendarDays(null);
 
 		return Response.status(Response.Status.OK).entity(carPool).build();
 	}
