@@ -2,9 +2,17 @@ package com.pool.service;
 
 import com.pool.spring.SpringBeanProvider;
 import com.pool.spring.dao.UserDao;
+import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.User;
+import com.pool.spring.model.Vehicle;
 
 public class UserService {
+
+	public Vehicle getVehicle(Long userId) {
+		VehicleDao vehicleDao = (VehicleDao) SpringBeanProvider
+				.getBean("vehicleDao");
+		return vehicleDao.getVehicleByOwnerId(userId);
+	}
 
 	public User getUser(String username, String password) {
 

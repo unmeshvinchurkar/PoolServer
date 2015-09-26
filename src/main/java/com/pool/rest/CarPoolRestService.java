@@ -193,6 +193,24 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	@GET
+	@Path("/getVehicle")
+	public Response getVehicle() {
+		_validateSession();
+
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		UserService service = new UserService();
+		Vehicle v = service.getVehicle(user.getUserId());
+
+		if (v != null) {
+			return Response.status(Response.Status.OK).entity(v).build();
+		} else {
+			return Response.status(Response.Status.NOT_FOUND).build();
+
+		}
+	}
+
 	@POST
 	// @Consumes("application/x-www-form-urlencoded")
 	@Path("/addVehicle")
