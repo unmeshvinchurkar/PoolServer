@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.pool.spring.model.PoolCalendarDay" table="pool_calendar">
+
+		<id name="poolCalendarId" type="java.lang.Long">
+			<column name="pool_calendar_id" not-null="true" />
+			<generator class="increment" />
+		</id>
+		
+		<!-- <property name="carPoolId" type="java.lang.Long"> <column name="car_pool_id" 
+			not-null="true" /> </property> -->
+
+		<property name="date" type="java.lang.Long">
+			<column name="calendar_date" not-null="true" />
+		</property>
+
+		<property name="isHoliday" type="java.lang.Integer">
+			<column name="is_holiday" length="1" />
+		</property>
+
+		<property name="noOfAvblSeats" type="java.lang.Integer">
+			<column name="no_of_avbl_seats" length="2" />
+		</property>
+
+		<property name="noOfTravellers" type="java.lang.Integer">
+			<column name="no_of_passengers" length="2" />
+		</property>
+
+		<many-to-one name="carPool" class="com.pool.spring.model.Carpool"
+			fetch="select">
+			<column name="car_pool_id" not-null="true" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

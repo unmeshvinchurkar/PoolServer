@@ -33,6 +33,7 @@
 				<value>User.hbm.xml</value>
 				<value>Vehicle.hbm.xml</value>
 				<value>PoolSubscription.hbm.xml</value>
+				<value>PoolCalendarDay.hbm.xml</value>				
 			</list>
 		</property>
 

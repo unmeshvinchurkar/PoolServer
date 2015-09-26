@@ -2,7 +2,9 @@ package com.pool.spring.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Carpool implements java.io.Serializable {
 
@@ -25,8 +27,18 @@ public class Carpool implements java.io.Serializable {
 	private Integer deleted = null;
 	private String srcArea;
 	private String destArea;
+	private Integer noOfAvblSeats;
+	private Set<PoolCalendarDay> calendarDays = null;
 
 	public Carpool() {
+	}
+
+	public Set<PoolCalendarDay> getCalendarDays() {
+		return calendarDays;
+	}
+
+	public void setCalendarDays(Set<PoolCalendarDay> calendarDays) {
+		this.calendarDays = calendarDays;
 	}
 
 	public String getSrcArea() {
@@ -91,7 +103,7 @@ public class Carpool implements java.io.Serializable {
 
 	public void setCarpoolName(String carpoolName) {
 		this.carpoolName = carpoolName;
-	}	
+	}
 
 	public Double getSrcLongitude() {
 		return srcLongitude;
@@ -171,6 +183,14 @@ public class Carpool implements java.io.Serializable {
 
 	public void setEndDate(Long endDate) {
 		this.endDate = endDate;
+	}
+
+	public Integer getNoOfAvblSeats() {
+		return noOfAvblSeats;
+	}
+
+	public void setNoOfAvblSeats(Integer noOfAvblSeats) {
+		this.noOfAvblSeats = noOfAvblSeats;
 	}
 
 	@Override

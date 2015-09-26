@@ -69,15 +69,14 @@ public class CarPoolRestService {
 		}
 
 		if (!captcha.isCorrect(answer)) {
-			
+
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity("Incorrect capcha").build();
 		}
 
-	
 		try {
 			EsapiUtils.verifyPasswordStrength(password, username);
-			
+
 			username = Validator.validateUserName("username", username);
 			firstName = Validator.validateName("firstName", firstName);
 			lastName = Validator.validateName("lastName", lastName);
@@ -207,9 +206,8 @@ public class CarPoolRestService {
 		User user = (User) session.getAttribute("USER");
 
 		Vehicle vh = new Vehicle();
-		vh.setVehicleNo(vehicleNo);
+		vh.setRegistrationNo(vehicleNo);
 		vh.setVehicleType(vehicleType);
-		vh.setLicenseNo(licenseNo);
 		vh.setOwnerId(user.getUserId());
 
 		CarPoolService service = new CarPoolService();
@@ -367,6 +365,10 @@ public class CarPoolRestService {
 
 		CarPoolService service = new CarPoolService();
 		List<Carpool> carPools = service.findPoolsByUserId(usr.getUserId());
+
+		for (Carpool pool : carPools) {
+			pool.setCalendarDays(null);
+		}
 		return Response.status(Response.Status.OK).entity(carPools).build();
 	}
 

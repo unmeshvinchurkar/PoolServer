@@ -24,6 +24,7 @@ import com.pool.spring.dao.UserDao;
 import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
+import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.Vehicle;
 import com.run.GoogleConstants;
 
@@ -101,6 +102,29 @@ public class CarPoolService {
 	public Carpool createCarPool(Carpool pool, List<Point> points) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
+
+		long noOfSecsInDay = 24 * 60 * 60;
+
+		Long startDate = pool.getStartDate();
+		Long endDate = pool.getEndDate();
+
+		if (pool.getNoOfAvblSeats() == null) {
+			pool.setNoOfAvblSeats(1);
+		}
+
+		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
+
+		for (long day = startDate; day <= endDate; day = day + noOfSecsInDay) {
+			PoolCalendarDay calendarDay = new PoolCalendarDay();
+			calendarDay.setNoOfTravellers(1);// Including owner
+			calendarDay.setIsHoliday(0);
+			calendarDay.setDate(day);
+			calendarDay.setNoOfAvblSeats(pool.getNoOfAvblSeats());
+			calendarDay.setCarPool(pool);
+			calendarDays.add(calendarDay);
+		}
+
+		pool.setCalendarDays(calendarDays);
 
 		return poolDao.createCarPool(pool, points);
 	}
