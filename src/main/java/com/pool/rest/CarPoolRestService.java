@@ -39,6 +39,43 @@ public class CarPoolRestService {
 	private HttpServletRequest request;
 
 	@POST
+	@Path("/changePassword")
+	public Response changePassword(
+			@FormParam("oldPassword") String oldPassword,
+			@FormParam("newPassword") String newPassword) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+
+		User user = (User) session.getAttribute("USER");
+		CarPoolService service = new CarPoolService();
+
+		try {
+
+			if (user.getPasswd().equals(oldPassword)) {
+				EsapiUtils.verifyPasswordStrength(newPassword,
+						user.getUsername());
+
+				user.setPasswd(newPassword);
+				service.saveOrUpdate(user);
+			}
+			else {
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
+		} catch (AuthenticationCredentialsException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity(e.getMessage()).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(e.getMessage()).build();
+		}
+
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
 	@Path("/signup")
 	public Response signup(@FormParam("username") String username,
 
@@ -137,8 +174,7 @@ public class CarPoolRestService {
 			System.out.println("********************* Login: " + username);
 			System.out.println("********************* password: " + password);
 
-			// password = Validator.validatePassword("password", password);
-			// username = Validator.validateUserName("username", username);
+			username = Validator.validateUserName("username", username);
 
 			UserService service = new UserService();
 			User usr = service.getUser(username, password);
@@ -164,6 +200,8 @@ public class CarPoolRestService {
 	@POST
 	@Path("/logout")
 	public Response logout() {
+		
+		_validateSession();
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 			session.invalidate();
@@ -204,6 +242,7 @@ public class CarPoolRestService {
 		Vehicle v = service.getVehicle(user.getUserId());
 
 		if (v != null) {
+			v.setDrivingLicense(user.getDrivingLicense());
 			return Response.status(Response.Status.OK).entity(v).build();
 		} else {
 			return Response.status(Response.Status.NOT_FOUND).build();
@@ -212,11 +251,13 @@ public class CarPoolRestService {
 	}
 
 	@POST
-	// @Consumes("application/x-www-form-urlencoded")
 	@Path("/addVehicle")
-	public Response addVehicle(@FormParam("vehicleNo") String vehicleNo,
-			@FormParam("licenseNo") String licenseNo,
-			@FormParam("vehicleType") String vehicleType) {
+	public Response addVehicle(@FormParam("manufacturer") String manufacturer,
+			@FormParam("model") String model,
+			@FormParam("fuelType") String fuelType,
+			@FormParam("color") String color,
+			@FormParam("registrationNumber") String registrationNumber,
+			@FormParam("drivingLicense") String drivingLicense) {
 
 		_validateSession();
 
@@ -224,14 +265,21 @@ public class CarPoolRestService {
 		User user = (User) session.getAttribute("USER");
 
 		Vehicle vh = new Vehicle();
-		vh.setRegistrationNo(vehicleNo);
-		vh.setVehicleType(vehicleType);
+		vh.setRegistrationNo(registrationNumber);
 		vh.setOwnerId(user.getUserId());
+		vh.setDrivingLicense(drivingLicense);
+		vh.setManufacturer(manufacturer);
+		vh.setModel(model);
+		vh.setFuelType(fuelType);
+		vh.setColor(color);
 
+		user.setDrivingLicense(drivingLicense);
 		CarPoolService service = new CarPoolService();
+
+		service.saveOrUpdate(user);
+
 		service.addVehicle(vh);
 		return Response.status(Response.Status.OK).build();
-
 	}
 
 	@POST

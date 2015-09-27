@@ -5,7 +5,7 @@
 <hibernate-mapping>
 	<class name="com.pool.spring.model.User" table="users">
 		<id name="userId" type="long">
-			<column name="UserId" length="100"  />
+			<column name="UserId" length="100" />
 			<generator class="increment" />
 		</id>
 		<property name="passwd" type="string">
@@ -43,6 +43,9 @@
 		</property>
 		<property name="gender" type="string">
 			<column name="Gender" length="2" />
+		</property>
+		<property name="drivingLicense" type="string">
+			<column name="driving_license" length="30" />
 		</property>
 		<set name="carpools" table="carpool" inverse="true" lazy="true"
 			fetch="select">

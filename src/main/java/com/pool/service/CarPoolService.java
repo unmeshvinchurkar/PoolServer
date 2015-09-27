@@ -44,12 +44,11 @@ public class CarPoolService {
 
 	}
 
-	public List findPoolsByUserId(Long userId) {
+	public List<Carpool> findPoolsByUserId(Long userId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
 		return poolDao.findPoolsByUserId(userId);
-
 	}
 
 	public Carpool findPoolById(String carPoolId) {

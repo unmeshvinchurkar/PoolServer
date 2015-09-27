@@ -18,6 +18,7 @@ public class User implements java.io.Serializable {
 	private String state;
 	private String country;
 	private String gender;
+	private String drivingLicense;
 	private Long birthDate;
 	private Set<Carpool> carpools = new HashSet<Carpool>(0);
 	private Set<Vehicle> vehicles = new HashSet<Vehicle>(0);
@@ -143,6 +144,14 @@ public class User implements java.io.Serializable {
 
 	public void setVehicles(Set<Vehicle> vehicles) {
 		this.vehicles = vehicles;
+	}
+
+	public String getDrivingLicense() {
+		return drivingLicense;
+	}
+
+	public void setDrivingLicense(String drivingLicense) {
+		this.drivingLicense = drivingLicense;
 	}
 
 	@Override

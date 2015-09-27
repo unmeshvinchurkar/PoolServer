@@ -12,6 +12,7 @@ public class Vehicle implements java.io.Serializable {
 	private String color;
 	private String manufacturer;
 	private Integer noOfSeats;
+	private String drivingLicense;
 
 	public Vehicle() {
 	}
@@ -86,6 +87,14 @@ public class Vehicle implements java.io.Serializable {
 
 	public void setNoOfSeats(Integer noOfSeats) {
 		this.noOfSeats = noOfSeats;
+	}
+
+	public String getDrivingLicense() {
+		return drivingLicense;
+	}
+
+	public void setDrivingLicense(String drivingLicense) {
+		this.drivingLicense = drivingLicense;
 	}
 
 	@Override
