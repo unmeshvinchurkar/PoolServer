@@ -20,6 +20,74 @@ import com.pool.spring.model.User;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
+	public List fetchPoolHolidays(Long carPoolId, Long startTime, Long endTime) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery(" from PoolCalendarDay day where day.carPoolId =(:carPoolId) and day.isHoliday=1 and day.date>=:startDay and day.date<=:endDay");
+			q.setParameter("startDay", startTime);
+			q.setParameter("endDay", startTime);
+			q.setParameter("carPoolId", carPoolId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		return result;
+	}
+
+	public List fetchUserHolidays(Long userId, Long carPoolId, Long startTime,
+			Long endTime) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery(" from UserCalendarDay day where day.userId =(:userId) and day.carPoolId =(:carPoolId)  and day.calendarDay>=:startDay and day.calendarDay<=:endDay");
+			q.setParameter("startDay", startTime);
+			q.setParameter("endDay", startTime);
+			q.setParameter("carPoolId", carPoolId);
+			q.setParameter("userId", userId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		return result;
+	}
+
+	public boolean isOwner(Long userId, Long carPoolId) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("select pool.ownerId from Carpool pool where pool.carPoolId=:carPoolId");
+			q.setParameter("carPoolId", carPoolId);
+			result = q.list();
+
+			if (result != null && result.size() > 0) {
+				Object ownerId = ((Object[]) result.get(0))[0];
+				if (ownerId.equals(userId.toString())) {
+					return true;
+				}
+			}
+
+		} finally {
+			session.close();
+		}
+
+		return false;
+	}
+
 	public void deletePool(String carPoolId) {
 		Session session = null;
 		try {
@@ -121,8 +189,8 @@ public class CarPoolDao extends AbstractDao {
 			pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
 			pool.setSrcLattitude(points.get(0).getLattitude());
 			pool.setSrcLongitude(points.get(0).getLongitude());
-			pool.setExptdEndTime(new Date().getTime()/1000);
-			pool.setCreateDate(new Date().getTime()/1000);
+			pool.setExptdEndTime(new Date().getTime() / 1000);
+			pool.setCreateDate(new Date().getTime() / 1000);
 			session.save(pool);
 			session.flush();
 
@@ -165,7 +233,7 @@ public class CarPoolDao extends AbstractDao {
 			pool.setStartDate(new Date().getTime());
 			pool.setStartTime(11111l);
 			pool.setOwnerId(userId);
-			pool.setExptdEndTime(new Date().getTime()/1000);
+			pool.setExptdEndTime(new Date().getTime() / 1000);
 			pool.setVehicleId(vehicleId);
 			session.save(pool);
 			session.flush();

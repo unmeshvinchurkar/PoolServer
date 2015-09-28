@@ -3,35 +3,80 @@ package com.pool.spring.model;
 public class PoolSubscription implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String subscriptionId;
-	private String carPoolId;
-	private String travellerId;
+	private Long subscriptionId;
+	private Long carPoolId;
+	private Long travellerId;
+	private Double pickupLongitute;
+	private Double pickupLattitude;
+	private Long pickupTime;
+	private String pickupAddress;
+	private String dropAddress;
 
 	public PoolSubscription() {
 	}
 
-	public String getSubscriptionId() {
+	public Long getSubscriptionId() {
 		return subscriptionId;
 	}
 
-	public void setSubscriptionId(String subscriptionId) {
+	public void setSubscriptionId(Long subscriptionId) {
 		this.subscriptionId = subscriptionId;
 	}
 
-	public String getCarPoolId() {
+	public Long getCarPoolId() {
 		return carPoolId;
 	}
 
-	public void setCarPoolId(String carPoolId) {
+	public void setCarPoolId(Long carPoolId) {
 		this.carPoolId = carPoolId;
 	}
 
-	public String getTravellerId() {
+	public Long getTravellerId() {
 		return travellerId;
 	}
 
-	public void setTravellerId(String travellerId) {
+	public void setTravellerId(Long travellerId) {
 		this.travellerId = travellerId;
+	}
+
+	public Double getPickupLongitute() {
+		return pickupLongitute;
+	}
+
+	public void setPickupLongitute(Double pickupLongitute) {
+		this.pickupLongitute = pickupLongitute;
+	}
+
+	public Double getPickupLattitude() {
+		return pickupLattitude;
+	}
+
+	public void setPickupLattitude(Double pickupLattitude) {
+		this.pickupLattitude = pickupLattitude;
+	}
+
+	public Long getPickupTime() {
+		return pickupTime;
+	}
+
+	public void setPickupTime(Long pickupTime) {
+		this.pickupTime = pickupTime;
+	}
+
+	public String getPickupAddress() {
+		return pickupAddress;
+	}
+
+	public void setPickupAddress(String pickupAddress) {
+		this.pickupAddress = pickupAddress;
+	}
+
+	public String getDropAddress() {
+		return dropAddress;
+	}
+
+	public void setDropAddress(String dropAddress) {
+		this.dropAddress = dropAddress;
 	}
 
 	@Override
@@ -66,5 +111,4 @@ public class PoolSubscription implements java.io.Serializable {
 			return false;
 		return true;
 	}
-
 }

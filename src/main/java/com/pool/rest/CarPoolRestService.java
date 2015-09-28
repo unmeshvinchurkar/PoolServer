@@ -1,7 +1,11 @@
 package com.pool.rest;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,7 +33,9 @@ import com.pool.esapi.Validator;
 import com.pool.service.CarPoolService;
 import com.pool.service.UserService;
 import com.pool.spring.model.Carpool;
+import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.User;
+import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
 
 @Path("/carpool")
@@ -58,8 +64,7 @@ public class CarPoolRestService {
 
 				user.setPasswd(newPassword);
 				service.saveOrUpdate(user);
-			}
-			else {
+			} else {
 				return Response.status(Response.Status.UNAUTHORIZED).build();
 			}
 		} catch (AuthenticationCredentialsException e) {
@@ -73,6 +78,32 @@ public class CarPoolRestService {
 		}
 
 		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/getCalendar")
+	public Response getCalendar(@FormParam("carPoolId") String carPoolId) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+
+		CarPoolService service = new CarPoolService();
+		User user = (User) session.getAttribute("USER");
+		Long userId = user.getUserId();
+
+		boolean isOwner = service.isOwner(userId, Long.valueOf(carPoolId));
+
+		List<UserCalendarDay> userHolidays = null;
+		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(Long
+				.valueOf(carPoolId));
+		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId));
+
+		Map map = new HashMap();
+		map.put("isOwner", isOwner);
+		map.put("userHolidays", userHolidays);
+		map.put("poolHolidays", poolHolidays);
+
+		return Response.status(Response.Status.OK).entity(map).build();
 	}
 
 	@POST
@@ -200,7 +231,7 @@ public class CarPoolRestService {
 	@POST
 	@Path("/logout")
 	public Response logout() {
-		
+
 		_validateSession();
 		HttpSession session = request.getSession(false);
 		if (session != null) {

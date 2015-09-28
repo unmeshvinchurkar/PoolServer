@@ -1,6 +1,7 @@
 package com.pool.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -25,10 +26,68 @@ import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
+import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
 import com.run.GoogleConstants;
 
 public class CarPoolService {
+
+	public List<PoolCalendarDay> getPoolHolidays(Long carPoolId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		Calendar cal = Calendar.getInstance();
+
+		int currentMonth = cal.get(Calendar.MONTH);
+		int currentYear1 = cal.get(Calendar.MONTH);
+		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
+				: currentYear1;
+		int nextMonth = (currentMonth == 12) ? 2 : (currentMonth + 2);
+
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+
+		Long startTime = cal.getTimeInMillis() / 1000;
+
+		cal.set(Calendar.YEAR, currentYear2);
+		cal.set(Calendar.MONTH, nextMonth);
+
+		Long endTime = cal.getTimeInMillis() / 1000;
+
+		return poolDao.fetchPoolHolidays(carPoolId, startTime, endTime);
+	}
+
+	public List<UserCalendarDay> getUserHolidays(Long userId, Long carPoolId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		Calendar cal = Calendar.getInstance();
+
+		int currentMonth = cal.get(Calendar.MONTH);
+		int currentYear1 = cal.get(Calendar.MONTH);
+		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
+				: currentYear1;
+		int nextMonth = (currentMonth == 12) ? 2 : (currentMonth + 2);
+
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+
+		Long startTime = cal.getTimeInMillis() / 1000;
+
+		cal.set(Calendar.YEAR, currentYear2);
+		cal.set(Calendar.MONTH, nextMonth);
+
+		Long endTime = cal.getTimeInMillis() / 1000;
+
+		return poolDao.fetchUserHolidays(userId, carPoolId, startTime, endTime);
+	}
+
+	public boolean isOwner(Long userId, Long carPoolId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		return poolDao.isOwner(userId, carPoolId);
+	}
 
 	public void saveOrUpdate(Object obj) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
