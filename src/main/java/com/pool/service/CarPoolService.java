@@ -118,7 +118,7 @@ public class CarPoolService {
 
 	}
 
-	public List<Point> convertRouteToPoints(String routeStr) {
+	public List<Point> convertRouteToPoints1(String routeStr) {
 		List<Point> points = new ArrayList<Point>();
 
 		try {
@@ -141,6 +141,54 @@ public class CarPoolService {
 		return points;
 	}
 
+	public List<Point> convertRouteToPoints(String routeStr, Long startTimeInSec) {
+		List<Point> points = new ArrayList<Point>();
+
+		try {
+			JSONObject route = new JSONObject(routeStr);
+
+			JSONObject leg = route.getJSONArray("legs").getJSONObject(0);
+			JSONArray steps = leg.getJSONArray("steps");
+
+			long duration = startTimeInSec.longValue();
+
+			for (int i = 0; i < steps.length(); i++) {
+
+				JSONObject step = steps.getJSONObject(i);
+
+				JSONObject startPoint = step.getJSONObject("start_point");
+				JSONArray path = step.getJSONArray("path");
+				int timeToCross = step.getJSONObject("duration")
+						.getInt("value");
+
+				points.add(new Point(Double.parseDouble(startPoint
+						.getString("H")), Double.parseDouble(startPoint
+						.getString("L")), duration));
+
+				if (path.length() > 0) {
+
+					int timePerStep = timeToCross / path.length();
+
+					for (int j = 0; j < path.length(); j++) {
+
+						JSONObject point = path.getJSONObject(j);
+						points.add(new Point(Double.parseDouble(point
+								.getString("H")), Double.parseDouble(point
+								.getString("L")), (duration + timePerStep * j)));
+					}
+				}
+
+				duration = duration + timeToCross;
+
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return points;
+	}
+
 	public void addVehicle(Vehicle vh) {
 		VehicleDao vDao = (VehicleDao) SpringBeanProvider.getBean("vehicleDao");
 		vDao.addvehicle(vh);
@@ -151,7 +199,7 @@ public class CarPoolService {
 		return vDao.getVehicleByOwnerId(ownerId);
 	}
 
-	public void subscribeToPool(String carPoolId, String travellerId) {
+	public void subscribeToPool(Long carPoolId, Long travellerId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 		poolDao.subscribeToPool(carPoolId, travellerId);
@@ -160,7 +208,8 @@ public class CarPoolService {
 	public Carpool createCarPool(Carpool pool, List<Point> points) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-
+		
+		
 		long noOfSecsInDay = 24 * 60 * 60;
 
 		Long startDate = pool.getStartDate();
@@ -250,7 +299,8 @@ public class CarPoolService {
 		return carPools;
 	}
 
-	public List<Long> findNearestPools(Point srcPoint, Point destPoint) {
+	public List<Long> findNearestPools(Point srcPoint, Point destPoint,
+			Long startTime) {
 
 		String lattitude = srcPoint.getLattitude().toString();
 		String longitude = srcPoint.getLongitude().toString();
@@ -266,12 +316,13 @@ public class CarPoolService {
 
 		// Search Car Pools with the radius of 400km around user location
 		List<Long> carPoolIds = poolDao.searchPools(lattitude, longitude,
-				screenDelta);
+				screenDelta, startTime);
 
 		DeltaLatLong delta = PoolUtils.findDelta(3.0, lattitude, longitude);
 
 		// For these pools select points on car pool within 3kms
-		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds);
+		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds,
+				startTime);
 
 		// Creat a Map of carpoolId and list of points fetched
 		Map<Long, List<GeoPoint>> poolId_PointMap = new HashMap<Long, List<GeoPoint>>();
@@ -327,7 +378,8 @@ public class CarPoolService {
 		Set<Long> carPoolIdSet = new HashSet<Long>();
 
 		// For these pools select points on car pool within 2kms
-		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds);
+		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds,
+				null);
 
 		for (GeoPoint p : points) {
 			carPoolIdSet.add(p.getCarPoolId());

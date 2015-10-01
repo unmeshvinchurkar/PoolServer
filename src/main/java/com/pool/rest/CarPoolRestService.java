@@ -321,7 +321,7 @@ public class CarPoolRestService {
 		try {
 			_validateSession();
 			CarPoolService service = new CarPoolService();
-			service.subscribeToPool(carPoolId, travellerId);
+			service.subscribeToPool(Long.parseLong(carPoolId), Long.parseLong(travellerId));
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -432,7 +432,8 @@ public class CarPoolRestService {
 	public Response findNearestPools(@QueryParam("srcLat") String srcLat,
 			@QueryParam("srcLng") String srcLng,
 			@QueryParam("destLat") String destLat,
-			@QueryParam("destLng") String destLng) {
+			@QueryParam("destLng") String destLng,
+			@QueryParam("startTime") String startTime) {
 
 		_validateSession();
 
@@ -445,7 +446,8 @@ public class CarPoolRestService {
 
 		System.err.println("Before searching pools ***********************");
 
-		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint);
+		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint,
+				Long.parseLong(startTime));
 
 		System.err.println("Afters searching pools ***********************: "
 				+ poolIds);

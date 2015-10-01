@@ -17,12 +17,24 @@
 		<property name="pointOrder" type="int">
 			<column name="Point_order" not-null="true" />
 		</property>
-		<property name="carPoolId" type="long">
-			<column name="car_pool_id" length="200" not-null="true" />
+		<property name="carPoolId" type="java.lang.Long">
+			<column name="car_pool_id" not-null="true" />
+		</property>
+		<property name="approxTimeToReach" type="java.lang.Long">
+			<column name="approx_time_to_reach" not-null="true" />
 		</property>
 	</class>
 
 	<query name="fetchPoints">
-        <![CDATA[from com.pool.spring.model.GeoPoint point1 where point1.longitude < :maxLongitude and point1.longitude > :minLongitude and point1.latitude > :minLattitude and point1.latitude <:maxLattitude and point1.carPoolId in (:carPoolIds)]]>
+        <![CDATA[from com.pool.spring.model.GeoPoint point1 where 
+        (point1.longitude < (:maxLongitude) 
+           and point1.longitude > (:minLongitude)   
+           and point1.latitude > (:minLattitude) 
+           and point1.latitude <(:maxLattitude) 
+           and point1.carPoolId in (:carPoolIds))
+           and point1.approxTimeToReach > (:minPickUpTime)  
+           and point1.approxTimeToReach < (:maxPickUpTime)
+           
+           ]]>
 	</query>
 </hibernate-mapping>

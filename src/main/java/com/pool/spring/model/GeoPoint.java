@@ -8,6 +8,7 @@ public class GeoPoint implements java.io.Serializable {
 	private Double longitude;
 	private int pointOrder;
 	private Long carPoolId;
+	private Long approxTimeToReach;
 
 	public GeoPoint() {
 	}
@@ -50,6 +51,14 @@ public class GeoPoint implements java.io.Serializable {
 
 	public void setCarPoolId(Long carPoolId) {
 		this.carPoolId = carPoolId;
+	}
+
+	public Long getApproxTimeToReach() {
+		return approxTimeToReach;
+	}
+
+	public void setApproxTimeToReach(Long approxTimeToReach) {
+		this.approxTimeToReach = approxTimeToReach;
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class CarPoolDao extends AbstractDao {
 		return carPoolList;
 	}
 
-	public void subscribeToPool(String carPoolId, String travellerId) {
+	public void subscribeToPool(Long carPoolId, Long travellerId) {
 
 		PoolSubscription subs = new PoolSubscription();
 		subs.setCarPoolId(carPoolId);
@@ -197,9 +197,10 @@ public class CarPoolDao extends AbstractDao {
 			for (int i = 0; i < points.size(); i++) {
 				GeoPoint point = new GeoPoint();
 				point.setCarPoolId(pool.getCarPoolId());
-				point.setLatitude(Double.valueOf(points.get(i).getLattitude()));
-				point.setLongitude(Double.valueOf(points.get(i).getLongitude()));
+				point.setLatitude(points.get(i).getLattitude());
+				point.setLongitude(points.get(i).getLongitude());
 				point.setPointOrder(i);
+				point.setApproxTimeToReach(points.get(i).getTimeToReach());
 				session.save(point);
 			}
 			tx.commit();
@@ -331,7 +332,7 @@ public class CarPoolDao extends AbstractDao {
 	 * @return Long
 	 */
 	public List<Long> searchPools(String lattitude, String longitude,
-			com.pool.DeltaLatLong delta) {
+			com.pool.DeltaLatLong delta, Long startTime) {
 
 		List<Long> carpoolIds = null;
 		Session session = null;
@@ -339,14 +340,15 @@ public class CarPoolDao extends AbstractDao {
 
 			session = this.openSession();
 			Query queryPool = session
-					.createQuery("select pool.carPoolId from Carpool pool where (pool.srcLongitude < :maxLongitude and pool.srcLongitude > :minLongitude and pool.srcLattitude > :minLattitude and  pool.srcLattitude < :maxLattitude) or "
+					.createQuery("select pool.carPoolId from Carpool pool where ((pool.srcLongitude < :maxLongitude and pool.srcLongitude > :minLongitude and pool.srcLattitude > :minLattitude and  pool.srcLattitude < :maxLattitude) or "
 							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude > :minLongitude "
-							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)");
+							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)) and pool.startTime <:startTime ");
 
 			queryPool.setParameter("minLongitude", delta.getMinLongitude());
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPool.setParameter("minLattitude", delta.getMinLattitude());
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
+			queryPool.setParameter("startTime", startTime);
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -366,7 +368,7 @@ public class CarPoolDao extends AbstractDao {
 	 * @return List<Points>
 	 */
 	public List<GeoPoint> findNearestPoints(DeltaLatLong delta,
-			List<Long> carpoolIds) {
+			List<Long> carpoolIds, Long startTime) {
 
 		Session session = null;
 		List<GeoPoint> points = null;
@@ -378,6 +380,8 @@ public class CarPoolDao extends AbstractDao {
 			queryPoints.setParameter("minLattitude", delta.getMinLattitude());
 			queryPoints.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPoints.setParameterList("carPoolIds", carpoolIds);
+			queryPoints.setParameter("minPickUpTime", startTime - 10*60);
+			queryPoints.setParameter("maxPickUpTime", startTime +20*60);
 			points = queryPoints.list();
 		} finally {
 			session.close();
