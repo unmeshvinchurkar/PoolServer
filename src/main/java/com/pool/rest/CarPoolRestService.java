@@ -355,7 +355,7 @@ public class CarPoolRestService {
 		Carpool carPool = null;
 		try {
 			vehicleId = "1";
-			pointList = route != null ? service.convertRouteToPoints(route)
+			pointList = route != null ? service.convertRouteToPoints(route, Long.parseLong(startTimeInSec))
 					: null;
 
 			if (vehicleId == null) {

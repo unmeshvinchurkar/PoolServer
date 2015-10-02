@@ -342,7 +342,8 @@ public class CarPoolDao extends AbstractDao {
 			Query queryPool = session
 					.createQuery("select pool.carPoolId from Carpool pool where ((pool.srcLongitude < :maxLongitude and pool.srcLongitude > :minLongitude and pool.srcLattitude > :minLattitude and  pool.srcLattitude < :maxLattitude) or "
 							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude > :minLongitude "
-							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)) and pool.startTime <:startTime ");
+							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)) and pool.startTime =<:startTime and pool.deleted ! = 1 and pool.noOfAvblSeats>=1 and pool.endDate > "
+							+ (new Date().getTime() / 1000));
 
 			queryPool.setParameter("minLongitude", delta.getMinLongitude());
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
@@ -359,6 +360,44 @@ public class CarPoolDao extends AbstractDao {
 		return carpoolIds;
 	}
 
+	
+	
+	/**
+	 * This method fetches all points for given carpoolIds which come under
+	 * geographical distance define by delta.
+	 * 
+	 * @param delta
+	 * @param carpoolIds
+	 * @return List<Points>
+	 */
+	public List<GeoPoint> findNearestDestinationPoints(DeltaLatLong delta,
+			Collection<Long> carpoolIds) {
+
+		Session session = null;
+		List<GeoPoint> points = null;
+		try {
+			session = this.openSession();
+			Query queryPoints = session
+					.createQuery("from com.pool.spring.model.GeoPoint point1 where "
+							+ " (point1.longitude < (:maxLongitude) "
+							+ " and point1.longitude > (:minLongitude) "
+							+ " and point1.latitude > (:minLattitude) "
+							+ "and point1.latitude <(:maxLattitude) "
+							+ " and point1.carPoolId in (:carPoolIds))");
+			queryPoints.setParameter("minLongitude", delta.getMinLongitude());
+			queryPoints.setParameter("maxLongitude", delta.getMaxLongitude());
+			queryPoints.setParameter("minLattitude", delta.getMinLattitude());
+			queryPoints.setParameter("maxLattitude", delta.getMaxLattitude());
+			queryPoints.setParameterList("carPoolIds", carpoolIds);
+			points = queryPoints.list();
+		} finally {
+			session.close();
+		}
+		return null;
+	}
+	
+	
+	
 	/**
 	 * This method fetches all points for given carpoolIds which come under
 	 * geographical distance define by delta.
@@ -380,8 +419,8 @@ public class CarPoolDao extends AbstractDao {
 			queryPoints.setParameter("minLattitude", delta.getMinLattitude());
 			queryPoints.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPoints.setParameterList("carPoolIds", carpoolIds);
-			queryPoints.setParameter("minPickUpTime", startTime - 10*60);
-			queryPoints.setParameter("maxPickUpTime", startTime +20*60);
+			queryPoints.setParameter("minPickUpTime", startTime - 10 * 60);
+			queryPoints.setParameter("maxPickUpTime", startTime + 20 * 60);
 			points = queryPoints.list();
 		} finally {
 			session.close();
