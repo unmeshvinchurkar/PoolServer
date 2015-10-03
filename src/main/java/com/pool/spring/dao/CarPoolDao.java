@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -376,11 +378,12 @@ public class CarPoolDao extends AbstractDao {
 	 * @param carpoolIds
 	 * @return List<Points>
 	 */
-	public List<GeoPoint> findNearestDestinationPoints(DeltaLatLong delta,
+	public Set<Long> findDestinationPools(DeltaLatLong delta,
 			Collection<Long> carpoolIds) {
 
 		Session session = null;
 		List<GeoPoint> points = null;
+		Set<Long> carPoolIds = new HashSet<Long>();
 		try {
 			session = this.openSession();
 			Query queryPoints = session
@@ -399,7 +402,17 @@ public class CarPoolDao extends AbstractDao {
 		} finally {
 			session.close();
 		}
-		return points;
+		
+		if(points!=null){
+			
+			for(GeoPoint p:points){
+				
+				carPoolIds.add(p.getCarPoolId());
+				
+			}
+			
+		}
+		return carPoolIds;
 	}
 
 	/**

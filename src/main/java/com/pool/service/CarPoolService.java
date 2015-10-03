@@ -298,13 +298,14 @@ public class CarPoolService {
 		return carPools;
 	}
 
-	public List<Long> findNearestPools(Point srcPoint, Point destPoint,
-			Long startTime) {
+	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,
+			Point destPoint, Long startTime) {
 
 		String lattitude = srcPoint.getLattitude().toString();
 		String longitude = srcPoint.getLongitude().toString();
 
 		List<Long> carPools = new ArrayList<Long>();
+		Map<Long, GeoPoint> poolPointMap = new HashMap<Long, GeoPoint>();
 
 		Double initFixedDistance = 200.0;
 		DeltaLatLong screenDelta = PoolUtils.findDelta(initFixedDistance,
@@ -318,7 +319,7 @@ public class CarPoolService {
 				screenDelta, startTime);
 
 		if (carPoolIds == null || carPoolIds.size() == 0) {
-			return carPools;
+			return null;
 		}
 
 		DeltaLatLong delta = PoolUtils.findDelta(3.0, lattitude, longitude);
@@ -340,11 +341,15 @@ public class CarPoolService {
 
 		if (poolId_PointMap.size() > 0) {
 
-			Collection<Long> pools = findPoolsGngToDestination(
-					poolId_PointMap.keySet(), destPoint);
+			DeltaLatLong deltaDest = PoolUtils.findDelta(3.0, lattitude,
+					longitude);
+
+			// For these pools select points on car pool within 3kms
+			Set<Long> destPoolIds = poolDao.findDestinationPools(deltaDest,
+					carPoolIds);
 
 			for (Long poolId : poolId_PointMap.keySet()) {
-				if (!pools.contains(poolId)) {
+				if (!destPoolIds.contains(poolId)) {
 					poolId_PointMap.remove(poolId);
 				}
 			}
@@ -369,12 +374,11 @@ public class CarPoolService {
 				Collections.sort(geoPoints, comparator);
 
 				for (GeoPoint point : geoPoints) {
-					carPools.add(point.getCarPoolId());
+					poolPointMap.put(point.getCarPoolId(), point);
 				}
 			}
 		}
-
-		return carPools;
+		return poolPointMap;
 	}
 
 	private static Collection<Long> findPoolsGngToDestination(
@@ -387,13 +391,15 @@ public class CarPoolService {
 
 		Set<Long> carPoolIdSet = new HashSet<Long>();
 
+	
+		/**
 		// For these pools select points on car pool within 2kms
-		List<GeoPoint> points = poolDao.findNearestDestinationPoints(delta,
+		List<GeoPoint> points = poolDao.findDestinationPools(delta,
 				carPoolIds);
 
 		for (GeoPoint p : points) {
 			carPoolIdSet.add(p.getCarPoolId());
-		}
+		}*/
 
 		return carPoolIds;
 	}
