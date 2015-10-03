@@ -1,6 +1,7 @@
 package com.pool.rest;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.owasp.esapi.errors.AuthenticationCredentialsException;
 
 import nl.captcha.Captcha;
@@ -32,7 +36,10 @@ import com.pool.esapi.IntrusionDetectedException;
 import com.pool.esapi.Validator;
 import com.pool.service.CarPoolService;
 import com.pool.service.UserService;
+import com.pool.spring.SpringBeanProvider;
+import com.pool.spring.dao.CarPoolDao;
 import com.pool.spring.model.Carpool;
+import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
@@ -321,7 +328,8 @@ public class CarPoolRestService {
 		try {
 			_validateSession();
 			CarPoolService service = new CarPoolService();
-			service.subscribeToPool(Long.parseLong(carPoolId), Long.parseLong(travellerId));
+			service.subscribeToPool(Long.parseLong(carPoolId),
+					Long.parseLong(travellerId));
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -355,8 +363,8 @@ public class CarPoolRestService {
 		Carpool carPool = null;
 		try {
 			vehicleId = "1";
-			pointList = route != null ? service.convertRouteToPoints(route, Long.parseLong(startTimeInSec))
-					: null;
+			pointList = route != null ? service.convertRouteToPoints(route,
+					Long.parseLong(startTimeInSec)) : null;
 
 			if (vehicleId == null) {
 				Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
@@ -365,7 +373,7 @@ public class CarPoolRestService {
 
 			if (carPoolId == null) {
 				carPool = new Carpool();
-				carPool.setOwnerId(user.getUserId().toString());
+				carPool.setOwnerId(user.getUserId());
 				carPool.setCarpoolName(user.getFirstName());
 				carPool.setPath(pointList.toString());
 				carPool.setStartDate(Long.valueOf(startDateInMilis) / 1000);
@@ -446,13 +454,30 @@ public class CarPoolRestService {
 
 		System.err.println("Before searching pools ***********************");
 
-		List<Long> poolIds = service.findNearestPools(srcPoint, destPoint,
-				Long.parseLong(startTime));
+		Map<Long, GeoPoint> poolIdPointMap = service.findNearestPools(srcPoint,
+				destPoint, Long.parseLong(startTime));
 
-		System.err.println("Afters searching pools ***********************: "
-				+ poolIds);
+		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
-		return Response.status(Response.Status.OK).entity(poolIds).build();
+		List array = new ArrayList();
+
+		for (int i = 0; i < list.size(); i++) {
+
+			Object result[] = (Object[]) list.get(i);
+
+			Carpool pool = (Carpool) result[0];
+			User user = (User) result[1];
+			user.setCarpools(null);
+			user.setVehicles(null);
+			pool.setCalendarDays(null);
+			pool.setGeoPoints(null);
+			Map map = new HashMap();
+			map.put("carpool", (pool));
+			map.put("user", (user));
+			array.add(map);
+		}
+
+		return Response.status(Response.Status.OK).entity(array).build();
 	}
 
 	@POST

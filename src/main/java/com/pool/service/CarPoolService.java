@@ -32,6 +32,13 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public List fetchPoolDetailsById(Collection<Long> carPoolIds) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchPoolDetailsById(carPoolIds);
+	}
+
 	public List<PoolCalendarDay> getPoolHolidays(Long carPoolId) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
@@ -242,62 +249,6 @@ public class CarPoolService {
 		poolDao.updatePool(pool, points);
 	}
 
-	public List<Long> findNearestPools2(Point srcPoint, Point destPoint) {
-
-		String lattitude = srcPoint.getLattitude().toString();
-		String longitude = srcPoint.getLongitude().toString();
-
-		List<Long> carPools = new ArrayList<Long>();
-		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
-				.getBean("carPoolDao");
-		DeltaLatLong delta = PoolUtils.findDelta(3.0, lattitude, longitude);
-
-		// Find all points within 3kms
-		List<GeoPoint> points = poolDao.findNearestPoints(delta);
-
-		// Creat a Map of carpoolId and list of points fetched
-		Map<Long, List<GeoPoint>> poolId_PointMap = new HashMap<Long, List<GeoPoint>>();
-
-		for (GeoPoint p : points) {
-			if (poolId_PointMap.get(p.getCarPoolId()) == null) {
-				poolId_PointMap
-						.put(p.getCarPoolId(), new ArrayList<GeoPoint>());
-			}
-			poolId_PointMap.get(p.getCarPoolId()).add(p);
-		}
-
-		if (poolId_PointMap.keySet().size() > 0) {
-
-			// For each pool find the nearest point. The pool with nearst point
-			// will get the priority
-			DistanceComparator comparator = new DistanceComparator(
-					Double.valueOf(longitude), Double.valueOf(lattitude));
-
-			List<GeoPoint> geoPoints = new ArrayList<GeoPoint>();
-
-			for (Long poolId : poolId_PointMap.keySet()) {
-				GeoPoint point = PoolUtils.findNearestPoint(lattitude,
-						longitude, poolId_PointMap.get(poolId));
-				geoPoints.add(point);
-			}
-
-			Collections.sort(geoPoints, comparator);
-
-			for (GeoPoint point : geoPoints) {
-				carPools.add(point.getCarPoolId());
-			}
-		}
-
-		if (carPools.size() > 0) {
-			Collection<Long> pools = findPoolsGngToDestination(carPools,
-					destPoint);
-			carPools.clear();
-			carPools.addAll(pools);
-		}
-
-		return carPools;
-	}
-
 	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,
 			Point destPoint, Long startTime) {
 
@@ -380,28 +331,4 @@ public class CarPoolService {
 		}
 		return poolPointMap;
 	}
-
-	private static Collection<Long> findPoolsGngToDestination(
-			Collection<Long> carPoolIds, Point point) {
-		DeltaLatLong delta = PoolUtils.findDelta(2.0, point.getLattitude()
-				.toString(), point.getLongitude().toString());
-
-		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
-				.getBean("carPoolDao");
-
-		Set<Long> carPoolIdSet = new HashSet<Long>();
-
-	
-		/**
-		// For these pools select points on car pool within 2kms
-		List<GeoPoint> points = poolDao.findDestinationPools(delta,
-				carPoolIds);
-
-		for (GeoPoint p : points) {
-			carPoolIdSet.add(p.getCarPoolId());
-		}*/
-
-		return carPoolIds;
-	}
-
 }

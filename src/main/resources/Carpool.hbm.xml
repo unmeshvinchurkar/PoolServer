@@ -9,7 +9,7 @@
 			<column name="carPoolId" length="100" not-null="true" />
 			<generator class="increment" />
 		</id>
-		<property name="ownerId" type="string">
+		<property name="ownerId" type="java.lang.Long">
 			<column name="owner_id" length="100" not-null="true" />
 		</property>
 		<property name="carpoolName" type="string">

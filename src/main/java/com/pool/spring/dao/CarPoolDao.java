@@ -23,6 +23,26 @@ import com.pool.spring.model.User;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
+	public List fetchPoolDetailsById(Collection<Long> carPoolIds) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("select pool, usr  from Carpool pool, User usr where pool.carPoolId in (:carPoolIds) and pool.ownerId = usr.userId");
+			q.setParameterList("carPoolIds", carPoolIds);
+			result = q.list();
+			
+
+		} finally {
+			session.close();
+		}
+		
+		return result;
+	}
+
 	public List fetchPoolHolidays(Long carPoolId, Long startTime, Long endTime) {
 
 		Session session = null;
@@ -114,9 +134,9 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("select carpool from Carpool carpool where ownerId =(:userId) and (carpool.deleted = 0 or carpool.deleted is Null) union "
+					.createQuery("select carpool from Carpool carpool where carpool.ownerId =(:userId) and (carpool.deleted = 0 or carpool.deleted is Null) union "
 							+ " select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
-			q.setParameter("userId", userId.toString());
+			q.setParameter("userId", userId);
 			carPoolList = q.list();
 
 		} finally {
@@ -236,7 +256,7 @@ public class CarPoolDao extends AbstractDao {
 			pool.setSrcLongitude(points.get(0).getLongitude());
 			pool.setStartDate(new Date().getTime());
 			pool.setStartTime(11111l);
-			pool.setOwnerId(userId);
+			pool.setOwnerId(Long.valueOf(userId));
 			pool.setExptdEndTime(new Date().getTime() / 1000);
 			pool.setVehicleId(vehicleId);
 			session.save(pool);
@@ -353,12 +373,9 @@ public class CarPoolDao extends AbstractDao {
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPool.setParameter("deleted", Integer.valueOf(1));
 			queryPool.setParameter("noOfAvblSeats", Integer.valueOf("1"));
-			
-			
-			
-			
+
 			queryPool.setParameter("endDate",
-					Long.valueOf((new Date().getTime())/1000));
+					Long.valueOf((new Date().getTime()) / 1000));
 			queryPool.setParameter("startTime", startTime);
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
@@ -402,15 +419,15 @@ public class CarPoolDao extends AbstractDao {
 		} finally {
 			session.close();
 		}
-		
-		if(points!=null){
-			
-			for(GeoPoint p:points){
-				
+
+		if (points != null) {
+
+			for (GeoPoint p : points) {
+
 				carPoolIds.add(p.getCarPoolId());
-				
+
 			}
-			
+
 		}
 		return carPoolIds;
 	}
