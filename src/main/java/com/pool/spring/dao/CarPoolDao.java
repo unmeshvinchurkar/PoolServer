@@ -1,6 +1,7 @@
 package com.pool.spring.dao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -340,15 +341,22 @@ public class CarPoolDao extends AbstractDao {
 
 			session = this.openSession();
 			Query queryPool = session
-					.createQuery("select pool.carPoolId from Carpool pool where ((pool.srcLongitude < :maxLongitude and pool.srcLongitude > :minLongitude and pool.srcLattitude > :minLattitude and  pool.srcLattitude < :maxLattitude) or "
-							+ " (pool.destLongitude < :maxLongitude and  pool.destLongitude > :minLongitude "
-							+ "  and pool.destLattitude < :maxLattitude and  pool.destLattitude > :minLattitude)) and pool.startTime =<:startTime and pool.deleted ! = 1 and pool.noOfAvblSeats>=1 and pool.endDate > "
-							+ (new Date().getTime() / 1000));
+					.createQuery("select pool.carPoolId from Carpool pool where ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or "
+							+ " (pool.destLongitude < (:maxLongitude) and  pool.destLongitude > (:minLongitude) "
+							+ "  and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and pool.startTime <= (:startTime) and (pool.deleted != :deleted or pool.deleted is NULL)and pool.noOfAvblSeats>=(:noOfAvblSeats) and pool.endDate > (:endDate)  ");
 
 			queryPool.setParameter("minLongitude", delta.getMinLongitude());
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPool.setParameter("minLattitude", delta.getMinLattitude());
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
+			queryPool.setParameter("deleted", Integer.valueOf(1));
+			queryPool.setParameter("noOfAvblSeats", Integer.valueOf("1"));
+			
+			
+			
+			
+			queryPool.setParameter("endDate",
+					Long.valueOf((new Date().getTime())/1000));
 			queryPool.setParameter("startTime", startTime);
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
@@ -360,8 +368,6 @@ public class CarPoolDao extends AbstractDao {
 		return carpoolIds;
 	}
 
-	
-	
 	/**
 	 * This method fetches all points for given carpoolIds which come under
 	 * geographical distance define by delta.
@@ -393,11 +399,9 @@ public class CarPoolDao extends AbstractDao {
 		} finally {
 			session.close();
 		}
-		return null;
+		return points;
 	}
-	
-	
-	
+
 	/**
 	 * This method fetches all points for given carpoolIds which come under
 	 * geographical distance define by delta.

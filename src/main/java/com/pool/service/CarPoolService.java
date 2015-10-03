@@ -317,6 +317,10 @@ public class CarPoolService {
 		List<Long> carPoolIds = poolDao.searchPools(lattitude, longitude,
 				screenDelta, startTime);
 
+		if (carPoolIds == null || carPoolIds.size() == 0) {
+			return carPools;
+		}
+
 		DeltaLatLong delta = PoolUtils.findDelta(3.0, lattitude, longitude);
 
 		// For these pools select points on car pool within 3kms
