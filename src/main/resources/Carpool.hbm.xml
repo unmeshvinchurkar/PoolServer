@@ -6,7 +6,7 @@
 	<class name="com.pool.spring.model.Carpool" table="carpool">
 		
 		<id name="carPoolId" type="java.lang.Long">
-			<column name="carPoolId" length="100" not-null="true" />
+			<column name="car_pool_id" length="100" not-null="true" />
 			<generator class="increment" />
 		</id>
 		<property name="ownerId" type="java.lang.Long">

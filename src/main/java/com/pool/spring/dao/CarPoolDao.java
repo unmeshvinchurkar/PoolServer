@@ -17,8 +17,10 @@ import com.pool.DeltaLatLong;
 import com.pool.Point;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
+import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.PoolSubscription;
 import com.pool.spring.model.User;
+import com.pool.spring.model.UserCalendarDay;
 
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
@@ -43,6 +45,30 @@ public class CarPoolDao extends AbstractDao {
 		return result;
 	}
 
+	public PoolCalendarDay fetchPoolCalendarDay(Long carPoolId, Long timeInSec) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery(" from PoolCalendarDay day where day.carPoolId =(:carPoolId) and day.date=:timeInSec ");
+			q.setParameter("timeInSec", timeInSec);
+
+			q.setParameter("carPoolId", carPoolId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		if (result != null && result.size() > 0) {
+			return (PoolCalendarDay) result.get(0);
+		}
+
+		return null;
+	}
+
 	public List fetchPoolHolidays(Long carPoolId, Long startTime, Long endTime) {
 
 		Session session = null;
@@ -51,7 +77,7 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery(" from PoolCalendarDay day where day.carPoolId =(:carPoolId) and day.isHoliday=1 and day.date>=:startDay and day.date<=:endDay");
+					.createQuery(" from PoolCalendarDay day where day.carPool.carPoolId =(:carPoolId) and day.isHoliday=1 and day.date>=:startDay and day.date<=:endDay");
 			q.setParameter("startDay", startTime);
 			q.setParameter("endDay", startTime);
 			q.setParameter("carPoolId", carPoolId);
@@ -61,6 +87,31 @@ public class CarPoolDao extends AbstractDao {
 		}
 
 		return result;
+	}
+
+	public UserCalendarDay fetchUserCalendarDay(Long carPoolId, Long userId,
+			Long timeInSec) {
+
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery(" from UserCalendarDay day where day.carPoolId =(:carPoolId) and day.userId =(:userId) and day.calendarDay=:timeInSec ");
+			q.setParameter("timeInSec", timeInSec);
+			q.setParameter("carPoolId", carPoolId);
+			q.setParameter("userId", userId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		if (result != null && result.size() > 0) {
+			return (UserCalendarDay) result.get(0);
+		}
+
+		return null;
 	}
 
 	public List fetchUserHolidays(Long userId, Long carPoolId, Long startTime,
@@ -98,8 +149,8 @@ public class CarPoolDao extends AbstractDao {
 			result = q.list();
 
 			if (result != null && result.size() > 0) {
-				Object ownerId = ((Object[]) result.get(0))[0];
-				if (ownerId.equals(userId.toString())) {
+				Object ownerId =  result.get(0);
+				if (ownerId.equals(userId)) {
 					return true;
 				}
 			}

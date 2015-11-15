@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="com.pool.spring.model.UserCalendarDay" table="user_calender">
+	<class name="com.pool.spring.model.UserCalendarDay" table="user_calendar">
 		<id name="userCalendarDayId" type="java.lang.Long">
 			<column name="calendar_id" />
 			<generator class="increment" />

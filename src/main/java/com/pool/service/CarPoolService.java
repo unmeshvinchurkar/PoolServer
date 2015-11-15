@@ -21,7 +21,6 @@ import com.pool.Point;
 import com.pool.PoolUtils;
 import com.pool.spring.SpringBeanProvider;
 import com.pool.spring.dao.CarPoolDao;
-import com.pool.spring.dao.UserDao;
 import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
@@ -39,6 +38,71 @@ public class CarPoolService {
 		return poolDao.fetchPoolDetailsById(carPoolIds);
 	}
 
+	public void unMarkHoliday(Long userId, Long carPoolId, Long timeInSec) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		Carpool carpool = poolDao.findPoolById(carPoolId.toString());
+		boolean isOwner = (carpool.getOwnerId().equals(userId)) ? true : false;
+
+		if (isOwner) {
+			PoolCalendarDay calDay = poolDao.fetchPoolCalendarDay(carPoolId,
+					timeInSec);
+
+			if (calDay == null) {
+				calDay = new PoolCalendarDay();
+			}
+			calDay.setCarPool(carpool);
+			calDay.setDate(timeInSec);
+			calDay.setIsHoliday(0);
+			poolDao.saveOrUpdate(calDay);
+
+		} else {
+			UserCalendarDay usrCalDay = poolDao.fetchUserCalendarDay(carPoolId,
+					userId, timeInSec);
+
+			if (usrCalDay != null) {
+				poolDao.delete(usrCalDay);
+			}
+		}
+	}
+
+	public void markHoliday(Long userId, Long carPoolId, Long timeInSec) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		Carpool carpool = poolDao.findPoolById(carPoolId.toString());
+		boolean isOwner = (carpool.getOwnerId().equals(userId)) ? true : false;
+		
+		if (isOwner) {
+			PoolCalendarDay calDay = poolDao.fetchPoolCalendarDay(carPoolId,
+					timeInSec);
+
+			if (calDay == null) {
+				calDay = new PoolCalendarDay();
+			}
+			calDay.setCarPool(carpool);
+			calDay.setDate(timeInSec);
+			calDay.setIsHoliday(1);
+			poolDao.saveOrUpdate(calDay);
+
+		} else {
+			UserCalendarDay usrCalDay = poolDao.fetchUserCalendarDay(carPoolId,
+					userId, timeInSec);
+
+			if (usrCalDay == null) {
+				usrCalDay = new UserCalendarDay();
+			}
+
+			usrCalDay.setCalendarDay(timeInSec);
+			usrCalDay.setCarPoolId(carPoolId);
+			usrCalDay.setUserId(userId);
+			poolDao.saveOrUpdate(usrCalDay);
+		}
+	}
+
 	public List<PoolCalendarDay> getPoolHolidays(Long carPoolId) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
@@ -47,10 +111,10 @@ public class CarPoolService {
 		Calendar cal = Calendar.getInstance();
 
 		int currentMonth = cal.get(Calendar.MONTH);
-		int currentYear1 = cal.get(Calendar.MONTH);
+		int currentYear1 = cal.get(Calendar.YEAR);
 		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
 				: currentYear1;
-		int nextMonth = (currentMonth == 12) ? 2 : (currentMonth + 2);
+		int nextMonth = (currentMonth == 12) ? 1 : (currentMonth + 1);
 
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 
@@ -74,7 +138,7 @@ public class CarPoolService {
 		int currentYear1 = cal.get(Calendar.MONTH);
 		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
 				: currentYear1;
-		int nextMonth = (currentMonth == 12) ? 2 : (currentMonth + 2);
+		int nextMonth = (currentMonth == 12) ? 1 : (currentMonth + 1);
 
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 

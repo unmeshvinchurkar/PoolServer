@@ -3,10 +3,8 @@ package com.pool.rest;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,7 +19,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jettison.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.esapi.errors.AuthenticationCredentialsException;
@@ -36,8 +33,6 @@ import com.pool.esapi.IntrusionDetectedException;
 import com.pool.esapi.Validator;
 import com.pool.service.CarPoolService;
 import com.pool.service.UserService;
-import com.pool.spring.SpringBeanProvider;
-import com.pool.spring.dao.CarPoolDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
@@ -87,9 +82,9 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).build();
 	}
 
-	@POST
+	@GET
 	@Path("/getCalendar")
-	public Response getCalendar(@FormParam("carPoolId") String carPoolId) {
+	public Response getCalendar(@QueryParam("carPoolId") String carPoolId) {
 
 		_validateSession();
 		HttpSession session = request.getSession(false);
@@ -104,14 +99,56 @@ public class CarPoolRestService {
 		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(Long
 				.valueOf(carPoolId));
 		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId));
+		
+		JSONObject map = null;
+		try {
+			map = new JSONObject();			
+			map.put("isOwner", isOwner);
+			map.put("userHolidays", userHolidays);
+			map.put("poolHolidays", poolHolidays);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-		Map map = new HashMap();
-		map.put("isOwner", isOwner);
-		map.put("userHolidays", userHolidays);
-		map.put("poolHolidays", poolHolidays);
-
-		return Response.status(Response.Status.OK).entity(map).build();
+		return Response.status(Response.Status.OK).entity(map.toString()).build();
 	}
+
+	@POST
+	@Path("/markHoliday")
+	public Response markHoliday(@FormParam("carPoolId") String carPoolId,
+			@FormParam("timeInSec") String timeInSec) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+
+		CarPoolService service = new CarPoolService();
+		User user = (User) session.getAttribute("USER");
+		Long userId = user.getUserId();
+
+		service.markHoliday(userId, Long.valueOf(carPoolId),
+				Long.valueOf(timeInSec));
+
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/unMarkHoliday")
+	public Response unMarkHoliday(@FormParam("carPoolId") String carPoolId,
+			@FormParam("timeInSec") String timeInSec) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+
+		CarPoolService service = new CarPoolService();
+		User user = (User) session.getAttribute("USER");
+		Long userId = user.getUserId();
+
+		service.unMarkHoliday(userId, Long.valueOf(carPoolId),
+				Long.valueOf(timeInSec));
+
+		return Response.status(Response.Status.OK).build();
+	}
+	
 
 	@POST
 	@Path("/signup")
