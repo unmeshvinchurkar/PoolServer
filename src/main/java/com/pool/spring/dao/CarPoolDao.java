@@ -53,9 +53,8 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery(" from PoolCalendarDay day where day.carPoolId =(:carPoolId) and day.date=:timeInSec ");
+					.createQuery(" from PoolCalendarDay day where day.carPool.carPoolId =(:carPoolId) and day.date=:timeInSec ");
 			q.setParameter("timeInSec", timeInSec);
-
 			q.setParameter("carPoolId", carPoolId);
 			result = q.list();
 		} finally {
