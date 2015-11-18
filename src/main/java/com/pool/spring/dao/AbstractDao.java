@@ -2,6 +2,7 @@ package com.pool.spring.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractDao {
@@ -31,19 +32,23 @@ public abstract class AbstractDao {
 		Session session = null;
 		try {
 			session = this.openSession();
+			Transaction tx = session.beginTransaction();
 			session.save(obj);
-
+			tx.commit();
 		} finally {
 			session.close();
 		}
 	}
-	
+
 	public void saveOrUpdate(Object obj) {
 
 		Session session = null;
 		try {
 			session = this.openSession();
+			Transaction tx = session.beginTransaction();
+			session = this.openSession();
 			session.saveOrUpdate(obj);
+			tx.commit();
 
 		} finally {
 			session.close();

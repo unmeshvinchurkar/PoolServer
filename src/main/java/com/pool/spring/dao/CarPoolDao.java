@@ -78,7 +78,7 @@ public class CarPoolDao extends AbstractDao {
 			Query q = session
 					.createQuery(" from PoolCalendarDay day where day.carPool.carPoolId =(:carPoolId) and day.isHoliday=1 and day.date>=:startDay and day.date<=:endDay");
 			q.setParameter("startDay", startTime);
-			q.setParameter("endDay", startTime);
+			q.setParameter("endDay", endTime);
 			q.setParameter("carPoolId", carPoolId);
 			result = q.list();
 		} finally {
@@ -124,7 +124,7 @@ public class CarPoolDao extends AbstractDao {
 			Query q = session
 					.createQuery(" from UserCalendarDay day where day.userId =(:userId) and day.carPoolId =(:carPoolId)  and day.calendarDay>=:startDay and day.calendarDay<=:endDay");
 			q.setParameter("startDay", startTime);
-			q.setParameter("endDay", startTime);
+			q.setParameter("endDay", endTime);
 			q.setParameter("carPoolId", carPoolId);
 			q.setParameter("userId", userId);
 			result = q.list();

@@ -86,7 +86,15 @@ public class CarPoolService {
 			calDay.setCarPool(carpool);
 			calDay.setDate(timeInSec);
 			calDay.setIsHoliday(1);
-			poolDao.saveOrUpdate(calDay);
+			calDay.setNoOfAvblSeats(carpool.getNoOfAvblSeats());
+			calDay.setNoOfTravellers(carpool.getNoOfAvblSeats());
+
+			if (calDay.getPoolCalendarId() != null) {
+				poolDao.saveOrUpdate(calDay);
+			} else {
+				poolDao.save(calDay);
+
+			}
 
 		} else {
 			UserCalendarDay usrCalDay = poolDao.fetchUserCalendarDay(carPoolId,
@@ -112,11 +120,14 @@ public class CarPoolService {
 
 		int currentMonth = cal.get(Calendar.MONTH);
 		int currentYear1 = cal.get(Calendar.YEAR);
-		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
+		int currentYear2 = (currentMonth == 11) ? (currentYear1 + 1)
 				: currentYear1;
-		int nextMonth = (currentMonth == 12) ? 1 : (currentMonth + 1);
+		int nextMonth = (currentMonth == 11) ? 1 : (currentMonth + 1);
 
 		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
 
 		Long startTime = cal.getTimeInMillis() / 1000;
 
@@ -135,10 +146,15 @@ public class CarPoolService {
 		Calendar cal = Calendar.getInstance();
 
 		int currentMonth = cal.get(Calendar.MONTH);
-		int currentYear1 = cal.get(Calendar.MONTH);
-		int currentYear2 = (currentMonth == 12) ? (currentYear1 + 1)
+		int currentYear1 = cal.get(Calendar.YEAR);
+		int currentYear2 = (currentMonth == 11) ? (currentYear1 + 1)
 				: currentYear1;
-		int nextMonth = (currentMonth == 12) ? 1 : (currentMonth + 1);
+		int nextMonth = (currentMonth == 11) ? 1 : (currentMonth + 1);
+		
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
 
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 

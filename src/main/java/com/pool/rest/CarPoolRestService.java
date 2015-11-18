@@ -19,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.esapi.errors.AuthenticationCredentialsException;
@@ -99,18 +100,52 @@ public class CarPoolRestService {
 		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(Long
 				.valueOf(carPoolId));
 		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId));
-		
+
+		JSONArray poolHolidaysArray = new JSONArray();
+		JSONArray userHolidaysArray = new JSONArray();
+		try {
+			if (poolHolidays != null) {
+				int i = 0;
+				for (PoolCalendarDay day : poolHolidays) {
+
+					JSONObject obj = new JSONObject();
+					obj.put("date", day.getDate());
+					obj.put("isHoliday", day.getIsHoliday());
+					obj.put("carPoolId", day.getCarPoolId());
+
+					poolHolidaysArray.put(i++, obj);
+				}
+			}
+
+			if (userHolidays != null) {
+				int i = 0;
+				for (UserCalendarDay day : userHolidays) {
+
+					JSONObject obj = new JSONObject();
+					obj.put("calendarDay", day.getCalendarDay());
+					obj.put("userId", day.getUserId());
+					obj.put("carPoolId", day.getCarPoolId());
+
+					userHolidaysArray.put(i++, obj);
+				}
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
 		JSONObject map = null;
 		try {
-			map = new JSONObject();			
+			map = new JSONObject();
 			map.put("isOwner", isOwner);
-			map.put("userHolidays", userHolidays);
-			map.put("poolHolidays", poolHolidays);
+			map.put("userHolidays", userHolidaysArray);
+			map.put("poolHolidays", poolHolidaysArray);
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		return Response.status(Response.Status.OK).entity(map.toString()).build();
+		return Response.status(Response.Status.OK).entity(map.toString())
+				.build();
 	}
 
 	@POST
@@ -148,7 +183,6 @@ public class CarPoolRestService {
 
 		return Response.status(Response.Status.OK).build();
 	}
-	
 
 	@POST
 	@Path("/signup")
