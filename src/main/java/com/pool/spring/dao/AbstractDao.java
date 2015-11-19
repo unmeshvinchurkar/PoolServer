@@ -48,6 +48,7 @@ public abstract class AbstractDao {
 			Transaction tx = session.beginTransaction();
 			session = this.openSession();
 			session.saveOrUpdate(obj);
+			session.flush();
 			tx.commit();
 
 		} finally {
