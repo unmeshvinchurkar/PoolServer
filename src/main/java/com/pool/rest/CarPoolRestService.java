@@ -85,6 +85,7 @@ public class CarPoolRestService {
 
 	@GET
 	@Path("/getCalendar")
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCalendar(@QueryParam("carPoolId") String carPoolId) {
 
 		_validateSession();
