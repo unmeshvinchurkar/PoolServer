@@ -86,7 +86,8 @@ public class CarPoolRestService {
 	@GET
 	@Path("/getCalendar")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getCalendar(@QueryParam("carPoolId") String carPoolId) {
+	public Response getCalendar(@QueryParam("carPoolId") String carPoolId,
+			@QueryParam("year") String year, @QueryParam("month") String month) {
 
 		_validateSession();
 		HttpSession session = request.getSession(false);
@@ -96,11 +97,13 @@ public class CarPoolRestService {
 		Long userId = user.getUserId();
 
 		boolean isOwner = service.isOwner(userId, Long.valueOf(carPoolId));
+		Integer yearInt = Integer.parseInt(year);
+		Integer monthInt = Integer.parseInt(month);
 
 		List<UserCalendarDay> userHolidays = null;
 		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(Long
-				.valueOf(carPoolId));
-		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId));
+				.valueOf(carPoolId), yearInt, monthInt);
+		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId), yearInt, monthInt);
 
 		JSONArray poolHolidaysArray = new JSONArray();
 		JSONArray userHolidaysArray = new JSONArray();

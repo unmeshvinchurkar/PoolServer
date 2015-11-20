@@ -75,7 +75,7 @@ public class CarPoolService {
 
 		Carpool carpool = poolDao.findPoolById(carPoolId.toString());
 		boolean isOwner = (carpool.getOwnerId().equals(userId)) ? true : false;
-		
+
 		if (isOwner) {
 			PoolCalendarDay calDay = poolDao.fetchPoolCalendarDay(carPoolId,
 					timeInSec);
@@ -111,15 +111,16 @@ public class CarPoolService {
 		}
 	}
 
-	public List<PoolCalendarDay> getPoolHolidays(Long carPoolId) {
+	public List<PoolCalendarDay> getPoolHolidays(Long carPoolId, Integer year,
+			Integer month) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
 		Calendar cal = Calendar.getInstance();
 
-		int currentMonth = cal.get(Calendar.MONTH);
-		int currentYear1 = cal.get(Calendar.YEAR);
+		int currentMonth = month - 1;
+		int currentYear1 = year;
 		int currentYear2 = (currentMonth == 11) ? (currentYear1 + 1)
 				: currentYear1;
 		int nextMonth = (currentMonth == 11) ? 1 : (currentMonth + 1);
@@ -139,18 +140,19 @@ public class CarPoolService {
 		return poolDao.fetchPoolHolidays(carPoolId, startTime, endTime);
 	}
 
-	public List<UserCalendarDay> getUserHolidays(Long userId, Long carPoolId) {
+	public List<UserCalendarDay> getUserHolidays(Long userId, Long carPoolId,
+			Integer year, Integer month) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 		Calendar cal = Calendar.getInstance();
 
-		int currentMonth = cal.get(Calendar.MONTH);
-		int currentYear1 = cal.get(Calendar.YEAR);
+		int currentMonth = month-1;
+		int currentYear1 = year;
 		int currentYear2 = (currentMonth == 11) ? (currentYear1 + 1)
 				: currentYear1;
 		int nextMonth = (currentMonth == 11) ? 1 : (currentMonth + 1);
-		
+
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 		cal.set(Calendar.HOUR, 0);
 		cal.set(Calendar.MINUTE, 0);
