@@ -101,9 +101,10 @@ public class CarPoolRestService {
 		Integer monthInt = Integer.parseInt(month);
 
 		List<UserCalendarDay> userHolidays = null;
-		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(Long
-				.valueOf(carPoolId), yearInt, monthInt);
-		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId), yearInt, monthInt);
+		List<PoolCalendarDay> poolHolidays = service.getPoolHolidays(
+				Long.valueOf(carPoolId), yearInt, monthInt);
+		userHolidays = service.getUserHolidays(userId, Long.valueOf(carPoolId),
+				yearInt, monthInt);
 
 		JSONArray poolHolidaysArray = new JSONArray();
 		JSONArray userHolidaysArray = new JSONArray();
@@ -126,7 +127,7 @@ public class CarPoolRestService {
 				for (UserCalendarDay day : userHolidays) {
 
 					JSONObject obj = new JSONObject();
-					obj.put("calendarDay", day.getCalendarDay());
+					obj.put("date", day.getCalendarDay());
 					obj.put("userId", day.getUserId());
 					obj.put("carPoolId", day.getCarPoolId());
 
@@ -140,7 +141,8 @@ public class CarPoolRestService {
 		JSONObject map = null;
 		try {
 			map = new JSONObject();
-			map.put("isOwner", isOwner);
+			map.put("isOwner", isOwner);			
+			map.put("currentUserId", user.getUserId());
 			map.put("userHolidays", userHolidaysArray);
 			map.put("poolHolidays", poolHolidaysArray);
 

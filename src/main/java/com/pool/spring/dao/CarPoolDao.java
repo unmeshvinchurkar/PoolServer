@@ -122,11 +122,11 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery(" from UserCalendarDay day where day.userId =(:userId) and day.carPoolId =(:carPoolId)  and day.calendarDay>=:startDay and day.calendarDay<=:endDay");
+					.createQuery(" from UserCalendarDay day where day.carPoolId =(:carPoolId)  and day.calendarDay>=:startDay and day.calendarDay<=:endDay");
 			q.setParameter("startDay", startTime);
 			q.setParameter("endDay", endTime);
 			q.setParameter("carPoolId", carPoolId);
-			q.setParameter("userId", userId);
+			//q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
 			session.close();
