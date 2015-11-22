@@ -536,25 +536,30 @@ public class CarPoolRestService {
 
 		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
-		List array = new ArrayList();
+		
+		JSONArray array = new JSONArray();
 
-		for (int i = 0; i < list.size(); i++) {
+		try {
+			for (int i = 0; i < list.size(); i++) {
 
-			Object result[] = (Object[]) list.get(i);
+				Object result[] = (Object[]) list.get(i);
 
-			Carpool pool = (Carpool) result[0];
-			User user = (User) result[1];
-			user.setCarpools(null);
-			user.setVehicles(null);
-			pool.setCalendarDays(null);
-			pool.setGeoPoints(null);
-			Map map = new HashMap();
-			map.put("carpool", (pool));
-			map.put("owner", (user));
-			array.add(map);
+				Carpool pool = (Carpool) result[0];
+				User user = (User) result[1];
+				user.setCarpools(null);
+				user.setVehicles(null);
+				pool.setCalendarDays(null);
+				pool.setGeoPoints(null);
+				JSONObject map = new JSONObject();
+				map.put("carpool",  new JSONObject(pool));
+				map.put("owner",  new JSONObject(user));
+				array.put(map);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
-		return Response.status(Response.Status.OK).entity(array).build();
+		return Response.status(Response.Status.OK).entity(array.toString()).build();
 	}
 
 	@POST
