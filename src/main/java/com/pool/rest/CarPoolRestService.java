@@ -550,7 +550,7 @@ public class CarPoolRestService {
 			pool.setGeoPoints(null);
 			Map map = new HashMap();
 			map.put("carpool", (pool));
-			map.put("user", (user));
+			map.put("owner", (user));
 			array.add(map);
 		}
 

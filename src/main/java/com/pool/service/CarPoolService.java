@@ -234,7 +234,8 @@ public class CarPoolService {
 		List<Point> points = new ArrayList<Point>();
 
 		try {
-			JSONObject route = new JSONObject(routeStr);
+			
+			JSONObject route  = new JSONObject(routeStr);
 
 			JSONObject leg = route.getJSONArray("legs").getJSONObject(0);
 			JSONArray steps = leg.getJSONArray("steps");
@@ -250,9 +251,11 @@ public class CarPoolService {
 				int timeToCross = step.getJSONObject("duration")
 						.getInt("value");
 
-				points.add(new Point(Double.parseDouble(startPoint
-						.getString("H")), Double.parseDouble(startPoint
-						.getString("L")), duration));
+				if (startPoint.has("lat")) {
+					points.add(new Point(Double.parseDouble(startPoint
+							.getString("lat")), Double.parseDouble(startPoint
+							.getString("lng")), duration));
+				}
 
 				if (path.length() > 0) {
 
@@ -261,9 +264,12 @@ public class CarPoolService {
 					for (int j = 0; j < path.length(); j++) {
 
 						JSONObject point = path.getJSONObject(j);
+						
+						if (startPoint.has("lat")) {
 						points.add(new Point(Double.parseDouble(point
-								.getString("H")), Double.parseDouble(point
-								.getString("L")), (duration + timePerStep * j)));
+								.getString("lat")), Double.parseDouble(point
+								.getString("lng")), (duration + timePerStep * j)));
+						}
 					}
 				}
 
