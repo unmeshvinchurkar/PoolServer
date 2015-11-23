@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.pool.spring.model.Request" table="requests">
+
+		<id name="requestId" type="java.lang.Long">
+			<column name="request_id" not-null="true" />
+			<generator class="increment" />
+		</id>
+
+		<property name="requestTypeId" type="java.lang.Long">
+			<column name="request_type_id" />
+		</property>
+
+		<property name="fromUserId" type="java.lang.Long">
+			<column name="from_user_id" />
+		</property>
+
+		<property name="toUserId" type="java.lang.Long">
+			<column name="to_user_id" />
+		</property>
+
+		<property name="carPoolId" type="java.lang.Long">
+			<column name="car_pool_id" />
+		</property>
+
+		<property name="createDate" type="java.lang.Long">
+			<column name="create_date" />
+		</property>
+
+		<property name="processed" type="java.lang.Integer">
+			<column name="processed" />
+		</property>
+		<property name="seen" type="java.lang.Integer">
+			<column name="seen" />
+		</property>
+	</class>
+</hibernate-mapping>

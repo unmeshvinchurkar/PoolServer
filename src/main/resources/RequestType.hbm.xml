@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.pool.spring.model.RequestType" table="request_type">
+
+		<id name="requestTypeId" type="java.lang.Long">
+			<column name="request_type_id" length="100" not-null="true" />
+			<generator class="increment" />
+		</id>
+
+		<property name="requestType" type="string">
+			<column name="request_type" length="100" />
+		</property>
+	</class>
+</hibernate-mapping>

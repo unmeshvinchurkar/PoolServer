@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.pool.spring.model.Notification" table="notifications">
+
+		<id name="notificationId" type="java.lang.Long">
+			<column name="notification_id" length="100" not-null="true" />
+			<generator class="increment" />
+		</id>
+
+		<property name="createDate" type="java.lang.Long">
+			<column name="create_date" />
+		</property>
+
+		<property name="holidayDate" type="java.lang.Long">
+			<column name="holiday_date" />
+		</property>
+
+		<property name="notificationTypeId" type="java.lang.Long">
+			<column name="notification_type_id" />
+		</property>
+
+		<property name="fromUserId" type="java.lang.Long">
+			<column name="from_user_id" />
+		</property>
+
+		<property name="toUserId" type="java.lang.Long">
+			<column name="to_user_id" />
+		</property>
+
+		<property name="carPoolId" type="java.lang.Long">
+			<column name="car_pool_id" />
+		</property>
+
+		<property name="seen" type="java.lang.Integer">
+			<column name="seen" />
+		</property>
+	</class>
+</hibernate-mapping>

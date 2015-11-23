@@ -34,7 +34,11 @@
 				<value>Vehicle.hbm.xml</value>
 				<value>PoolSubscription.hbm.xml</value>
 				<value>PoolCalendarDay.hbm.xml</value>
-				<value>UserCalendarDay.hbm.xml</value>
+				<value>UserCalendarDay.hbm.xml</value>				
+				<value>Request.hbm.xml</value>
+				<value>RequestType.hbm.xml</value>
+				<value>Notification.hbm.xml</value>
+				<value>NotificationType.hbm.xml</value>
 			</list>
 		</property>
 
