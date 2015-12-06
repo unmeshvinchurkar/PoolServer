@@ -71,33 +71,35 @@ public class CarPoolRestService {
 
 	@POST
 	@Path("/raiseJoinRequest")
-	public Response raiseJoinRequest(@FormParam("carPoolId") String carPoolId,
-			@FormParam("ownerId") String ownerId,
+	public Response raiseJoinRequest(@FormParam("carPoolId") String carPoolId,			
 			@FormParam("srcLattitude") String srcLattitude,
 			@FormParam("srcLongitude") String srcLongitude,
-			@FormParam("startTime") String startTime) {
+			@FormParam("destLattitude") String destLattitude,
+			@FormParam("destLongitude") String destLongitude,
+			@FormParam("pickupTime") String pickupTime) {
 
 		_validateSession();
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
 		CarPoolService service = new CarPoolService();
+		Carpool carPool = service.findPoolById(carPoolId);
 
 		Request request = new Request();
-		request.setToUserId(Long.parseLong(ownerId));
+		request.setToUserId(carPool.getOwnerId());
 		request.setFromUserId(user.getUserId());
 		request.setCarPoolId(Long.parseLong(carPoolId));
 		request.setCreateDate(new Date().getTime() / 1000);
 		request.setRequestTypeId(PoolConstants.REQUEST_JOIN_POOL_REQUEST_ID);
 		request.setSrcLattitude(Double.parseDouble(srcLattitude));
 		request.setSrcLongitude(Double.parseDouble(srcLongitude));
-		request.setStartTime(Long.valueOf(startTime));
+		request.setStartTime(Long.valueOf(pickupTime));
 		service.saveOrUpdate(request);
 
 		Notification note = new Notification();
 		note.setCarPoolId(request.getCarPoolId());
 		note.setCreateDate((new Date()).getTime() / 1000);
 		note.setFromUserId(user.getUserId());
-		note.setToUserId(Long.parseLong(ownerId));
+		note.setToUserId(carPool.getOwnerId());
 		note.setNotificationTypeId(PoolConstants.NOTI_JOIN_REQUEST_RECEIVED_ID);
 		note.setRequestId(request.getRequestId());
 		service.saveOrUpdate(note);
@@ -728,7 +730,7 @@ public class CarPoolRestService {
 	@GET
 	@Path("/searchPools")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response findNearestPools(@QueryParam("srcLat") String srcLat,
+	public Response searchNearestPools(@QueryParam("srcLat") String srcLat,
 			@QueryParam("srcLng") String srcLng,
 			@QueryParam("destLat") String destLat,
 			@QueryParam("destLng") String destLng,
@@ -769,7 +771,9 @@ public class CarPoolRestService {
 
 				poolJson.put("srcLattitude", geoPoint.getLatitude());
 				poolJson.put("srcLongitude", geoPoint.getLongitude());
-				poolJson.put("startTime", startTime);
+				poolJson.put("destLattitude", geoPoint.getLatitude());
+				poolJson.put("destLongitude", geoPoint.getLongitude());
+				poolJson.put("pickupTime", startTime);
 
 				map.put("carpool", poolJson);
 				map.put("owner", new JSONObject(user));
