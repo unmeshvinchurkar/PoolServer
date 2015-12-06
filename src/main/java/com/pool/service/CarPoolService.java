@@ -31,6 +31,13 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public List fetchSubscribedTravellers(Long carPoolId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchSubscribedTravellers(carPoolId);
+	}
+
 	public List fetchPoolDetailsById(Collection<Long> carPoolIds) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
@@ -181,7 +188,7 @@ public class CarPoolService {
 	public void saveOrUpdate(Object obj) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
-		poolDao.save(obj);
+		poolDao.saveOrUpdate(obj);
 
 	}
 
@@ -341,9 +348,7 @@ public class CarPoolService {
 			Point destPoint, Long startTime) {
 
 		String lattitude = srcPoint.getLattitude().toString();
-		String longitude = srcPoint.getLongitude().toString();
-
-		List<Long> carPools = new ArrayList<Long>();
+		String longitude = srcPoint.getLongitude().toString();		
 		Map<Long, GeoPoint> poolPointMap = new HashMap<Long, GeoPoint>();
 
 		Double initFixedDistance = 200.0;

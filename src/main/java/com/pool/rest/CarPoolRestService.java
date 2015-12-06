@@ -1,8 +1,7 @@
 package com.pool.rest;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,10 +32,14 @@ import com.pool.esapi.FieldValidationException;
 import com.pool.esapi.IntrusionDetectedException;
 import com.pool.esapi.Validator;
 import com.pool.service.CarPoolService;
+import com.pool.service.NotificationService;
 import com.pool.service.UserService;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
+import com.pool.spring.model.Notification;
 import com.pool.spring.model.PoolCalendarDay;
+import com.pool.spring.model.PoolSubscription;
+import com.pool.spring.model.Request;
 import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
@@ -46,6 +49,168 @@ public class CarPoolRestService {
 
 	@Context
 	private HttpServletRequest request;
+
+	@POST
+	@Path("/getNotifications")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getNotifications() {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		NotificationService service = new NotificationService();
+
+		List notifications = service.fetchNotifications(user.getUserId());
+		JSONArray arr = new JSONArray();
+
+		for (Object note : notifications) {
+			arr.put(new JSONObject(note));
+		}
+		return Response.status(Response.Status.OK).entity(arr.toString())
+				.build();
+	}
+
+	@POST
+	@Path("/raiseJoinRequest")
+	public Response raiseJoinRequest(@FormParam("carPoolId") String carPoolId,
+			@FormParam("ownerId") String ownerId,
+			@FormParam("srcLattitude") String srcLattitude,
+			@FormParam("srcLongitude") String srcLongitude,
+			@FormParam("startTime") String startTime) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		CarPoolService service = new CarPoolService();
+
+		Request request = new Request();
+		request.setToUserId(Long.parseLong(ownerId));
+		request.setFromUserId(user.getUserId());
+		request.setCarPoolId(Long.parseLong(carPoolId));
+		request.setCreateDate(new Date().getTime() / 1000);
+		request.setRequestTypeId(PoolConstants.REQUEST_JOIN_POOL_REQUEST_ID);
+		request.setSrcLattitude(Double.parseDouble(srcLattitude));
+		request.setSrcLongitude(Double.parseDouble(srcLongitude));
+		request.setStartTime(Long.valueOf(startTime));
+		service.saveOrUpdate(request);
+
+		Notification note = new Notification();
+		note.setCarPoolId(request.getCarPoolId());
+		note.setCreateDate((new Date()).getTime() / 1000);
+		note.setFromUserId(user.getUserId());
+		note.setToUserId(Long.parseLong(ownerId));
+		note.setNotificationTypeId(PoolConstants.NOTI_JOIN_REQUEST_RECEIVED_ID);
+		note.setRequestId(request.getRequestId());
+		service.saveOrUpdate(note);
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/acceptJoinRequest")
+	public Response acceptJoinRequest(@FormParam("requestId") String requestId) {
+		_validateSession();
+		CarPoolService cService = new CarPoolService();
+		NotificationService service = new NotificationService();
+
+		Request req = service.fetchRequestById(Long.parseLong(requestId));
+		req.setSeen(1);
+		req.setProcessed(1);
+		req.setStatus(1);
+
+		Carpool carPool = cService.findPoolById(req.getCarPoolId().toString());
+
+		Notification note = new Notification();
+		note.setCarPoolId(req.getCarPoolId());
+		note.setCreateDate((new Date()).getTime() / 1000);
+		note.setFromUserId(req.getToUserId());
+		note.setNotificationTypeId(PoolConstants.NOTI_JOIN_REQUEST_ACCEPTED_ID);
+		note.setRequestId(req.getRequestId());
+		service.saveObjects(req, note);
+
+		PoolSubscription subs = new PoolSubscription();
+		subs.setCarPoolId(req.getCarPoolId());
+		subs.setTravellerId(req.getFromUserId());
+		subs.setPickupLattitude(req.getSrcLattitude());
+		subs.setPickupLongitute(req.getSrcLongitude());
+		subs.setPickupTime(req.getStartTime());
+		carPool.setNoOfRemainingSeats(carPool.getNoOfRemainingSeats() - 1);
+		service.saveObjects(subs, carPool);
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/rejectJoinRequest")
+	public Response rejectJoinRequest(@FormParam("requestId") String requestId) {
+		_validateSession();
+		NotificationService service = new NotificationService();
+		Request req = service.fetchRequestById(Long.parseLong(requestId));
+		req.setSeen(1);
+		req.setProcessed(1);
+		req.setStatus(0);
+
+		Notification note = new Notification();
+		note.setCarPoolId(req.getCarPoolId());
+		note.setCreateDate((new Date()).getTime() / 1000);
+		note.setFromUserId(req.getToUserId());
+		note.setNotificationTypeId(PoolConstants.NOTI_JOIN_REQUEST_REJECTED_ID);
+		note.setRequestId(req.getRequestId());
+		note.setToUserId(req.getFromUserId());
+		service.saveObjects(req, note);
+
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/leavePool")
+	public Response leavePool(@FormParam("carPoolId") String carPoolId) {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+
+		CarPoolService service = new CarPoolService();
+		NotificationService nService = new NotificationService();
+
+		Carpool carPool = service.findPoolById(carPoolId);
+		nService.removeTraveller(user.getUserId(), Long.parseLong(carPoolId));
+		Notification note = new Notification();
+		note.setCarPoolId(Long.parseLong(carPoolId));
+		note.setCreateDate((new Date()).getTime() / 1000);
+		note.setFromUserId(user.getUserId());
+		note.setNotificationTypeId(PoolConstants.NOTI_TRAVELLER_OPTED_OUT_ID);
+		note.setToUserId(carPool.getOwnerId());
+
+		carPool.setNoOfRemainingSeats(carPool.getNoOfRemainingSeats() + 1);
+		nService.saveObjects(carPool, note);
+
+		return Response.status(Response.Status.OK).build();
+	}
+
+	@POST
+	@Path("/removeTraveller")
+	public Response removeTraveller(@FormParam("carPoolId") String carPoolId,
+			@FormParam("travellerId") String travellerId) {
+
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+
+		NotificationService service = new NotificationService();
+		CarPoolService cService = new CarPoolService();
+
+		Carpool carPool = cService.findPoolById(carPoolId);
+
+		service.removeTraveller(Long.parseLong(travellerId),
+				Long.parseLong(carPoolId));
+		Notification note = new Notification();
+		note.setCarPoolId(Long.parseLong(carPoolId));
+		note.setCreateDate((new Date()).getTime() / 1000);
+		note.setFromUserId(user.getUserId());
+		note.setNotificationTypeId(PoolConstants.NOTI_TRAVELLER_REMOVED_ID);
+		note.setToUserId(Long.parseLong(travellerId));
+		carPool.setNoOfRemainingSeats(carPool.getNoOfRemainingSeats() + 1);
+		service.saveObjects(carPool, note);
+
+		return Response.status(Response.Status.OK).build();
+	}
 
 	@POST
 	@Path("/changePassword")
@@ -141,7 +306,7 @@ public class CarPoolRestService {
 		JSONObject map = null;
 		try {
 			map = new JSONObject();
-			map.put("isOwner", isOwner);			
+			map.put("isOwner", isOwner);
 			map.put("currentUserId", user.getUserId());
 			map.put("userHolidays", userHolidaysArray);
 			map.put("poolHolidays", poolHolidaysArray);
@@ -168,6 +333,37 @@ public class CarPoolRestService {
 
 		service.markHoliday(userId, Long.valueOf(carPoolId),
 				Long.valueOf(timeInSec));
+
+		Carpool carPool = service.findPoolById(carPoolId);
+		boolean isOwner = carPool.getOwnerId().equals(user.getUserId());
+
+		if (!isOwner) {
+			Notification note = new Notification();
+			note.setCarPoolId(carPool.getCarPoolId());
+			note.setCreateDate((new Date()).getTime() / 1000);
+			note.setFromUserId(user.getUserId());
+			note.setToUserId(carPool.getOwnerId());
+			note.setNotificationTypeId(PoolConstants.NOTI_TRAVELLER_HOLIDAY_ID);
+			note.setHolidayDate(Long.valueOf(timeInSec));
+			service.saveOrUpdate(note);
+		} else {
+
+			List travellers = service.fetchSubscribedTravellers(carPool
+					.getCarPoolId());
+
+			if (travellers != null) {
+				for (Object travellerId : travellers) {
+					Notification note = new Notification();
+					note.setCarPoolId(carPool.getCarPoolId());
+					note.setCreateDate((new Date()).getTime() / 1000);
+					note.setFromUserId(user.getUserId());
+					note.setToUserId((Long) travellerId);
+					note.setNotificationTypeId(PoolConstants.NOTI_POOL_HOLIDAY_ID);
+					note.setHolidayDate(Long.valueOf(timeInSec));
+					service.saveOrUpdate(note);
+				}
+			}
+		}
 
 		return Response.status(Response.Status.OK).build();
 	}
@@ -328,8 +524,25 @@ public class CarPoolRestService {
 	@Path("/deletepool/{poolId}")
 	public Response deletePool(@PathParam("poolId") String poolId) {
 		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
 		CarPoolService service = new CarPoolService();
 		service.deletePool(poolId);
+
+		List travellers = service.fetchSubscribedTravellers(Long
+				.valueOf(poolId));
+
+		if (travellers != null) {
+			for (Object travellerId : travellers) {
+				Notification note = new Notification();
+				note.setCarPoolId(Long.valueOf(poolId));
+				note.setCreateDate((new Date()).getTime() / 1000);
+				note.setFromUserId(user.getUserId());
+				note.setToUserId((Long) travellerId);
+				note.setNotificationTypeId(PoolConstants.NOTI_POOL_DISSOLVED_ID);
+				service.saveOrUpdate(note);
+			}
+		}
 
 		return Response.status(Response.Status.OK).build();
 	}
@@ -460,6 +673,7 @@ public class CarPoolRestService {
 				carPool.setSrcArea(srcArea);
 				carPool.setDestArea(destArea);
 				carPool.setNoOfAvblSeats(Integer.valueOf(totalSeats));
+				carPool.setNoOfRemainingSeats(Integer.valueOf(totalSeats));
 
 				carPool = service.createCarPool(carPool, pointList);
 
@@ -536,12 +750,10 @@ public class CarPoolRestService {
 
 		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
-		
 		JSONArray array = new JSONArray();
 
 		try {
 			for (int i = 0; i < list.size(); i++) {
-
 				Object result[] = (Object[]) list.get(i);
 
 				Carpool pool = (Carpool) result[0];
@@ -551,15 +763,24 @@ public class CarPoolRestService {
 				pool.setCalendarDays(null);
 				pool.setGeoPoints(null);
 				JSONObject map = new JSONObject();
-				map.put("carpool",  new JSONObject(pool));
-				map.put("owner",  new JSONObject(user));
+
+				JSONObject poolJson = new JSONObject(pool);
+				GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());
+
+				poolJson.put("srcLattitude", geoPoint.getLatitude());
+				poolJson.put("srcLongitude", geoPoint.getLongitude());
+				poolJson.put("startTime", startTime);
+
+				map.put("carpool", poolJson);
+				map.put("owner", new JSONObject(user));
 				array.put(map);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 
-		return Response.status(Response.Status.OK).entity(array.toString()).build();
+		return Response.status(Response.Status.OK).entity(array.toString())
+				.build();
 	}
 
 	@POST

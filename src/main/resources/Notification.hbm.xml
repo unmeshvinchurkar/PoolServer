@@ -37,5 +37,9 @@
 		<property name="seen" type="java.lang.Integer">
 			<column name="seen" />
 		</property>
+
+		<property name="requestId" type="java.lang.Long">
+			<column name="request_id" />
+		</property>
 	</class>
 </hibernate-mapping>

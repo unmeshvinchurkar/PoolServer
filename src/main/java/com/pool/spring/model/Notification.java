@@ -10,6 +10,15 @@ public class Notification implements java.io.Serializable {
 	private Long toUserId;
 	private Long carPoolId;
 	private Integer seen;
+	private Long requestId;
+
+	public Long getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(Long requestId) {
+		this.requestId = requestId;
+	}
 
 	public Long getNotificationId() {
 		return notificationId;

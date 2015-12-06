@@ -1,6 +1,5 @@
 package com.pool.spring.dao;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -19,11 +18,74 @@ import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.PoolSubscription;
-import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
+
+	public List fetchSubscribedTravellers(Long carPoolId) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery("select sub.travellerId from PoolSubscription sub where sub.carPoolId=:carPoolId");
+			q.setParameter("carPoolId", carPoolId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public List fetchNotifications(Long userId, Long dateInSec) {
+		Session session = null;
+		List result = null;
+
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery("from Notification not where not.toUserId =(:userId) and not.createDate> = (:createDate) ORDER BY not.createDate DESC ");
+			q.setParameter("userId", userId);
+			q.setParameter("createDate", dateInSec);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public List fetchRequests(Long userId) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("from Request req where req.toUserId =(:userId) and req.processed!=1 ORDER BY req.createDate DESC  ");
+			q.setParameter("userId", userId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public void removeTraveller(Long travellerId, Long carPoolId) {
+
+		Session session = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("delete PoolSubscription where travellerId=(:travellerId) and carPoolId =(:carPoolId)");
+			q.setParameter("travellerId", travellerId);
+			q.setParameter("carPoolId", carPoolId);
+			q.executeUpdate();
+		} finally {
+			session.close();
+		}
+	}
 
 	public List fetchPoolDetailsById(Collection<Long> carPoolIds) {
 
@@ -36,12 +98,11 @@ public class CarPoolDao extends AbstractDao {
 					.createQuery("select pool, usr  from Carpool pool, User usr where pool.carPoolId in (:carPoolIds) and pool.ownerId = usr.userId");
 			q.setParameterList("carPoolIds", carPoolIds);
 			result = q.list();
-			
 
 		} finally {
 			session.close();
 		}
-		
+
 		return result;
 	}
 
@@ -126,7 +187,7 @@ public class CarPoolDao extends AbstractDao {
 			q.setParameter("startDay", startTime);
 			q.setParameter("endDay", endTime);
 			q.setParameter("carPoolId", carPoolId);
-			//q.setParameter("userId", userId);
+			// q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
 			session.close();
@@ -148,12 +209,11 @@ public class CarPoolDao extends AbstractDao {
 			result = q.list();
 
 			if (result != null && result.size() > 0) {
-				Object ownerId =  result.get(0);
+				Object ownerId = result.get(0);
 				if (ownerId.equals(userId)) {
 					return true;
 				}
 			}
-
 		} finally {
 			session.close();
 		}

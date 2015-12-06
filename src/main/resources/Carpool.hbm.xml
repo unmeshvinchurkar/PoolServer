@@ -4,7 +4,7 @@
 
 <hibernate-mapping>
 	<class name="com.pool.spring.model.Carpool" table="carpool">
-		
+
 		<id name="carPoolId" type="java.lang.Long">
 			<column name="car_pool_id" length="100" not-null="true" />
 			<generator class="increment" />
@@ -63,7 +63,12 @@
 			<column name="no_of_avbl_seats" length="2" />
 		</property>
 
-		<set name="calendarDays" cascade="all" inverse="true" lazy="true" fetch="select">
+		<property name="noOfRemainingSeats" type="java.lang.Integer">
+			<column name="no_of_remaining_seats" length="2" />
+		</property>
+
+		<set name="calendarDays" cascade="all" inverse="true" lazy="true"
+			fetch="select">
 			<key column="car_pool_id" />
 			<one-to-many class="com.pool.spring.model.PoolCalendarDay" />
 		</set>

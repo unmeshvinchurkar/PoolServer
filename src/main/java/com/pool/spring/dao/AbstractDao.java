@@ -27,6 +27,33 @@ public abstract class AbstractDao {
 		getSession().delete(entity);
 	}
 
+	public Object load(Class c, Long id) {
+
+		Session session = null;
+		Object o = null;
+		try {
+			session = this.openSession();
+
+			o = session.load(c, id);
+		} finally {
+			session.close();
+		}
+		return o;
+	}
+
+	public Object get(Class c, Long id) {
+
+		Session session = null;
+		Object o = null;
+		try {
+			session = this.openSession();
+			o = session.get(c, id);
+		} finally {
+			session.close();
+		}
+		return o;
+	}
+
 	public void save(Object obj) {
 
 		Session session = null;
@@ -34,6 +61,7 @@ public abstract class AbstractDao {
 			session = this.openSession();
 			Transaction tx = session.beginTransaction();
 			session.save(obj);
+			session.flush();
 			tx.commit();
 		} finally {
 			session.close();

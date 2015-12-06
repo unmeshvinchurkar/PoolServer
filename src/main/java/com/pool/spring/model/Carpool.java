@@ -28,9 +28,18 @@ public class Carpool implements java.io.Serializable {
 	private String srcArea;
 	private String destArea;
 	private Integer noOfAvblSeats;
+	private Integer noOfRemainingSeats;
 	private Set<PoolCalendarDay> calendarDays = null;
 
 	public Carpool() {
+	}
+
+	public Integer getNoOfRemainingSeats() {
+		return noOfRemainingSeats;
+	}
+
+	public void setNoOfRemainingSeats(Integer noOfRemainingSeats) {
+		this.noOfRemainingSeats = noOfRemainingSeats;
 	}
 
 	public Set<PoolCalendarDay> getCalendarDays() {

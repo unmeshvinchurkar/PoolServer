@@ -10,6 +10,18 @@ public class Request implements java.io.Serializable {
 	private Long createDate;
 	private Integer seen;
 	private Integer processed;
+	private Integer status;
+	private Double srcLattitude;
+	private Double srcLongitude;
+	private Long startTime;
+
+	public Long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
+	}
 
 	public Long getRequestId() {
 		return requestId;
@@ -73,6 +85,30 @@ public class Request implements java.io.Serializable {
 
 	public void setProcessed(Integer processed) {
 		this.processed = processed;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Double getSrcLattitude() {
+		return srcLattitude;
+	}
+
+	public void setSrcLattitude(Double srcLattitude) {
+		this.srcLattitude = srcLattitude;
+	}
+
+	public Double getSrcLongitude() {
+		return srcLongitude;
+	}
+
+	public void setSrcLongitude(Double srcLongitude) {
+		this.srcLongitude = srcLongitude;
 	}
 
 	@Override

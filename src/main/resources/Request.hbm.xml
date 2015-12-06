@@ -36,5 +36,18 @@
 		<property name="seen" type="java.lang.Integer">
 			<column name="seen" />
 		</property>
+
+		<property name="status" type="java.lang.Integer">
+			<column name="status" />
+		</property>
+		<property name="startTime" type="java.lang.Long">
+			<column name="start_time" not-null="true" />
+		</property>
+		<property name="srcLongitude" type="java.lang.Double">
+			<column name="src_longitude" not-null="true" />
+		</property>
+		<property name="srcLattitude" type="java.lang.Double">
+			<column name="src_lattitude" not-null="true" />
+		</property>
 	</class>
 </hibernate-mapping>
