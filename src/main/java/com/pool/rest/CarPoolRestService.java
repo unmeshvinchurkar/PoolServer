@@ -765,18 +765,14 @@ public class CarPoolRestService {
 				pool.setCalendarDays(null);
 				pool.setGeoPoints(null);
 				JSONObject map = new JSONObject();
-
 				JSONObject poolJson = new JSONObject(pool);
-				GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());
-
-				poolJson.put("srcLattitude", geoPoint.getLatitude());
-				poolJson.put("srcLongitude", geoPoint.getLongitude());
-				poolJson.put("destLattitude", geoPoint.getLatitude());
-				poolJson.put("destLongitude", geoPoint.getLongitude());
+				GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());		
+				
 				poolJson.put("pickupTime", startTime);
-
-				map.put("carpool", poolJson);
+				poolJson.put("pickupLattitude", geoPoint.getLatitude());
+				poolJson.put("pickupLongitude", geoPoint.getLongitude());
 				map.put("owner", new JSONObject(user));
+				map.put("carpool", poolJson);
 				array.put(map);
 			}
 		} catch (JSONException e) {
