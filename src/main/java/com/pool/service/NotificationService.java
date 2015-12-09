@@ -1,21 +1,43 @@
 package com.pool.service;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-
 import com.pool.spring.SpringBeanProvider;
 import com.pool.spring.dao.CarPoolDao;
-import com.pool.spring.model.Notification;
 import com.pool.spring.model.Request;
 
 public class NotificationService {
 
-	public List fetchNotifications(Long userId) {
+	public List getSubscribedPoolIds(Long userId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchSubscribedPoolIds(userId);
+	}
 
+	public List getPoolIdsForSentRequests(Long userId, Collection carpoolIds) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchPoolIdsForSentRequests(userId, carpoolIds);
+	}
+
+	public List getSentRequests(Long userId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchSentRequests(userId);
+	}
+
+	public List getReceivedRequests(Long userId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchReceivedRequests(userId);
+	}
+
+	public List fetchNotifications(Long userId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
@@ -31,7 +53,6 @@ public class NotificationService {
 		long dateInSec = cal.getTimeInMillis() / 1000;
 
 		return poolDao.fetchNotifications(userId, dateInSec);
-
 	}
 
 	public void removeTraveller(Long travellerId, Long carPoolId) {
@@ -64,6 +85,29 @@ public class NotificationService {
 			tx = session.beginTransaction();
 			session.saveOrUpdate(obj1);
 			session.saveOrUpdate(obj2);
+			session.flush();
+			tx.commit();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			tx.rollback();
+		} finally {
+			session.close();
+		}
+	}
+
+	public void saveObjects(List list) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = poolDao.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+
+			for (Object obj : list) {
+				session.saveOrUpdate(obj);
+			}
+
 			session.flush();
 			tx.commit();
 		} catch (HibernateException e) {

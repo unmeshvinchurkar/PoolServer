@@ -50,6 +50,47 @@ public class CarPoolRestService {
 	@Context
 	private HttpServletRequest request;
 
+	@GET
+	@Path("/getSentRequests")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getSentRequests() {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		NotificationService service = new NotificationService();
+
+		List requestList = service.getSentRequests(user.getUserId());
+		JSONArray requests = new JSONArray();
+
+		if (requestList != null) {
+			for (Object req : requestList) {
+				requests.put(new JSONObject(req));
+			}
+		}
+		return Response.status(Response.Status.OK).entity(requests).build();
+	}
+
+	@GET
+	@Path("/getReceivedtRequests")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getReceivedRequests() {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+
+		NotificationService service = new NotificationService();
+
+		List requestList = service.getReceivedRequests(user.getUserId());
+		JSONArray requests = new JSONArray();
+
+		if (requestList != null) {
+			for (Object req : requestList) {
+				requests.put(new JSONObject(req));
+			}
+		}
+		return Response.status(Response.Status.OK).entity(requests).build();
+	}
+
 	@POST
 	@Path("/getNotifications")
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -71,7 +112,7 @@ public class CarPoolRestService {
 
 	@POST
 	@Path("/raiseJoinRequest")
-	public Response raiseJoinRequest(@FormParam("carPoolId") String carPoolId,			
+	public Response raiseJoinRequest(@FormParam("carPoolId") String carPoolId,
 			@FormParam("srcLattitude") String srcLattitude,
 			@FormParam("srcLongitude") String srcLongitude,
 			@FormParam("destLattitude") String destLattitude,
@@ -738,6 +779,9 @@ public class CarPoolRestService {
 
 		_validateSession();
 
+		HttpSession session = request.getSession(false);
+		User usr = (User) session.getAttribute("USER");
+
 		Point srcPoint = new Point(Double.parseDouble(srcLat),
 				Double.parseDouble(srcLng));
 		Point destPoint = new Point(Double.parseDouble(destLat),
@@ -752,6 +796,10 @@ public class CarPoolRestService {
 
 		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
+		NotificationService nService = new NotificationService();
+		List poolIdsForSentReqs = nService.getPoolIdsForSentRequests(
+				usr.getUserId(), poolIdPointMap.keySet());
+		List subsPoolIds = nService.getSubscribedPoolIds(usr.getUserId());
 		JSONArray array = new JSONArray();
 
 		try {
@@ -759,21 +807,29 @@ public class CarPoolRestService {
 				Object result[] = (Object[]) list.get(i);
 
 				Carpool pool = (Carpool) result[0];
-				User user = (User) result[1];
-				user.setCarpools(null);
-				user.setVehicles(null);
-				pool.setCalendarDays(null);
-				pool.setGeoPoints(null);
-				JSONObject map = new JSONObject();
-				JSONObject poolJson = new JSONObject(pool);
-				GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());		
-				
-				poolJson.put("pickupTime", startTime);
-				poolJson.put("pickupLattitude", geoPoint.getLatitude());
-				poolJson.put("pickupLongitude", geoPoint.getLongitude());
-				map.put("owner", new JSONObject(user));
-				map.put("carpool", poolJson);
-				array.put(map);
+
+				if (!subsPoolIds.contains(pool.getCarPoolId())) {
+					User user = (User) result[1];
+					user.setCarpools(null);
+					user.setVehicles(null);
+					pool.setCalendarDays(null);
+					pool.setGeoPoints(null);
+					JSONObject map = new JSONObject();
+					JSONObject poolJson = new JSONObject(pool);
+					GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());
+
+					poolJson.put("pickupTime", startTime);
+					poolJson.put("pickupLattitude", geoPoint.getLatitude());
+					poolJson.put("pickupLongitude", geoPoint.getLongitude());
+
+					if (poolIdsForSentReqs.contains(pool.getCarPoolId())) {
+						poolJson.put("requestReceived", true);
+					}
+
+					map.put("owner", new JSONObject(user));
+					map.put("carpool", poolJson);
+					array.put(map);
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

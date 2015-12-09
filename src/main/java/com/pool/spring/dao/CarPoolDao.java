@@ -23,6 +23,23 @@ import com.pool.spring.model.UserCalendarDay;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 
+	public List fetchPoolIdsForSentRequests(Long userId, Collection carpoolIds) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery("from req.carPoolId where req.fromUserId =(:userId) "
+							+ "  and req.carPoolId in (:carpoolIds) and (req.processed is NULL or req.processed=0) ");
+			q.setParameter("userId", userId);
+			q.setParameterList("carpoolIds", carpoolIds);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
 	public List fetchSubscribedTravellers(Long carPoolId) {
 		Session session = null;
 		List result = null;
@@ -55,14 +72,30 @@ public class CarPoolDao extends AbstractDao {
 		return result;
 	}
 
-	public List fetchRequests(Long userId) {
+	public List fetchSentRequests(Long userId) {
 		Session session = null;
 		List result = null;
 		try {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("from Request req where req.toUserId =(:userId) and req.processed!=1 ORDER BY req.createDate DESC  ");
+					.createQuery("from Request req where req.fromUserId =(:userId) and req.processed !=1 ORDER BY req.createDate DESC  ");
+			q.setParameter("userId", userId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public List fetchReceivedRequests(Long userId) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("from Request req where req.toUserId =(:userId) and (req.processed or req.processed is NULL ) ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
@@ -85,6 +118,24 @@ public class CarPoolDao extends AbstractDao {
 		} finally {
 			session.close();
 		}
+	}
+
+	public List fetchSubscribedPoolIds(Long userId) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+
+			Query q = session
+					.createQuery("select sub.carPoolId from  PoolSubscription sub where sub.travellerId=(:userId)");
+			q.setParameter("userId", userId);
+			result = q.list();
+
+		} finally {
+			session.close();
+		}
+
+		return result;
 	}
 
 	public List fetchPoolDetailsById(Collection<Long> carPoolIds) {
