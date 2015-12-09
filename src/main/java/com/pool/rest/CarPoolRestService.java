@@ -71,7 +71,7 @@ public class CarPoolRestService {
 	}
 
 	@GET
-	@Path("/getReceivedtRequests")
+	@Path("/getReceivedRequests")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getReceivedRequests() {
 		_validateSession();
@@ -91,7 +91,7 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).entity(requests).build();
 	}
 
-	@POST
+	@GET
 	@Path("/getNotifications")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getNotifications() {
