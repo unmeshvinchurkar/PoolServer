@@ -63,11 +63,27 @@ public class CarPoolRestService {
 		JSONArray requests = new JSONArray();
 
 		if (requestList != null) {
-			for (Object req : requestList) {
-				requests.put(new JSONObject(req));
+			for (Object obj : requestList) {
+
+				Map map = (Map) obj;
+				JSONObject jsonObj = new JSONObject();
+
+				for (Object key : map.keySet()) {
+					try {
+						jsonObj.put((String) key, map.get(key));
+					} catch (JSONException e) {
+					}
+				}
+
+				try {
+					if (jsonObj.get("carPoolId") != null) {
+						requests.put(jsonObj);
+					}
+				} catch (JSONException e) {
+				}
 			}
 		}
-		return Response.status(Response.Status.OK).entity(requests).build();
+		return Response.status(Response.Status.OK).entity(requests.toString()).build();
 	}
 
 	@GET

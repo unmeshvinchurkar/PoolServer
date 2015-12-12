@@ -1,10 +1,13 @@
 package com.pool.spring.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Query;
@@ -79,13 +82,30 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("from Request req where req.fromUserId =(:userId) and req.processed !=1 ORDER BY req.createDate DESC  ");
+					.createQuery("select req.carPoolId, req.createDate, req.status, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId  "
+							+ " from Request req, User usr where req.fromUserId =(:userId) and (req.processed !=1 or req.processed is NULL )and usr.userId = req.toUserId ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
 			session.close();
 		}
-		return result;
+		List resultSet = new ArrayList();
+
+		if (result != null) {
+			for (Object obj : result) {
+				Map map = new HashMap();
+				Object values[] = (Object[]) obj;
+				map.put("carPoolId", values[0]);
+				map.put("createDate", values[1]);
+				map.put("status", values[2]);
+				map.put("startTime", values[3]);
+				map.put("ownerName", values[4] + " " + values[5]);
+				map.put("userId", values[6]);
+				map.put("requestId", values[7]);
+				resultSet.add(map);
+			}
+		}
+		return resultSet;
 	}
 
 	public List fetchReceivedRequests(Long userId) {
