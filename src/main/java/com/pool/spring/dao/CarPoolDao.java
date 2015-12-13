@@ -65,14 +65,32 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			Query q = session
-					.createQuery("from Notification not where not.toUserId =(:userId) and not.createDate> = (:createDate) ORDER BY not.createDate DESC ");
+					.createQuery("select noti.notificationTypeId, noti.createDate, noti.holidayDate, noti.carPoolId, user.firstName, user.lastName, user.userId, notType.notificationType from Notification noti , User user, NotificationType notType   "
+							+ " where noti.fromUserId=user.userId and notType.notificationTypeId=noti.notificationTypeId  and noti.toUserId=(:userId) and noti.createDate>=(:createDate) ORDER BY noti.createDate DESC ");
 			q.setParameter("userId", userId);
 			q.setParameter("createDate", dateInSec);
 			result = q.list();
 		} finally {
 			session.close();
 		}
-		return result;
+
+		List resultSet = new ArrayList();
+
+		if (result != null) {
+			for (Object obj : result) {
+				Map map = new HashMap();
+				Object values[] = (Object[]) obj;
+				map.put("notificationTypeId", values[0]);
+				map.put("createDate", values[1]);
+				map.put("holidayDate", values[2]);
+				map.put("carPoolId", values[3]);
+				map.put("fromUser", values[4] + " " + values[5]);
+				map.put("fromUserId", values[6]);
+				map.put("notificationType", values[7]);
+				resultSet.add(map);
+			}
+		}
+		return resultSet;
 	}
 
 	public List fetchSentRequests(Long userId) {
@@ -124,7 +142,7 @@ public class CarPoolDao extends AbstractDao {
 		} finally {
 			session.close();
 		}
-		
+
 		List resultSet = new ArrayList();
 
 		if (result != null) {
@@ -141,7 +159,7 @@ public class CarPoolDao extends AbstractDao {
 				map.put("pickupLongitude", values[8]);
 				resultSet.add(map);
 			}
-		}		
+		}
 		return resultSet;
 	}
 

@@ -139,9 +139,21 @@ public class CarPoolRestService {
 		List notifications = service.fetchNotifications(user.getUserId());
 		JSONArray arr = new JSONArray();
 
-		for (Object note : notifications) {
-			arr.put(new JSONObject(note));
+		if (notifications != null) {
+			for (Object obj : notifications) {
+				Map map = (Map) obj;
+				JSONObject jsonObj = new JSONObject();
+
+				for (Object key : map.keySet()) {
+					try {
+						jsonObj.put((String) key, map.get(key));
+					} catch (JSONException e) {
+					}
+				}
+				arr.put(jsonObj);
+			}
 		}
+
 		return Response.status(Response.Status.OK).entity(arr.toString())
 				.build();
 	}
