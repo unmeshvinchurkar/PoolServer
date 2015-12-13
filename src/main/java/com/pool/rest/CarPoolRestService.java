@@ -59,12 +59,14 @@ public class CarPoolRestService {
 		User user = (User) session.getAttribute("USER");
 		NotificationService service = new NotificationService();
 
-		List requestList = service.getSentRequests(user.getUserId());
-		JSONArray requests = new JSONArray();
+		List sentRequestList = service.getSentRequests(user.getUserId());
+		List recvRequestList = service.getReceivedRequests(user.getUserId());
 
-		if (requestList != null) {
-			for (Object obj : requestList) {
+		JSONArray sentRequests = new JSONArray();
+		JSONArray recvRequests = new JSONArray();
 
+		if (sentRequestList != null) {
+			for (Object obj : sentRequestList) {
 				Map map = (Map) obj;
 				JSONObject jsonObj = new JSONObject();
 
@@ -74,16 +76,34 @@ public class CarPoolRestService {
 					} catch (JSONException e) {
 					}
 				}
-
-				try {
-					if (jsonObj.get("carPoolId") != null) {
-						requests.put(jsonObj);
-					}
-				} catch (JSONException e) {
-				}
+				sentRequests.put(jsonObj);
 			}
 		}
-		return Response.status(Response.Status.OK).entity(requests.toString()).build();
+
+		if (recvRequestList != null) {
+			for (Object obj : recvRequestList) {
+				Map map = (Map) obj;
+				JSONObject jsonObj = new JSONObject();
+
+				for (Object key : map.keySet()) {
+					try {
+						jsonObj.put((String) key, map.get(key));
+					} catch (JSONException e) {
+					}
+				}
+				recvRequests.put(jsonObj);
+			}
+		}
+
+		JSONObject responseData = new JSONObject();
+		try {
+			responseData.put("receivedRequests", recvRequests);
+			responseData.put("sentRequests", sentRequests);
+		} catch (JSONException e) {
+		}
+
+		return Response.status(Response.Status.OK)
+				.entity(responseData.toString()).build();
 	}
 
 	@GET

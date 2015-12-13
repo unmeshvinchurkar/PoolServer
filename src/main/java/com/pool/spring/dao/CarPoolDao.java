@@ -82,8 +82,8 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("select req.carPoolId, req.createDate, req.status, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId  "
-							+ " from Request req, User usr where req.fromUserId =(:userId) and (req.processed !=1 or req.processed is NULL )and usr.userId = req.toUserId ORDER BY req.createDate DESC  ");
+					.createQuery("select req.carPoolId, req.createDate, req.status, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude   "
+							+ " from Request req, User usr where req.fromUserId =(:userId) and (req.processed !=1 or req.processed is NULL ) and usr.userId = req.toUserId ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
@@ -102,6 +102,8 @@ public class CarPoolDao extends AbstractDao {
 				map.put("ownerName", values[4] + " " + values[5]);
 				map.put("userId", values[6]);
 				map.put("requestId", values[7]);
+				map.put("pickupLattitude", values[8]);
+				map.put("pickupLongitude", values[9]);
 				resultSet.add(map);
 			}
 		}
@@ -115,13 +117,32 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("from Request req where req.toUserId =(:userId) and (req.processed or req.processed is NULL ) ORDER BY req.createDate DESC  ");
+					.createQuery("select req.carPoolId, req.createDate, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude  "
+							+ " from Request req, User usr  where req.toUserId =(:userId) and (req.processed = 0 or req.processed is NULL ) and usr.userId = req.fromUserId ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
 		} finally {
 			session.close();
 		}
-		return result;
+		
+		List resultSet = new ArrayList();
+
+		if (result != null) {
+			for (Object obj : result) {
+				Map map = new HashMap();
+				Object values[] = (Object[]) obj;
+				map.put("carPoolId", values[0]);
+				map.put("createDate", values[1]);
+				map.put("startTime", values[2]);
+				map.put("fullName", values[3] + " " + values[4]);
+				map.put("userId", values[5]);
+				map.put("requestId", values[6]);
+				map.put("pickupLattitude", values[7]);
+				map.put("pickupLongitude", values[8]);
+				resultSet.add(map);
+			}
+		}		
+		return resultSet;
 	}
 
 	public void removeTraveller(Long travellerId, Long carPoolId) {
