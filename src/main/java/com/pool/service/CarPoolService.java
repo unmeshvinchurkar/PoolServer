@@ -345,7 +345,7 @@ public class CarPoolService {
 	}
 
 	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,
-			Point destPoint, Long startTime) {
+			Point destPoint, Long startTime, Long userId) {
 
 		String lattitude = srcPoint.getLattitude().toString();
 		String longitude = srcPoint.getLongitude().toString();		
@@ -360,7 +360,7 @@ public class CarPoolService {
 
 		// Search Car Pools with the radius of 400km around user location
 		List<Long> carPoolIds = poolDao.searchPools(lattitude, longitude,
-				screenDelta, startTime);
+				screenDelta, startTime, userId);
 
 		if (carPoolIds == null || carPoolIds.size() == 0) {
 			return null;

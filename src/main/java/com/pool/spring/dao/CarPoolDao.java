@@ -32,7 +32,7 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			Query q = session
-					.createQuery("from req.carPoolId where req.fromUserId =(:userId) "
+					.createQuery("select req.carPoolId from Request req where req.fromUserId =(:userId) "
 							+ "  and req.carPoolId in (:carpoolIds) and (req.processed is NULL or req.processed=0) ");
 			q.setParameter("userId", userId);
 			q.setParameterList("carpoolIds", carpoolIds);
@@ -557,7 +557,7 @@ public class CarPoolDao extends AbstractDao {
 	 * @return Long
 	 */
 	public List<Long> searchPools(String lattitude, String longitude,
-			com.pool.DeltaLatLong delta, Long startTime) {
+			com.pool.DeltaLatLong delta, Long startTime, Long userId) {
 
 		List<Long> carpoolIds = null;
 		Session session = null;
@@ -565,7 +565,7 @@ public class CarPoolDao extends AbstractDao {
 
 			session = this.openSession();
 			Query queryPool = session
-					.createQuery("select pool.carPoolId from Carpool pool where ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or "
+					.createQuery("select pool.carPoolId from Carpool pool where pool.ownerId!=(:userId) and ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or "
 							+ " (pool.destLongitude < (:maxLongitude) and  pool.destLongitude > (:minLongitude) "
 							+ "  and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and pool.startTime <= (:startTime) and (pool.deleted != :deleted or pool.deleted is NULL)and pool.noOfAvblSeats>=(:noOfAvblSeats) and pool.endDate > (:endDate)  ");
 
@@ -575,6 +575,7 @@ public class CarPoolDao extends AbstractDao {
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPool.setParameter("deleted", Integer.valueOf(1));
 			queryPool.setParameter("noOfAvblSeats", Integer.valueOf("1"));
+			queryPool.setParameter("userId", userId);
 
 			queryPool.setParameter("endDate",
 					Long.valueOf((new Date().getTime()) / 1000));

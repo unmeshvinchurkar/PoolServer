@@ -828,7 +828,7 @@ public class CarPoolRestService {
 		System.err.println("Before searching pools ***********************");
 
 		Map<Long, GeoPoint> poolIdPointMap = service.findNearestPools(srcPoint,
-				destPoint, Long.parseLong(startTime));
+				destPoint, Long.parseLong(startTime), usr.getUserId());
 
 		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
