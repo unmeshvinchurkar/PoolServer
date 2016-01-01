@@ -31,6 +31,12 @@ import com.run.GoogleConstants;
 
 public class CarPoolService {
 
+	public List fetchSubscribedTravellersDetails(Long carPoolId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchSubscribedTravellersDetails(carPoolId);
+	}
+
 	public List fetchSubscribedTravellers(Long carPoolId) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider

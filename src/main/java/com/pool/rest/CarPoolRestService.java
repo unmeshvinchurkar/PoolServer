@@ -809,11 +809,28 @@ public class CarPoolRestService {
 	public Response getPoolById(@PathParam("poolId") String poolId) {
 
 		CarPoolService service = new CarPoolService();
-
 		Carpool carPool = service.findPoolById(poolId);
 		carPool.setCalendarDays(null);
+		
+		JSONObject jsonObj = new JSONObject(carPool);
+		JSONArray array = new JSONArray();
 
-		return Response.status(Response.Status.OK).entity(carPool).build();
+		List subDetails = service.fetchSubscribedTravellersDetails(carPool
+				.getCarPoolId());
+
+		if (subDetails != null) {
+			for (Object obj : subDetails) {
+				array.put((Map) obj);
+			}
+		}
+		try {
+			jsonObj.put("subscriptionDetails", array);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return Response.status(Response.Status.OK).entity(jsonObj.toString())
+				.build();
 	}
 
 	@GET
@@ -903,6 +920,9 @@ public class CarPoolRestService {
 		for (Carpool pool : carPools) {
 			pool.setCalendarDays(null);
 		}
+
+		// /fetchSubscribedTravellersDetails
+
 		return Response.status(Response.Status.OK).entity(carPools).build();
 	}
 
