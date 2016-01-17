@@ -388,7 +388,7 @@ public class CarPoolDao extends AbstractDao {
 	public List findPoolsByUserId(Long userId) {
 
 		Session session = null;
-		List carPoolList = null;
+		List carPoolList = new ArrayList();
 		try {
 			session = this.openSession();
 
@@ -396,7 +396,20 @@ public class CarPoolDao extends AbstractDao {
 					.createQuery("select carpool from Carpool carpool where carpool.ownerId =(:userId) and (carpool.deleted = 0 or carpool.deleted is Null) union "
 							+ " select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
 			q.setParameter("userId", userId);
-			carPoolList = q.list();
+			List list = q.list();
+
+			if (list != null) {
+				carPoolList.addAll(list);
+			}
+
+			q = session
+					.createQuery(" select pool from Carpool pool, PoolSubscription subs where pool.carPoolId = subs.carPoolId and subs.travellerId=:userId");
+			q.setParameter("userId", userId);
+			list = q.list();
+
+			if (list != null) {
+				carPoolList.addAll(list);
+			}
 
 		} finally {
 			session.close();
