@@ -43,6 +43,31 @@ public class CarPoolDao extends AbstractDao {
 		return result;
 	}
 
+	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(Collection carPoolIds,
+			Long travellerId) {
+		Session session = null;
+		List result = null;
+		Map<Long, PoolSubscription> map = new HashMap<Long, PoolSubscription>();
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery(" from PoolSubscription sub  where sub.carPoolId in (:carPoolIds) and sub.travellerId =(:travellerId)");
+			q.setParameterList("carPoolIds", carPoolIds);
+			q.setParameter("travellerId", travellerId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		if (result != null) {
+			for (Object obj : result) {
+				PoolSubscription sub = (PoolSubscription) obj;
+				map.put(sub.getCarPoolId(), sub);
+			}
+		}
+		return map;
+	}
+
 	public List fetchSubscribedTravellersDetails(Long carPoolId) {
 		Session session = null;
 		List result = null;

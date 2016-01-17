@@ -1,6 +1,7 @@
 package com.pool.rest;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -920,6 +921,14 @@ public class CarPoolRestService {
 		CarPoolService service = new CarPoolService();
 		List<Carpool> carPools = service.findPoolsByUserId(usr.getUserId());
 		JSONArray array = new JSONArray();
+		List<Long> carPoolIds = new ArrayList<Long>();
+
+		for (Carpool pool : carPools) {
+			carPoolIds.add(pool.getCarPoolId());
+		}
+
+		Map<Long, PoolSubscription> subs = service.fetchTravellerSubscriptions(
+				carPoolIds, usr.getUserId());
 
 		for (Carpool pool : carPools) {
 			pool.setCalendarDays(null);
@@ -930,13 +939,15 @@ public class CarPoolRestService {
 			try {
 				if (pool.getOwnerId().equals(usr.getUserId())) {
 					poolJson.put("isOwner", true);
+					poolJson.put("pickupTime", pool.getStartTime());
 				} else {
+					PoolSubscription sub = subs.get(pool.getCarPoolId());
 					poolJson.put("isOwner", false);
+					poolJson.put("pickupTime", sub.getPickupTime());
 				}
 			} catch (JSONException e) {
 			}
 		}
-
 		return Response.status(Response.Status.OK).entity(array.toString()).build();
 	}
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +24,19 @@ import com.pool.spring.dao.VehicleDao;
 import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
+import com.pool.spring.model.PoolSubscription;
 import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
-import com.run.GoogleConstants;
 
 public class CarPoolService {
+
+	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(Collection carPoolIds,
+			Long travellerId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchTravellerSubscriptions(carPoolIds, travellerId);
+	}
 
 	public List fetchSubscribedTravellersDetails(Long carPoolId) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
@@ -160,7 +167,7 @@ public class CarPoolService {
 				.getBean("carPoolDao");
 		Calendar cal = Calendar.getInstance();
 
-		int currentMonth = month-1;
+		int currentMonth = month - 1;
 		int currentYear1 = year;
 		int currentYear2 = (currentMonth == 11) ? (currentYear1 + 1)
 				: currentYear1;
@@ -247,8 +254,8 @@ public class CarPoolService {
 		List<Point> points = new ArrayList<Point>();
 
 		try {
-			
-			JSONObject route  = new JSONObject(routeStr);
+
+			JSONObject route = new JSONObject(routeStr);
 
 			JSONObject leg = route.getJSONArray("legs").getJSONObject(0);
 			JSONArray steps = leg.getJSONArray("steps");
@@ -277,11 +284,12 @@ public class CarPoolService {
 					for (int j = 0; j < path.length(); j++) {
 
 						JSONObject point = path.getJSONObject(j);
-						
+
 						if (startPoint.has("lat")) {
-						points.add(new Point(Double.parseDouble(point
-								.getString("lat")), Double.parseDouble(point
-								.getString("lng")), (duration + timePerStep * j)));
+							points.add(new Point(Double.parseDouble(point
+									.getString("lat")), Double
+									.parseDouble(point.getString("lng")),
+									(duration + timePerStep * j)));
 						}
 					}
 				}
@@ -354,7 +362,7 @@ public class CarPoolService {
 			Point destPoint, Long startTime, Long userId) {
 
 		String lattitude = srcPoint.getLattitude().toString();
-		String longitude = srcPoint.getLongitude().toString();		
+		String longitude = srcPoint.getLongitude().toString();
 		Map<Long, GeoPoint> poolPointMap = new HashMap<Long, GeoPoint>();
 
 		Double initFixedDistance = 200.0;
