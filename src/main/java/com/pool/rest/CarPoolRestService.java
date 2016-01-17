@@ -583,6 +583,8 @@ public class CarPoolRestService {
 			if (usr != null) {
 				HttpSession session = request.getSession(true);
 				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
+			} else {
+				return Response.status(Response.Status.FORBIDDEN).build();
 			}
 		}
 
