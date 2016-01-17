@@ -249,10 +249,11 @@ public class CarPoolRestService {
 
 		return Response.status(Response.Status.OK).build();
 	}
+	
 
-	@POST
-	@Path("/leavePool")
-	public Response leavePool(@FormParam("carPoolId") String carPoolId) {
+	@GET
+	@Path("/leavePool/{carPoolId}")
+	public Response leavePool(@PathParam("carPoolId") String carPoolId) {
 		_validateSession();
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
@@ -918,14 +919,25 @@ public class CarPoolRestService {
 
 		CarPoolService service = new CarPoolService();
 		List<Carpool> carPools = service.findPoolsByUserId(usr.getUserId());
+		JSONArray array = new JSONArray();
 
 		for (Carpool pool : carPools) {
 			pool.setCalendarDays(null);
+
+			JSONObject poolJson = new JSONObject(pool);
+			array.put(poolJson);
+
+			try {
+				if (pool.getOwnerId().equals(usr.getUserId())) {
+					poolJson.put("isOwner", true);
+				} else {
+					poolJson.put("isOwner", false);
+				}
+			} catch (JSONException e) {
+			}
 		}
 
-		// /fetchSubscribedTravellersDetails
-
-		return Response.status(Response.Status.OK).entity(carPools).build();
+		return Response.status(Response.Status.OK).entity(array.toString()).build();
 	}
 
 	private void _validateSession() {
