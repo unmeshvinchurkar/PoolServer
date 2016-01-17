@@ -370,6 +370,10 @@ public class CarPoolDao extends AbstractDao {
 			q.setParameter("carPoolId", Long.valueOf(carPoolId));
 			q.executeUpdate();
 
+			q = session
+					.createQuery("delete from  Request req where req.carPoolId=:carPoolId");
+			q.setParameter("carPoolId", Long.valueOf(carPoolId));
+			q.executeUpdate();
 		} finally {
 			session.close();
 		}
