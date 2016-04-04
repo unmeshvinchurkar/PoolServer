@@ -21,6 +21,7 @@ import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.PoolSubscription;
+import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 
 @Repository("carPoolDao")
@@ -66,6 +67,27 @@ public class CarPoolDao extends AbstractDao {
 			}
 		}
 		return map;
+	}
+
+	public User fetchUsersDetails(Long userId) {
+		Session session = null;
+		List result = null;
+		User usr = null;
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery("from  User user where  user.userId=:userId");
+			q.setParameter("userId", userId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		if (result != null && result.size() != 0) {
+			usr = (User) result.get(0);
+		}
+
+		return usr;
 	}
 
 	public List fetchSubscribedTravellersDetails(Long carPoolId) {

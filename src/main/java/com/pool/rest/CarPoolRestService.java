@@ -808,6 +808,38 @@ public class CarPoolRestService {
 	}
 
 	@GET
+	@Path("/getCurrentUserDetails")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getCurrentUserDetails() {
+		_validateSession();
+
+		HttpSession session = request.getSession(false);
+		User usr = (User) session.getAttribute("USER");
+
+		return getUserDetails(usr.getUserId().toString());
+
+	}	
+
+	@GET
+	@Path("/getUserDetails/{userid}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getUserDetails(@PathParam("userid") String userid) {
+		_validateSession();
+		CarPoolService service = new CarPoolService();
+
+		User usr = service.fetchUserDetails(Long.valueOf(userid));
+
+		usr.setCarpools(null);
+		usr.setPasswd(null);
+		usr.setVehicles(null);
+
+		JSONObject jsonObj = new JSONObject(usr);
+		JSONArray array = new JSONArray();
+		return Response.status(Response.Status.OK).entity(jsonObj.toString())
+				.build();
+	}
+
+	@GET
 	@Path("{poolId}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getPoolById(@PathParam("poolId") String poolId) {

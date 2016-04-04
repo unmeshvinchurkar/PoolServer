@@ -25,10 +25,19 @@ import com.pool.spring.model.Carpool;
 import com.pool.spring.model.GeoPoint;
 import com.pool.spring.model.PoolCalendarDay;
 import com.pool.spring.model.PoolSubscription;
+import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
 
 public class CarPoolService {
+	
+	
+	public User fetchUserDetails(Long userId) {
+
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchUsersDetails(userId);
+	}
 
 	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(Collection carPoolIds,
 			Long travellerId) {
