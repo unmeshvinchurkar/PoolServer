@@ -17,6 +17,7 @@ public class User implements java.io.Serializable {
 	private Integer pin;
 	private String state;
 	private String country;
+	private String contactNo;
 	private String gender;
 	private String drivingLicense;
 	private Long birthDate;
@@ -24,6 +25,14 @@ public class User implements java.io.Serializable {
 	private Set<Vehicle> vehicles = new HashSet<Vehicle>(0);
 
 	public User() {
+	}
+
+	public String getContactNo() {
+		return contactNo;
+	}
+
+	public void setContactNo(String contactNo) {
+		this.contactNo = contactNo;
 	}
 
 	public Long getBirthDate() {
