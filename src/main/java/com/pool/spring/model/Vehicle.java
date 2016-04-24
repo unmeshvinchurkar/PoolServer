@@ -3,7 +3,7 @@ package com.pool.spring.model;
 public class Vehicle implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String vehicleId;
+	private Long vehicleId;
 	private Long ownerId;
 	private String registrationNo;
 	private String vehicleType;
@@ -17,11 +17,11 @@ public class Vehicle implements java.io.Serializable {
 	public Vehicle() {
 	}
 
-	public String getVehicleId() {
+	public Long getVehicleId() {
 		return vehicleId;
 	}
 
-	public void setVehicleId(String vehicleId) {
+	public void setVehicleId(Long vehicleId) {
 		this.vehicleId = vehicleId;
 	}
 

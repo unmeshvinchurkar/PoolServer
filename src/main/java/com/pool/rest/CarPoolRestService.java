@@ -250,7 +250,6 @@ public class CarPoolRestService {
 
 		return Response.status(Response.Status.OK).build();
 	}
-	
 
 	@GET
 	@Path("/leavePool/{carPoolId}")
@@ -526,8 +525,6 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).build();
 	}
 
-	
-
 	@POST
 	@Path("/signup")
 	public Response signup(@FormParam("username") String username,
@@ -705,6 +702,7 @@ public class CarPoolRestService {
 
 	@GET
 	@Path("/getVehicle")
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getVehicle() {
 		_validateSession();
 
@@ -714,8 +712,13 @@ public class CarPoolRestService {
 		Vehicle v = service.getVehicle(user.getUserId());
 
 		if (v != null) {
+			JSONObject jsonObj = new JSONObject(v);
 			v.setDrivingLicense(user.getDrivingLicense());
-			return Response.status(Response.Status.OK).entity(v).build();
+			try {
+				jsonObj.put("drivingLicense", user.getDrivingLicense());
+			} catch (JSONException e) {
+			}
+			return Response.status(Response.Status.OK).entity(jsonObj.toString()).build();
 		} else {
 			return Response.status(Response.Status.NOT_FOUND).build();
 
@@ -736,7 +739,13 @@ public class CarPoolRestService {
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
 
-		Vehicle vh = new Vehicle();
+		UserService service = new UserService();
+		Vehicle vh = service.getVehicle(user.getUserId());
+
+		if (vh == null) {
+			vh = new Vehicle();
+		}
+
 		vh.setRegistrationNo(registrationNumber);
 		vh.setOwnerId(user.getUserId());
 		vh.setDrivingLicense(drivingLicense);
@@ -746,11 +755,11 @@ public class CarPoolRestService {
 		vh.setColor(color);
 
 		user.setDrivingLicense(drivingLicense);
-		CarPoolService service = new CarPoolService();
+		CarPoolService carService = new CarPoolService();
 
-		service.saveOrUpdate(user);
+		carService.saveOrUpdate(user);
+		carService.saveOrUpdate(vh);
 
-		service.addVehicle(vh);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -802,7 +811,7 @@ public class CarPoolRestService {
 
 			if (vehicleId == null) {
 				Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
-				vehicleId = vh.getVehicleId();
+				vehicleId = vh.getVehicleId().toString();
 			}
 
 			if (carPoolId == null) {
@@ -867,7 +876,7 @@ public class CarPoolRestService {
 
 		return getUserDetails(usr.getUserId().toString());
 
-	}	
+	}
 
 	@GET
 	@Path("/getUserDetails/{userid}")
@@ -896,7 +905,7 @@ public class CarPoolRestService {
 		CarPoolService service = new CarPoolService();
 		Carpool carPool = service.findPoolById(poolId);
 		carPool.setCalendarDays(null);
-		
+
 		JSONObject jsonObj = new JSONObject(carPool);
 		JSONArray array = new JSONArray();
 
@@ -1029,7 +1038,8 @@ public class CarPoolRestService {
 			} catch (JSONException e) {
 			}
 		}
-		return Response.status(Response.Status.OK).entity(array.toString()).build();
+		return Response.status(Response.Status.OK).entity(array.toString())
+				.build();
 	}
 
 	private void _validateSession() {
