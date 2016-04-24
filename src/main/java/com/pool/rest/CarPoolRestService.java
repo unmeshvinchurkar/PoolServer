@@ -480,6 +480,55 @@ public class CarPoolRestService {
 	}
 
 	@POST
+	@Path("/edituser")
+	public Response editUser(@FormParam("state") String state,
+			@FormParam("streetAddress") String streetAddress,
+			@FormParam("city") String city, @FormParam("pin") String pin,
+			@FormParam("country") String country,
+			@FormParam("contactNo") String contactNo) {
+
+		try {
+			streetAddress = Validator.validateString("streetAddress",
+					streetAddress);
+			state = Validator.validateName("state", state);
+			city = Validator.validateName("city", city);
+			pin = Validator.validatePin("pin", pin);
+			Integer.valueOf(contactNo);
+
+			_validateSession();
+			HttpSession session = request.getSession(false);
+
+			CarPoolService service = new CarPoolService();
+			User usr = (User) session.getAttribute("USER");
+
+			usr.setCity(city);
+			usr.setPin(Integer.valueOf(pin));
+			usr.setState(state);
+			usr.setAddress(streetAddress);
+			usr.setCountry(country);
+			usr.setContactNo(contactNo);
+			service.saveOrUpdate(usr);
+
+		} catch (FieldValidationException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.NOT_ACCEPTABLE)
+					.entity(e.getMessage()).build();
+		} catch (IntrusionDetectedException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.FORBIDDEN)
+					.entity(e.getMessage()).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(e.getMessage()).build();
+		}
+
+		return Response.status(Response.Status.OK).build();
+	}
+
+	
+
+	@POST
 	@Path("/signup")
 	public Response signup(@FormParam("username") String username,
 
