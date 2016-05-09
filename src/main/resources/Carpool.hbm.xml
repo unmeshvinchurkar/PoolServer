@@ -62,6 +62,10 @@
 		<property name="noOfAvblSeats" type="java.lang.Integer">
 			<column name="no_of_avbl_seats" length="2" />
 		</property>
+		
+		<property name="bucksPerKm" type="java.lang.Integer">
+			<column name="bucks_per_km" length="2" />
+		</property>
 
 		<property name="noOfRemainingSeats" type="java.lang.Integer">
 			<column name="no_of_remaining_seats" length="2" />

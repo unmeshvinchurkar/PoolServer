@@ -1,5 +1,10 @@
 package com.pool.rest;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +13,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+//import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -44,6 +50,7 @@ import com.pool.spring.model.Request;
 import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
+//import com.sun.jersey.core.header.FormDataContentDisposition;
 
 @Path("/carpool")
 public class CarPoolRestService {
@@ -718,7 +725,8 @@ public class CarPoolRestService {
 				jsonObj.put("drivingLicense", user.getDrivingLicense());
 			} catch (JSONException e) {
 			}
-			return Response.status(Response.Status.OK).entity(jsonObj.toString()).build();
+			return Response.status(Response.Status.OK)
+					.entity(jsonObj.toString()).build();
 		} else {
 			return Response.status(Response.Status.NOT_FOUND).build();
 
@@ -795,7 +803,8 @@ public class CarPoolRestService {
 			@FormParam("startTime") String startTimeInSec,
 			@FormParam("srcArea") String srcArea,
 			@FormParam("destArea") String destArea,
-			@FormParam("totalSeats") String totalSeats) {
+			@FormParam("totalSeats") String totalSeats,
+			@FormParam("bucksPerKm") String bucksPerKm) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
@@ -827,6 +836,7 @@ public class CarPoolRestService {
 				carPool.setDestArea(destArea);
 				carPool.setNoOfAvblSeats(Integer.valueOf(totalSeats));
 				carPool.setNoOfRemainingSeats(Integer.valueOf(totalSeats));
+				carPool.setBucksPerKm(Integer.valueOf(bucksPerKm));
 
 				carPool = service.createCarPool(carPool, pointList);
 
@@ -1041,6 +1051,54 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).entity(array.toString())
 				.build();
 	}
+
+//	@POST
+//	@Path("/upload")
+//	@Consumes(MediaType.MULTIPART_FORM_DATA)
+//	public Response uploadFile(
+//			@FormParam("file") InputStream uploadedInputStream,
+//			@FormParam("file") FormDataContentDisposition fileDetail,
+//			@FormParam("path") String path) {
+//
+//		/*
+//		 * String uploadedFileLocation = "d://uploaded/" +
+//		 * fileDetail.getFileName();
+//		 */
+//
+//		/*
+//		 * String uploadedFileLocation = "//10.217.14.88/Installables/uploaded/"
+//		 * + fileDetail.getFileName();
+//		 */
+//		String uploadedFileLocation = path + fileDetail.getFileName();
+//
+//		// save it
+//		writeToFile(uploadedInputStream, uploadedFileLocation);
+//
+//		String output = "File uploaded to : " + uploadedFileLocation;
+//
+//		return Response.status(200).entity(output).build();
+//
+//	}
+//
+//	// save uploaded file to new location
+//	private void writeToFile(InputStream uploadedInputStream,
+//			String uploadedFileLocation) {
+//		try {
+//			OutputStream out = new FileOutputStream(new File(
+//					uploadedFileLocation));
+//			int read = 0;
+//			byte[] bytes = new byte[1024];
+//
+//			out = new FileOutputStream(new File(uploadedFileLocation));
+//			while ((read = uploadedInputStream.read(bytes)) != -1) {
+//				out.write(bytes, 0, read);
+//			}
+//			out.flush();
+//			out.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	private void _validateSession() {
 		HttpSession session = request.getSession(false);
