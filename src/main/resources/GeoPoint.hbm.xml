@@ -23,6 +23,9 @@
 		<property name="approxTimeToReach" type="java.lang.Long">
 			<column name="approx_time_to_reach" not-null="true" />
 		</property>
+		<property name="distanceToReach" type="java.lang.Long">
+			<column name="distance_to_reach" not-null="true" />
+		</property>
 	</class>
 
 	<query name="fetchPoints">

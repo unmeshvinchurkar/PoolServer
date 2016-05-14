@@ -11,8 +11,44 @@ public class PoolSubscription implements java.io.Serializable {
 	private Long pickupTime;
 	private String pickupAddress;
 	private String dropAddress;
+	private Double destLattitude;
+	private Double destLongitude;
+	private Float tripCost;
+	private Float pickupDistance;
 
 	public PoolSubscription() {
+	}
+
+	public Double getDestLattitude() {
+		return destLattitude;
+	}
+
+	public void setDestLattitude(Double destLattitude) {
+		this.destLattitude = destLattitude;
+	}
+
+	public Double getDestLongitude() {
+		return destLongitude;
+	}
+
+	public void setDestLongitude(Double destLongitude) {
+		this.destLongitude = destLongitude;
+	}
+
+	public Float getTripCost() {
+		return tripCost;
+	}
+
+	public void setTripCost(Float tripCost) {
+		this.tripCost = tripCost;
+	}
+
+	public Float getPickupDistance() {
+		return pickupDistance;
+	}
+
+	public void setPickupDistance(Float pickupDistance) {
+		this.pickupDistance = pickupDistance;
 	}
 
 	public Long getSubscriptionId() {

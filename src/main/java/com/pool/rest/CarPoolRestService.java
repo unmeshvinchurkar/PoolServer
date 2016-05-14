@@ -7,12 +7,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
 //import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -32,6 +34,7 @@ import org.owasp.esapi.errors.AuthenticationCredentialsException;
 
 import nl.captcha.Captcha;
 
+import com.pool.DistanceComparator;
 import com.pool.Point;
 import com.pool.PoolConstants;
 import com.pool.esapi.EsapiUtils;
@@ -50,6 +53,9 @@ import com.pool.spring.model.Request;
 import com.pool.spring.model.User;
 import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+
 //import com.sun.jersey.core.header.FormDataContentDisposition;
 
 @Path("/carpool")
@@ -173,7 +179,9 @@ public class CarPoolRestService {
 			@FormParam("srcLongitude") String srcLongitude,
 			@FormParam("destLattitude") String destLattitude,
 			@FormParam("destLongitude") String destLongitude,
-			@FormParam("pickupTime") String pickupTime) {
+			@FormParam("tripCost") String tripCost,
+			@FormParam("pickupTime") String pickupTime,
+			@FormParam("pickupDistance") String pickupDistance) {
 
 		_validateSession();
 		HttpSession session = request.getSession(false);
@@ -189,6 +197,10 @@ public class CarPoolRestService {
 		request.setRequestTypeId(PoolConstants.REQUEST_JOIN_POOL_REQUEST_ID);
 		request.setSrcLattitude(Double.parseDouble(srcLattitude));
 		request.setSrcLongitude(Double.parseDouble(srcLongitude));
+		request.setDestLattitude(Double.parseDouble(destLattitude));
+		request.setDestLongitude(Double.parseDouble(destLongitude));
+		request.setTripCost(Float.valueOf(tripCost));
+		request.setPickupDistance(Float.valueOf(pickupDistance));
 		request.setStartTime(Long.valueOf(pickupTime));
 		service.saveOrUpdate(request);
 
@@ -231,6 +243,11 @@ public class CarPoolRestService {
 		subs.setPickupLattitude(req.getSrcLattitude());
 		subs.setPickupLongitute(req.getSrcLongitude());
 		subs.setPickupTime(req.getStartTime());
+		subs.setDestLattitude(req.getDestLattitude());
+		subs.setDestLongitude(req.getDestLongitude());
+		subs.setTripCost(req.getTripCost());
+		subs.setPickupDistance(req.getPickupDistance());
+
 		carPool.setNoOfRemainingSeats(carPool.getNoOfRemainingSeats() - 1);
 		service.saveObjects(subs, carPool);
 		return Response.status(Response.Status.OK).build();
@@ -982,7 +999,20 @@ public class CarPoolRestService {
 					user.setCarpools(null);
 					user.setVehicles(null);
 					pool.setCalendarDays(null);
+					// pool.setGeoPoints(null);
+
+					// Get the nearest drop point
+					DistanceComparator destComparator = new DistanceComparator(
+							destPoint.getLongitude(), destPoint.getLattitude());
+					List<GeoPoint> allPoints = service
+							.fetchGeoPointsByPoolId(pool.getCarPoolId());
+
+					GeoPoint startPoint = allPoints.get(0);
+					Collections.sort(allPoints, destComparator);
+					GeoPoint dropPoint = allPoints.get(0);
+
 					pool.setGeoPoints(null);
+
 					JSONObject map = new JSONObject();
 					JSONObject poolJson = new JSONObject(pool);
 					GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());
@@ -990,6 +1020,15 @@ public class CarPoolRestService {
 					poolJson.put("pickupTime", startTime);
 					poolJson.put("pickupLattitude", geoPoint.getLatitude());
 					poolJson.put("pickupLongitude", geoPoint.getLongitude());
+					poolJson.put("dropLattitude", dropPoint.getLatitude());
+					poolJson.put("dropLongitude", dropPoint.getLongitude());
+					poolJson.put("pickupDistance", ((float) (geoPoint
+							.getDistanceToReach() - startPoint
+							.getDistanceToReach())) / 1000.00);
+					poolJson.put("tripCost",
+							((float) (dropPoint.getDistanceToReach() - geoPoint
+									.getDistanceToReach()) * pool
+									.getBucksPerKm()) / 1000.0);
 
 					if (poolIdsForSentReqs.contains(pool.getCarPoolId())) {
 						poolJson.put("requestReceived", true);
@@ -1040,10 +1079,14 @@ public class CarPoolRestService {
 				if (pool.getOwnerId().equals(usr.getUserId())) {
 					poolJson.put("isOwner", true);
 					poolJson.put("pickupTime", pool.getStartTime());
+					poolJson.put("cost",
+							service.getPerTripCollection(pool.getCarPoolId()));
+
 				} else {
 					PoolSubscription sub = subs.get(pool.getCarPoolId());
 					poolJson.put("isOwner", false);
 					poolJson.put("pickupTime", sub.getPickupTime());
+					poolJson.put("cost", sub.getTripCost());
 				}
 			} catch (JSONException e) {
 			}
@@ -1052,53 +1095,69 @@ public class CarPoolRestService {
 				.build();
 	}
 
-//	@POST
-//	@Path("/upload")
-//	@Consumes(MediaType.MULTIPART_FORM_DATA)
-//	public Response uploadFile(
-//			@FormParam("file") InputStream uploadedInputStream,
-//			@FormParam("file") FormDataContentDisposition fileDetail,
-//			@FormParam("path") String path) {
-//
-//		/*
-//		 * String uploadedFileLocation = "d://uploaded/" +
-//		 * fileDetail.getFileName();
-//		 */
-//
-//		/*
-//		 * String uploadedFileLocation = "//10.217.14.88/Installables/uploaded/"
-//		 * + fileDetail.getFileName();
-//		 */
-//		String uploadedFileLocation = path + fileDetail.getFileName();
-//
-//		// save it
-//		writeToFile(uploadedInputStream, uploadedFileLocation);
-//
-//		String output = "File uploaded to : " + uploadedFileLocation;
-//
-//		return Response.status(200).entity(output).build();
-//
-//	}
-//
-//	// save uploaded file to new location
-//	private void writeToFile(InputStream uploadedInputStream,
-//			String uploadedFileLocation) {
-//		try {
-//			OutputStream out = new FileOutputStream(new File(
-//					uploadedFileLocation));
-//			int read = 0;
-//			byte[] bytes = new byte[1024];
-//
-//			out = new FileOutputStream(new File(uploadedFileLocation));
-//			while ((read = uploadedInputStream.read(bytes)) != -1) {
-//				out.write(bytes, 0, read);
-//			}
-//			out.flush();
-//			out.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	@POST
+	@Path("/upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadFile(
+			@FormDataParam("file") InputStream uploadedInputStream,
+			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User usr = (User) session.getAttribute("USER");
+
+		String fileName = fileDetail.getFileName();
+		String fileType = ".jpg";
+
+		if (fileName.indexOf(".") > 0) {
+			fileType = fileName.substring(fileName.indexOf("."));
+		}
+
+		String path = request.getSession().getServletContext()
+				.getRealPath("/images/");
+
+		if (!new File(path).exists()) {
+			new File(path).mkdirs();
+		}
+
+		String uploadedFileLocation = path + usr.getUsername() + fileType;
+
+		// save it
+		_writeToFile(uploadedInputStream, uploadedFileLocation);
+		String output = "File uploaded successfully";
+
+		JSONObject json = new JSONObject();
+		try {
+			json.put("msg", output);
+		} catch (JSONException e) {
+		}
+
+		return Response.status(200).entity(json.toString()).build();
+	}
+
+	// save uploaded file
+	private void _writeToFile(InputStream uploadedInputStream,
+			String uploadedFileLocation) {
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(new File(uploadedFileLocation));
+			int read = 0;
+			byte[] bytes = new byte[1024];
+
+			out = new FileOutputStream(new File(uploadedFileLocation));
+			while ((read = uploadedInputStream.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+			}
+		}
+	}
 
 	private void _validateSession() {
 		HttpSession session = request.getSession(false);

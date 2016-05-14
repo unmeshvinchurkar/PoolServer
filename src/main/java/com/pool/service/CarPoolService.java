@@ -30,8 +30,19 @@ import com.pool.spring.model.UserCalendarDay;
 import com.pool.spring.model.Vehicle;
 
 public class CarPoolService {
-	
-	
+
+	public Float getPerTripCollection(Long carPoolId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.getPerTripCollection(carPoolId);
+	}
+
+	public List fetchGeoPointsByPoolId(Long poolId) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+		return poolDao.fetchGeoPointsByPoolId(poolId);
+	}
+
 	public User fetchUserDetails(Long userId) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
@@ -39,8 +50,8 @@ public class CarPoolService {
 		return poolDao.fetchUsersDetails(userId);
 	}
 
-	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(Collection carPoolIds,
-			Long travellerId) {
+	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(
+			Collection carPoolIds, Long travellerId) {
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
@@ -270,6 +281,7 @@ public class CarPoolService {
 			JSONArray steps = leg.getJSONArray("steps");
 
 			long duration = startTimeInSec.longValue();
+			long totalDistance = 0;
 
 			for (int i = 0; i < steps.length(); i++) {
 
@@ -277,8 +289,10 @@ public class CarPoolService {
 
 				JSONObject startPoint = step.getJSONObject("start_point");
 				JSONArray path = step.getJSONArray("path");
-				int timeToCross = step.getJSONObject("duration")
-						.getInt("value");
+				int timeToCrossInSecs = step.getJSONObject("duration").getInt(
+						"value");
+				int distanceInMeters = step.getJSONObject("distance").getInt(
+						"value");
 
 				if (startPoint.has("lat")) {
 					points.add(new Point(Double.parseDouble(startPoint
@@ -288,7 +302,8 @@ public class CarPoolService {
 
 				if (path.length() > 0) {
 
-					int timePerStep = timeToCross / path.length();
+					int timePerStep = timeToCrossInSecs / path.length() - 1;
+					int distancePerStep = distanceInMeters / path.length() - 1;
 
 					for (int j = 0; j < path.length(); j++) {
 
@@ -298,12 +313,14 @@ public class CarPoolService {
 							points.add(new Point(Double.parseDouble(point
 									.getString("lat")), Double
 									.parseDouble(point.getString("lng")),
-									(duration + timePerStep * j)));
+									(duration + timePerStep * j),
+									(totalDistance + distancePerStep * j)));
 						}
 					}
 				}
 
-				duration = duration + timeToCross;
+				duration = duration + timeToCrossInSecs;
+				totalDistance = totalDistance + distanceInMeters;
 
 			}
 
@@ -408,8 +425,9 @@ public class CarPoolService {
 
 		if (poolId_PointMap.size() > 0) {
 
-			DeltaLatLong deltaDest = PoolUtils.findDelta(3.0, lattitude,
-					longitude);
+			DeltaLatLong deltaDest = PoolUtils.findDelta(3.0, destPoint
+					.getLattitude().toString(), destPoint.getLongitude()
+					.toString());
 
 			// For these pools select points on car pool within 3kms
 			Set<Long> destPoolIds = poolDao.findDestinationPools(deltaDest,
@@ -423,9 +441,9 @@ public class CarPoolService {
 
 			if (poolId_PointMap.size() > 0) {
 
-				// For each pool find the nearest point. The pool with nearst
-				// point
-				// will get the priority
+				// For each pool find the nearest source point. The pool with
+				// nearest
+				// point will get the priority
 				DistanceComparator comparator = new DistanceComparator(
 						Double.valueOf(longitude), Double.valueOf(lattitude));
 

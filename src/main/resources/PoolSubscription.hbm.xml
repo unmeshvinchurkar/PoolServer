@@ -37,5 +37,18 @@
 			<column name="drop_address" length="200" />
 		</property>
 
+		<property name="destLongitude" type="java.lang.Double">
+			<column name="dest_longitude" not-null="true" />
+		</property>
+		<property name="destLattitude" type="java.lang.Double">
+			<column name="dest_lattitude" not-null="true" />
+		</property>
+		<property name="tripCost" type="java.lang.Float">
+			<column name="trip_cost" not-null="true" />
+		</property>
+		<property name="pickupDistance" type="java.lang.Float">
+			<column name="pickup_distance" not-null="true" />
+		</property>
+
 	</class>
 </hibernate-mapping>

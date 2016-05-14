@@ -10,7 +10,18 @@ public class GeoPoint implements java.io.Serializable {
 	private Long carPoolId;
 	private Long approxTimeToReach;
 
+	// In meters
+	private Long distanceToReach;
+
 	public GeoPoint() {
+	}
+
+	public Long getDistanceToReach() {
+		return distanceToReach;
+	}
+
+	public void setDistanceToReach(Long distanceToReach) {
+		this.distanceToReach = distanceToReach;
 	}
 
 	public Long getPointId() {

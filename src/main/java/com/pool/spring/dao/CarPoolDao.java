@@ -26,6 +26,23 @@ import com.pool.spring.model.UserCalendarDay;
 
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
+	
+	
+	public List fetchGeoPointsByPoolId(Long poolId) {
+		Session session = null;
+		List result = null;
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery("from com.pool.spring.model.GeoPoint point where point.carPoolId=:poolId order by point.pointOrder asc");
+			q.setParameter("poolId", poolId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+	
 
 	public List fetchPoolIdsForSentRequests(Long userId, Collection carpoolIds) {
 		Session session = null;
@@ -44,6 +61,27 @@ public class CarPoolDao extends AbstractDao {
 		return result;
 	}
 
+	public Float getPerTripCollection(Long carPoolId) {
+		Session session = null;
+		List result = null;
+		Map<Long, PoolSubscription> map = new HashMap<Long, PoolSubscription>();
+		try {
+			session = this.openSession();
+			Query q = session
+					.createQuery(" select sum(sub.tripCost) from PoolSubscription sub  where sub.carPoolId =:carPoolId ");
+			q.setParameter("carPoolId", carPoolId);
+			result = q.list();
+		} finally {
+			session.close();
+		}
+
+		return (result != null && result.size() > 0) ? (Float) result.get(0)
+				: 0;
+	}
+	
+	
+	
+	
 	public Map<Long, PoolSubscription> fetchTravellerSubscriptions(Collection carPoolIds,
 			Long travellerId) {
 		Session session = null;
@@ -543,6 +581,7 @@ public class CarPoolDao extends AbstractDao {
 				point.setLongitude(points.get(i).getLongitude());
 				point.setPointOrder(i);
 				point.setApproxTimeToReach(points.get(i).getTimeToReach());
+				point.setDistanceToReach((points.get(i).getDistanceFromStart()));
 				session.save(point);
 			}
 			tx.commit();
