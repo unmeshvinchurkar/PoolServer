@@ -75,7 +75,7 @@ public class CarPoolDao extends AbstractDao {
 			session.close();
 		}
 
-		return (result != null && result.size() > 0) ? (Float) result.get(0)
+		return (result != null && result.size() > 0) ? Float.valueOf(result.get(0).toString())
 				: 0;
 	}
 	

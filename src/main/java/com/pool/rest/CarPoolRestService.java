@@ -1146,7 +1146,7 @@ public class CarPoolRestService {
 
 		if (files != null && files.length > 0) {
 			for (File pimage : files) {
-				if (!pimage.getName().equalsIgnoreCase(newFileName)) {
+				if (pimage.getName().startsWith(usr.getUsername())) {
 					pimage.delete();
 				}
 			}
