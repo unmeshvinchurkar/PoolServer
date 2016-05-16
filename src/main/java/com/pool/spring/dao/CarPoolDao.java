@@ -134,7 +134,7 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			Query q = session
-					.createQuery("select user.firstName, sub.pickupLongitute, sub.pickupLattitude, sub.pickupTime  from PoolSubscription sub, User user where sub.carPoolId in (:carPoolId) and user.userId=sub.travellerId");
+					.createQuery("select user.firstName, sub.pickupLongitute, sub.pickupLattitude, sub.pickupTime, user.username, sub.tripCost, sub.pickupDistance, user.profileImagePath from PoolSubscription sub, User user where sub.carPoolId in (:carPoolId) and user.userId=sub.travellerId");
 			q.setParameter("carPoolId", carPoolId);
 			result = q.list();
 		} finally {
@@ -150,6 +150,10 @@ public class CarPoolDao extends AbstractDao {
 				map.put("pickupLongitute", values[1]);
 				map.put("pickupLattitude", values[2]);
 				map.put("pickupTime", values[3]);
+				map.put("username", values[4]);
+				map.put("tripCost", values[5]);
+				map.put("pickupDistance", values[6]);
+				map.put("profileImagePath", values[7]);
 				resultSet.add(map);
 			}
 		}

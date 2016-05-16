@@ -21,10 +21,19 @@ public class User implements java.io.Serializable {
 	private String gender;
 	private String drivingLicense;
 	private Long birthDate;
+	private String profileImagePath;
 	private Set<Carpool> carpools = new HashSet<Carpool>(0);
 	private Set<Vehicle> vehicles = new HashSet<Vehicle>(0);
 
 	public User() {
+	}
+
+	public String getProfileImagePath() {
+		return profileImagePath;
+	}
+
+	public void setProfileImagePath(String profileImagePath) {
+		this.profileImagePath = profileImagePath;
 	}
 
 	public String getContactNo() {

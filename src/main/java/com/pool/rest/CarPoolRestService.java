@@ -911,6 +911,7 @@ public class CarPoolRestService {
 	public Response getUserDetails(@PathParam("userid") String userid) {
 		_validateSession();
 		CarPoolService service = new CarPoolService();
+		File profileImgFile = null;
 
 		final User usr = service.fetchUserDetails(Long.valueOf(userid));
 
@@ -918,24 +919,21 @@ public class CarPoolRestService {
 		usr.setPasswd(null);
 		usr.setVehicles(null);
 
-		String path = request.getSession().getServletContext()
-				.getRealPath("/images/");
-		File dir = new File(path);
+		String path = request.getSession().getServletContext().getRealPath("/images/");
 
-		FilenameFilter beginswithFilter = new FilenameFilter() {
-			public boolean accept(File directory, String filename) {
-				return filename.startsWith(usr.getUsername());
-			}
-		};
-
-		File[] files = dir.listFiles(beginswithFilter);
+		if (usr.getProfileImagePath() != null) {
+			profileImgFile = new File(path + usr.getProfileImagePath());
+		}
 
 		JSONObject jsonObj = new JSONObject(usr);
 
 		try {
-			if (files != null && files.length > 0) {
-				jsonObj.put("profileImagePath", "images/" + files[0].getName());
-
+			if (profileImgFile != null && profileImgFile.exists()) {
+				jsonObj.put("profileImagePath", usr.getProfileImagePath());
+			}
+			else{
+				jsonObj.remove("profileImagePath");
+				
 			}
 		} catch (JSONException e) {
 		}
@@ -961,7 +959,8 @@ public class CarPoolRestService {
 
 		if (subDetails != null) {
 			for (Object obj : subDetails) {
-				array.put((Map) obj);
+				Map usrSubDetails = (Map) obj;
+				array.put(usrSubDetails);
 			}
 		}
 		try {
@@ -1126,34 +1125,38 @@ public class CarPoolRestService {
 		HttpSession session = request.getSession(false);
 		User usr = (User) session.getAttribute("USER");
 
+		CarPoolService service = new CarPoolService();
+
 		String fileName = fileDetail.getFileName();
 		String fileType = ".jpg";
+		File profileImagePath = null;
 
 		if (fileName.indexOf(".") > 0) {
 			fileType = fileName.substring(fileName.indexOf("."));
 		}
 
-		String path = request.getSession().getServletContext()
-				.getRealPath("/images/");
+		String path = request.getSession().getServletContext().getRealPath("/images/");
 		String newFileName = usr.getUsername() + fileType;
 
 		if (!new File(path).exists()) {
 			new File(path).mkdirs();
 		}
 
-		// Delete old profile images whose name is different than the current name
-		File files[] = _getOldProfileImageFiles(usr.getUsername(), path);
+		if (usr.getProfileImagePath() != null) {
+			profileImagePath = new File(path + usr.getProfileImagePath());
 
-		if (files != null && files.length > 0) {
-			for (File pimage : files) {
-				if (pimage.getName().startsWith(usr.getUsername())) {
-					pimage.delete();
-				}
+			if (profileImagePath.exists()) {
+				profileImagePath.delete();
 			}
 		}
 
 		// save it
 		_writeToFile(uploadedInputStream, path + newFileName);
+
+		usr.setProfileImagePath(newFileName);
+
+		service.saveOrUpdate(usr);
+
 		String output = "File uploaded successfully";
 
 		JSONObject json = new JSONObject();
@@ -1185,21 +1188,6 @@ public class CarPoolRestService {
 			} catch (IOException e) {
 			}
 		}
-	}
-
-	private File[] _getOldProfileImageFiles(final String username,
-			String dirPath) {
-
-		File dir = new File(dirPath);
-
-		FilenameFilter beginswithFilter = new FilenameFilter() {
-			public boolean accept(File directory, String filename) {
-				return filename.startsWith(username);
-			}
-		};
-
-		File[] files = dir.listFiles(beginswithFilter);
-		return files;
 	}
 
 	private void _validateSession() {

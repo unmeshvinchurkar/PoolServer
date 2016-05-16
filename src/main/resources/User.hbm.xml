@@ -28,6 +28,11 @@
 		<property name="lastName" type="string">
 			<column name="Last_Name" />
 		</property>
+				
+		<property name="profileImagePath" type="string">
+			<column name="profile_image_path" />
+		</property>
+		
 		<property name="address" type="string">
 			<column name="Address" />
 		</property>
