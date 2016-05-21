@@ -919,7 +919,8 @@ public class CarPoolRestService {
 		usr.setPasswd(null);
 		usr.setVehicles(null);
 
-		String path = request.getSession().getServletContext().getRealPath("/images/");
+		String path = request.getSession().getServletContext()
+				.getRealPath("/images/");
 
 		if (usr.getProfileImagePath() != null) {
 			profileImgFile = new File(path + usr.getProfileImagePath());
@@ -958,6 +959,12 @@ public class CarPoolRestService {
 		if (subDetails != null) {
 			for (Object obj : subDetails) {
 				Map usrSubDetails = (Map) obj;
+
+				if (!_checkProfileImage((String) usrSubDetails
+						.get("profileImagePath"))) {
+					usrSubDetails.remove("profileImagePath");
+				}
+
 				array.put(usrSubDetails);
 			}
 		}
@@ -969,6 +976,13 @@ public class CarPoolRestService {
 
 		return Response.status(Response.Status.OK).entity(jsonObj.toString())
 				.build();
+	}
+
+	private boolean _checkProfileImage(String profileImagePath) {
+		String path = request.getSession().getServletContext()
+				.getRealPath("/images/");
+		File profileImgFile = new File(path + profileImagePath);
+		return profileImgFile != null && profileImgFile.exists();
 	}
 
 	@GET
@@ -1133,7 +1147,8 @@ public class CarPoolRestService {
 			fileType = fileName.substring(fileName.indexOf("."));
 		}
 
-		String path = request.getSession().getServletContext().getRealPath("/images/");
+		String path = request.getSession().getServletContext()
+				.getRealPath("/images/");
 		String newFileName = usr.getUsername() + fileType;
 
 		if (!new File(path).exists()) {
