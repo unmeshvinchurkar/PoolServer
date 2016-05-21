@@ -930,10 +930,8 @@ public class CarPoolRestService {
 		try {
 			if (profileImgFile != null && profileImgFile.exists()) {
 				jsonObj.put("profileImagePath", usr.getProfileImagePath());
-			}
-			else{
+			} else {
 				jsonObj.remove("profileImagePath");
-				
 			}
 		} catch (JSONException e) {
 		}
