@@ -134,7 +134,7 @@ public class CarPoolDao extends AbstractDao {
 		try {
 			session = this.openSession();
 			Query q = session
-					.createQuery("select user.firstName, user.lastName, user.email,user.contactNo , sub.pickupLongitute, sub.pickupLattitude, sub.pickupTime, user.username, sub.tripCost, sub.pickupDistance, user.profileImagePath from PoolSubscription sub, User user where sub.carPoolId in (:carPoolId) and user.userId=sub.travellerId");
+					.createQuery("select user.userId, user.firstName, user.lastName, user.email,user.contactNo , sub.pickupLongitute, sub.pickupLattitude, sub.pickupTime, user.username, sub.tripCost, sub.pickupDistance, user.profileImagePath from PoolSubscription sub, User user where sub.carPoolId in (:carPoolId) and user.userId=sub.travellerId");
 			q.setParameter("carPoolId", carPoolId);
 			result = q.list();
 		} finally {
@@ -146,16 +146,17 @@ public class CarPoolDao extends AbstractDao {
 			for (Object obj : result) {
 				Map map = new HashMap();
 				Object values[] = (Object[]) obj;
-				map.put("name", values[0]+" " + values[1]);
-				map.put("email", values[2]);
-				map.put("contactNo", values[3]);
-				map.put("pickupLongitute", values[4]);
-				map.put("pickupLattitude", values[5]);
-				map.put("pickupTime", values[6]);
-				map.put("username", values[7]);
-				map.put("tripCost", values[8]);
-				map.put("pickupDistance", values[9]);
-				map.put("profileImagePath", values[10]);
+				map.put("userId", values[0]);
+				map.put("name", values[1]+" " + values[2]);
+				map.put("email", values[3]);
+				map.put("contactNo", values[4]);
+				map.put("pickupLongitute", values[5]);
+				map.put("pickupLattitude", values[6]);
+				map.put("pickupTime", values[7]);
+				map.put("username", values[8]);
+				map.put("tripCost", values[9]);
+				map.put("pickupDistance", values[10]);
+				map.put("profileImagePath", values[11]);
 				resultSet.add(map);
 			}
 		}
