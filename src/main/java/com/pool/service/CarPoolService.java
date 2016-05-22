@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -347,7 +348,8 @@ public class CarPoolService {
 		poolDao.subscribeToPool(carPoolId, travellerId);
 	}
 
-	public Carpool createCarPool(Carpool pool, List<Point> points) {
+	public Carpool createCarPool(Carpool pool, List<Point> points,
+			boolean excludeWeekend, boolean oddEven) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
@@ -362,10 +364,43 @@ public class CarPoolService {
 
 		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
 
+		Vehicle v = null;
+		boolean isEven = true;
+
+		if (oddEven) {
+			v = (Vehicle) poolDao.get(Vehicle.class,
+					Long.valueOf(pool.getVehicleId()));
+			String regNo = v.getRegistrationNo().trim();
+			isEven = Integer.valueOf(regNo.substring(regNo.length() - 1)) % 2 == 0;
+		}
+
 		for (long day = startDate; day <= endDate; day = day + noOfSecsInDay) {
+
+			Calendar date = Calendar.getInstance();
+			date.setTimeInMillis(day * 1000);
+
 			PoolCalendarDay calendarDay = new PoolCalendarDay();
+			
+			if (oddEven || excludeWeekend) {
+				if (excludeWeekend
+						&& (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || date
+								.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
+					calendarDay.setIsHoliday(1);
+				}
+
+				if (oddEven && v != null) {
+					if (isEven && date.get(Calendar.DATE) % 2 == 0) {
+						calendarDay.setIsHoliday(1);
+					} else {
+						calendarDay.setIsHoliday(1);
+					}
+				}
+
+			} else {
+				calendarDay.setIsHoliday(0);
+			}
+
 			calendarDay.setNoOfTravellers(1);// Including owner
-			calendarDay.setIsHoliday(0);
 			calendarDay.setDate(day);
 			calendarDay.setNoOfAvblSeats(pool.getNoOfAvblSeats());
 			calendarDay.setCarPool(pool);

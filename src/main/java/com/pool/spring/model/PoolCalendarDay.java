@@ -7,7 +7,7 @@ public class PoolCalendarDay implements java.io.Serializable {
 	private Long poolCalendarId;
 	private Long carPoolId;
 	private Long date;
-	private Integer isHoliday;
+	private Integer isHoliday = 0;
 	private Integer noOfAvblSeats;
 	private Integer noOfTravellers;
 	private Carpool carPool;
