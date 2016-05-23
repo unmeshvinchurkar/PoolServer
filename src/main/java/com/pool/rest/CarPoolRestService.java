@@ -506,7 +506,8 @@ public class CarPoolRestService {
 	@Path("/edituser")
 	public Response editUser(@FormParam("state") String state,
 			@FormParam("streetAddress") String streetAddress,
-			@FormParam("city") String city, @FormParam("pin") String pin,
+			@FormParam("city") String city, 
+			@FormParam("pin") String pin,
 			@FormParam("country") String country,
 			@FormParam("contactNo") String contactNo) {
 
@@ -516,7 +517,7 @@ public class CarPoolRestService {
 			state = Validator.validateName("state", state);
 			city = Validator.validateName("city", city);
 			pin = Validator.validatePin("pin", pin);
-			Integer.valueOf(contactNo);
+			Long.parseLong(contactNo);
 
 			_validateSession();
 			HttpSession session = request.getSession(false);
