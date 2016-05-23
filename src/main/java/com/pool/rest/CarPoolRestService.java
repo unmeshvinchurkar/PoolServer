@@ -1105,8 +1105,13 @@ public class CarPoolRestService {
 			carPoolIds.add(pool.getCarPoolId());
 		}
 
-		Map<Long, PoolSubscription> subs = service.fetchTravellerSubscriptions(
+		Map<Long, PoolSubscription> subs = null;
+		
+		if(carPoolIds!=null && carPoolIds.size() >0){
+		 subs = service.fetchTravellerSubscriptions(
 				carPoolIds, usr.getUserId());
+		 
+		}
 
 		for (Carpool pool : carPools) {
 			pool.setCalendarDays(null);

@@ -298,7 +298,7 @@ public class CarPoolService {
 				if (startPoint.has("lat")) {
 					points.add(new Point(Double.parseDouble(startPoint
 							.getString("lat")), Double.parseDouble(startPoint
-							.getString("lng")), duration));
+							.getString("lng")), duration, totalDistance));
 				}
 
 				if (path.length() > 0) {
