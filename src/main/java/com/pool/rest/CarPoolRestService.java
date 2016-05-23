@@ -839,7 +839,7 @@ public class CarPoolRestService {
 		List<Point> pointList = null;
 		Carpool carPool = null;
 		try {
-			vehicleId = "1";
+			
 			pointList = route != null ? service.convertRouteToPoints(route,
 					Long.parseLong(startTimeInSec)) : null;
 
