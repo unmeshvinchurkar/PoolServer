@@ -506,8 +506,7 @@ public class CarPoolRestService {
 	@Path("/edituser")
 	public Response editUser(@FormParam("state") String state,
 			@FormParam("streetAddress") String streetAddress,
-			@FormParam("city") String city, 
-			@FormParam("pin") String pin,
+			@FormParam("city") String city, @FormParam("pin") String pin,
 			@FormParam("country") String country,
 			@FormParam("contactNo") String contactNo) {
 
@@ -833,13 +832,13 @@ public class CarPoolRestService {
 
 		boolean doExcludeWeekend = (excludeWeekend != null && excludeWeekend
 				.equals("true")) ? true : false;
-		boolean isOddEven = (oddEven != null && oddEven
-				.equals("true")) ? true : false;
+		boolean isOddEven = (oddEven != null && oddEven.equals("true")) ? true
+				: false;
 
 		List<Point> pointList = null;
 		Carpool carPool = null;
 		try {
-			
+
 			pointList = route != null ? service.convertRouteToPoints(route,
 					Long.parseLong(startTimeInSec)) : null;
 
@@ -863,7 +862,8 @@ public class CarPoolRestService {
 				carPool.setNoOfRemainingSeats(Integer.valueOf(totalSeats));
 				carPool.setBucksPerKm(Integer.valueOf(bucksPerKm));
 
-				carPool = service.createCarPool(carPool, pointList, doExcludeWeekend, isOddEven);
+				carPool = service.createCarPool(carPool, pointList,
+						doExcludeWeekend, isOddEven);
 
 				System.err.println("############### Src area: " + srcArea);
 				System.err.println("############### Dest area: " + destArea);
@@ -1019,71 +1019,82 @@ public class CarPoolRestService {
 		Map<Long, GeoPoint> poolIdPointMap = service.findNearestPools(srcPoint,
 				destPoint, Long.parseLong(startTime), usr.getUserId());
 
-		List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
+		if (poolIdPointMap != null) {
 
-		NotificationService nService = new NotificationService();
-		List poolIdsForSentReqs = nService.getPoolIdsForSentRequests(
-				usr.getUserId(), poolIdPointMap.keySet());
-		List subsPoolIds = nService.getSubscribedPoolIds(usr.getUserId());
-		JSONArray array = new JSONArray();
+			List list = service.fetchPoolDetailsById(poolIdPointMap.keySet());
 
-		try {
-			for (int i = 0; i < list.size(); i++) {
-				Object result[] = (Object[]) list.get(i);
+			NotificationService nService = new NotificationService();
+			List poolIdsForSentReqs = nService.getPoolIdsForSentRequests(
+					usr.getUserId(), poolIdPointMap.keySet());
+			List subsPoolIds = nService.getSubscribedPoolIds(usr.getUserId());
+			JSONArray array = new JSONArray();
 
-				Carpool pool = (Carpool) result[0];
+			try {
+				for (int i = 0; i < list.size(); i++) {
+					Object result[] = (Object[]) list.get(i);
 
-				if (!subsPoolIds.contains(pool.getCarPoolId())) {
-					User user = (User) result[1];
-					user.setCarpools(null);
-					user.setVehicles(null);
-					pool.setCalendarDays(null);
-					// pool.setGeoPoints(null);
+					Carpool pool = (Carpool) result[0];
 
-					// Get the nearest drop point
-					DistanceComparator destComparator = new DistanceComparator(
-							destPoint.getLongitude(), destPoint.getLattitude());
-					List<GeoPoint> allPoints = service
-							.fetchGeoPointsByPoolId(pool.getCarPoolId());
+					if (!subsPoolIds.contains(pool.getCarPoolId())) {
+						User user = (User) result[1];
+						user.setCarpools(null);
+						user.setVehicles(null);
+						pool.setCalendarDays(null);
+						// pool.setGeoPoints(null);
 
-					GeoPoint startPoint = allPoints.get(0);
-					Collections.sort(allPoints, destComparator);
-					GeoPoint dropPoint = allPoints.get(0);
+						// Get the nearest drop point
+						DistanceComparator destComparator = new DistanceComparator(
+								destPoint.getLongitude(),
+								destPoint.getLattitude());
+						List<GeoPoint> allPoints = service
+								.fetchGeoPointsByPoolId(pool.getCarPoolId());
 
-					pool.setGeoPoints(null);
+						GeoPoint startPoint = allPoints.get(0);
+						Collections.sort(allPoints, destComparator);
+						GeoPoint dropPoint = allPoints.get(0);
 
-					JSONObject map = new JSONObject();
-					JSONObject poolJson = new JSONObject(pool);
-					GeoPoint geoPoint = poolIdPointMap.get(pool.getCarPoolId());
+						pool.setGeoPoints(null);
 
-					poolJson.put("pickupTime", startTime);
-					poolJson.put("pickupLattitude", geoPoint.getLatitude());
-					poolJson.put("pickupLongitude", geoPoint.getLongitude());
-					poolJson.put("dropLattitude", dropPoint.getLatitude());
-					poolJson.put("dropLongitude", dropPoint.getLongitude());
-					poolJson.put("pickupDistance", ((float) (geoPoint
-							.getDistanceToReach() - startPoint
-							.getDistanceToReach())) / 1000.00);
-					poolJson.put("tripCost",
-							((float) (dropPoint.getDistanceToReach() - geoPoint
-									.getDistanceToReach()) * pool
-									.getBucksPerKm()) / 1000.0);
+						JSONObject map = new JSONObject();
+						JSONObject poolJson = new JSONObject(pool);
+						GeoPoint geoPoint = poolIdPointMap.get(pool
+								.getCarPoolId());
 
-					if (poolIdsForSentReqs.contains(pool.getCarPoolId())) {
-						poolJson.put("requestReceived", true);
+						poolJson.put("pickupTime", startTime);
+						poolJson.put("pickupLattitude", geoPoint.getLatitude());
+						poolJson.put("pickupLongitude", geoPoint.getLongitude());
+						poolJson.put("dropLattitude", dropPoint.getLatitude());
+						poolJson.put("dropLongitude", dropPoint.getLongitude());
+						poolJson.put("pickupDistance", ((float) (geoPoint
+								
+								.getDistanceToReach() - startPoint
+								.getDistanceToReach())) / 1000.00);
+						poolJson.put(
+								"tripCost",
+								((float) (dropPoint.getDistanceToReach() - geoPoint
+										.getDistanceToReach()) * pool
+										.getBucksPerKm()) / 1000.0);
+
+						if (poolIdsForSentReqs.contains(pool.getCarPoolId())) {
+							poolJson.put("requestReceived", true);
+						}
+
+						map.put("owner", new JSONObject(user));
+						map.put("carpool", poolJson);
+						array.put(map);
 					}
-
-					map.put("owner", new JSONObject(user));
-					map.put("carpool", poolJson);
-					array.put(map);
 				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+						.build();
 			}
-		} catch (JSONException e) {
-			e.printStackTrace();
+
+			return Response.status(Response.Status.OK).entity(array.toString())
+					.build();
 		}
 
-		return Response.status(Response.Status.OK).entity(array.toString())
-				.build();
+		return Response.status(Response.Status.NOT_FOUND).build();
 	}
 
 	@POST
@@ -1106,11 +1117,11 @@ public class CarPoolRestService {
 		}
 
 		Map<Long, PoolSubscription> subs = null;
-		
-		if(carPoolIds!=null && carPoolIds.size() >0){
-		 subs = service.fetchTravellerSubscriptions(
-				carPoolIds, usr.getUserId());
-		 
+
+		if (carPoolIds != null && carPoolIds.size() > 0) {
+			subs = service.fetchTravellerSubscriptions(carPoolIds,
+					usr.getUserId());
+
 		}
 
 		for (Carpool pool : carPools) {
