@@ -75,8 +75,7 @@ public class CarPoolDao extends AbstractDao {
 			session.close();
 		}
 
-		return (result != null && result.size() > 0 && result.get(0)!=null) ? Float.valueOf(result.get(0).toString())
-				: 0;
+		return (result != null && result.size() > 0 && result.get(0)!=null) ? Float.valueOf(result.get(0).toString()): 0;
 	}
 	
 	
@@ -730,14 +729,14 @@ public class CarPoolDao extends AbstractDao {
 			Query queryPool = session
 					.createQuery("select pool.carPoolId from Carpool pool where pool.ownerId!=(:userId) and ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or "
 							+ " (pool.destLongitude < (:maxLongitude) and  pool.destLongitude > (:minLongitude) "
-							+ "  and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and pool.startTime <= (:startTime) and (pool.deleted != :deleted or pool.deleted is NULL)and pool.noOfAvblSeats>=(:noOfAvblSeats) and pool.endDate > (:endDate)  ");
+							+ "  and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and pool.startTime <= (:startTime) and (pool.deleted != :deleted or pool.deleted is NULL)and pool.noOfRemainingSeats>=(:noOfRemainingSeats) and pool.endDate > (:endDate)  ");
 
 			queryPool.setParameter("minLongitude", delta.getMinLongitude());
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPool.setParameter("minLattitude", delta.getMinLattitude());
 			queryPool.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPool.setParameter("deleted", Integer.valueOf(1));
-			queryPool.setParameter("noOfAvblSeats", Integer.valueOf("1"));
+			queryPool.setParameter("noOfRemainingSeats", Integer.valueOf("1"));
 			queryPool.setParameter("userId", userId);
 
 			queryPool.setParameter("endDate",
