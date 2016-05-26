@@ -220,7 +220,7 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("select req.carPoolId, req.createDate, req.status, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude   "
+					.createQuery("select req.carPoolId, req.createDate, req.status, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude, req.destLattitude, req.destLongitude  "
 							+ " from Request req, User usr where req.fromUserId =(:userId) and (req.processed !=1 or req.processed is NULL ) and usr.userId = req.toUserId ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
@@ -242,6 +242,8 @@ public class CarPoolDao extends AbstractDao {
 				map.put("requestId", values[7]);
 				map.put("pickupLattitude", values[8]);
 				map.put("pickupLongitude", values[9]);
+				map.put("destLattitude", values[10]);
+				map.put("destLongitude", values[11]);
 				resultSet.add(map);
 			}
 		}
@@ -255,7 +257,7 @@ public class CarPoolDao extends AbstractDao {
 			session = this.openSession();
 
 			Query q = session
-					.createQuery("select req.carPoolId, req.createDate, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude  "
+					.createQuery("select req.carPoolId, req.createDate, req.startTime, usr.firstName, usr.lastName, usr.userId, req.requestId, req.srcLattitude, req.srcLongitude, req.destLattitude, req.destLongitude  "
 							+ " from Request req, User usr  where req.toUserId =(:userId) and (req.processed = 0 or req.processed is NULL ) and usr.userId = req.fromUserId ORDER BY req.createDate DESC  ");
 			q.setParameter("userId", userId);
 			result = q.list();
@@ -277,6 +279,8 @@ public class CarPoolDao extends AbstractDao {
 				map.put("requestId", values[6]);
 				map.put("pickupLattitude", values[7]);
 				map.put("pickupLongitude", values[8]);
+				map.put("destLattitude", values[9]);
+				map.put("destLongitude", values[10]);
 				resultSet.add(map);
 			}
 		}
