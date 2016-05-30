@@ -2,7 +2,6 @@ package com.pool.rest;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -586,9 +585,14 @@ public class CarPoolRestService {
 		}
 
 		try {
+			
+			username = username.trim();
+			lastName = lastName.trim();
+			email = email.trim();
+			
 			EsapiUtils.verifyPasswordStrength(password, username);
 
-			username = Validator.validateUserName("username", username);
+			username = Validator.validateEmail("username", username);
 			firstName = Validator.validateName("firstName", firstName);
 			lastName = Validator.validateName("lastName", lastName);
 			email = Validator.validateEmail("email", email);
