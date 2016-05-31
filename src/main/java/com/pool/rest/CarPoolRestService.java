@@ -652,7 +652,7 @@ public class CarPoolRestService {
 			System.out.println("********************* Login: " + username);
 			System.out.println("********************* password: " + password);
 
-			username = Validator.validateUserName("username", username);
+			username = Validator.validateEmail("username", username);
 
 			UserService service = new UserService();
 			User usr = service.getUser(username, password);
@@ -665,12 +665,15 @@ public class CarPoolRestService {
 		}
 
 		catch (FieldValidationException e) {
+			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity(e.getMessage()).build();
 		} catch (IntrusionDetectedException e) {
+			e.printStackTrace();
 			return Response.status(Response.Status.FORBIDDEN)
 					.entity(e.getMessage()).build();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(e.getMessage()).build();
 		}
