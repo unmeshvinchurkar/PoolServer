@@ -560,7 +560,7 @@ public class CarPoolRestService {
 
 	@FormParam("email") String email, @FormParam("state") String state,
 
-	@FormParam("gender") String gender,
+	@FormParam("sex") String sex,
 
 	@FormParam("streetAddress") String streetAddress,
 
@@ -600,7 +600,7 @@ public class CarPoolRestService {
 					streetAddress);
 			state = Validator.validateName("state", state);
 			city = Validator.validateName("city", city);
-			gender = Validator.validateGender("gender", gender);
+			sex = Validator.validateGender("sex", sex);
 			answer = Validator.validateString("answer", answer);
 			pin = Validator.validatePin("pin", pin);
 
@@ -613,7 +613,7 @@ public class CarPoolRestService {
 			usr.setFirstName(firstName);
 			usr.setLastName(lastName);
 			usr.setState(state);
-			usr.setGender(gender);
+			usr.setGender(sex);
 			usr.setAddress(streetAddress);
 			usr.setPasswd(password);
 			usr.setBirthDate(Long.valueOf(birthDate) / 1000);
