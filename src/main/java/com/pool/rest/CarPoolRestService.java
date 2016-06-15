@@ -558,15 +558,23 @@ public class CarPoolRestService {
 
 	@FormParam("lastName") String lastName,
 
-	@FormParam("email") String email, @FormParam("state") String state,
+	@FormParam("email") String email, 
+	
+	@FormParam("state") String state,
 
 	@FormParam("sex") String sex,
 
 	@FormParam("streetAddress") String streetAddress,
 
-	@FormParam("city") String city, @FormParam("pin") String pin,
+	@FormParam("city") String city, 
+	
+	@FormParam("pin") String pin,
 
-	@FormParam("country") String country, @FormParam("answer") String answer,
+	@FormParam("country") String country, 
+	
+	@FormParam("answer") String answer,
+	
+	@FormParam("contactNo") String contactNo, 
 
 	@FormParam("birthDate") String birthDate) {
 
@@ -618,6 +626,7 @@ public class CarPoolRestService {
 			usr.setPasswd(password);
 			usr.setBirthDate(Long.valueOf(birthDate) / 1000);
 			usr.setCountry(country);
+			usr.setContactNo(contactNo);
 			UserService service = new UserService();
 			service.createUser(usr);
 
