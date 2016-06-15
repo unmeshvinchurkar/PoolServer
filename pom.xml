@@ -135,7 +135,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>C:\apache\apache-tomcat-8.0.23\webapps\PoolServer</outputDirectory>
+							<outputDirectory>C:\apache\apache-tomcat-7.0.69\webapps\PoolServer</outputDirectory>
 							<resources>
 								<resource>
 									<directory>./target/PoolServer-1.0</directory>
