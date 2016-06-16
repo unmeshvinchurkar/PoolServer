@@ -349,7 +349,7 @@ public class CarPoolService {
 	}
 
 	public Carpool createCarPool(Carpool pool, List<Point> points,
-			boolean excludeWeekend, boolean oddEven) {
+			String excludeWeekend, boolean oddEven) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
@@ -364,16 +364,17 @@ public class CarPoolService {
 
 		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
 
-		Vehicle v = null;
+		Vehicle vehicle = null;
 		boolean isEven = true;
 
 		if (oddEven) {
-			v = (Vehicle) poolDao.get(Vehicle.class,
+			vehicle = (Vehicle) poolDao.get(Vehicle.class,
 					Long.valueOf(pool.getVehicleId()));
-			String regNo = v.getRegistrationNo().trim();
+			String regNo = vehicle.getRegistrationNo().trim();
 			isEven = Integer.valueOf(regNo.substring(regNo.length() - 1)) % 2 == 0;
 		}
 
+		
 		for (long day = startDate; day <= endDate; day = day + noOfSecsInDay) {
 
 			Calendar date = Calendar.getInstance();
@@ -381,14 +382,26 @@ public class CarPoolService {
 
 			PoolCalendarDay calendarDay = new PoolCalendarDay();
 			
-			if (oddEven || excludeWeekend) {
-				if (excludeWeekend
-						&& (date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || date
-								.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
-					calendarDay.setIsHoliday(1);
+			if ( !excludeWeekend.isEmpty() ) {
+				String[] excludeDays = excludeWeekend.split(",");
+				for (String excludeday : excludeDays) {
+					if( excludeday.compareTo("Saturday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Sunday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Monday")  == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Tuesday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Wednesday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Thursday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY )
+						calendarDay.setIsHoliday(1);
+					else if( excludeday.compareTo("Friday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY )
+						calendarDay.setIsHoliday(1);
 				}
 
-				if (oddEven && v != null) {
+				if (oddEven && vehicle != null) {
 					if (isEven && date.get(Calendar.DATE) % 2 == 0) {
 						calendarDay.setIsHoliday(1);
 					} else {

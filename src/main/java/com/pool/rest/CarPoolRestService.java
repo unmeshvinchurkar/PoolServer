@@ -838,7 +838,7 @@ public class CarPoolRestService {
 			@FormParam("destArea") String destArea,
 			@FormParam("totalSeats") String totalSeats,
 			@FormParam("bucksPerKm") String bucksPerKm,
-			@FormParam("excludeWeekend") String excludeWeekend,
+			@FormParam("excludeDays") String excludeDays,
 			@FormParam("oddEven") String oddEven) {
 		_validateSession();
 
@@ -846,8 +846,7 @@ public class CarPoolRestService {
 		User user = (User) session.getAttribute("USER");
 		CarPoolService service = new CarPoolService();
 
-		boolean doExcludeWeekend = (excludeWeekend != null && excludeWeekend
-				.equals("true")) ? true : false;
+		//String doExcludeWeekend = excludeDays;
 		boolean isOddEven = (oddEven != null && oddEven.equals("true")) ? true
 				: false;
 
@@ -879,7 +878,7 @@ public class CarPoolRestService {
 				carPool.setBucksPerKm(Integer.valueOf(bucksPerKm));
 
 				carPool = service.createCarPool(carPool, pointList,
-						doExcludeWeekend, isOddEven);
+						excludeDays, isOddEven);
 
 				System.err.println("############### Src area: " + srcArea);
 				System.err.println("############### Dest area: " + destArea);
