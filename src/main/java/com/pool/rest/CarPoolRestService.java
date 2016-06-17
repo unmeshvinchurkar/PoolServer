@@ -36,6 +36,7 @@ import nl.captcha.Captcha;
 import com.pool.DistanceComparator;
 import com.pool.Point;
 import com.pool.PoolConstants;
+import com.pool.PoolUtils;
 import com.pool.esapi.EsapiUtils;
 import com.pool.esapi.FieldValidationException;
 import com.pool.esapi.IntrusionDetectedException;
@@ -550,6 +551,7 @@ public class CarPoolRestService {
 
 	@POST
 	@Path("/signup")
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response signup(@FormParam("username") String username,
 
 	@FormParam("password") String password,
@@ -580,6 +582,13 @@ public class CarPoolRestService {
 
 		Captcha captcha = (Captcha) request.getSession().getAttribute(
 				Captcha.NAME);
+		
+		JSONObject errorObj = new JSONObject();
+		
+		try {
+			errorObj.put("errorMessage", "Error while saving details");
+		} catch (JSONException e2) {
+		}
 
 		try {
 			request.setCharacterEncoding("UTF-8");
@@ -587,9 +596,16 @@ public class CarPoolRestService {
 		}
 
 		if (!captcha.isCorrect(answer)) {
+			
+			JSONObject jsonObj = new JSONObject();
+			try {
+				jsonObj.put("errorMessage", "Incorrect capcha");
+				jsonObj.put("fieldName", "answer");
+			} catch (JSONException e) {
+			}
 
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity("Incorrect capcha").build();
+					.entity(jsonObj.toString()).build();
 		}
 
 		try {
@@ -633,19 +649,19 @@ public class CarPoolRestService {
 		} catch (FieldValidationException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(e.getMessage()).build();
+					.entity(errorObj.toString()).build();
 		} catch (IntrusionDetectedException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.FORBIDDEN)
-					.entity(e.getMessage()).build();
+					.entity(errorObj.toString()).build();
 		} catch (AuthenticationCredentialsException e) {
 			e.printStackTrace();
-			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(e.getMessage()).build();
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(errorObj.toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(e.getMessage()).build();
+					.entity(errorObj.toString()).build();
 		}
 
 		return Response.status(Response.Status.OK).build();
@@ -1063,10 +1079,17 @@ public class CarPoolRestService {
 								destPoint.getLattitude());
 						List<GeoPoint> allPoints = service
 								.fetchGeoPointsByPoolId(pool.getCarPoolId());
+						
+						
+
+						GeoPoint nearPoint = PoolUtils.findNearestPoint(destPoint.getLattitude().toString(),
+								destPoint.getLongitude().toString(), allPoints);
 
 						GeoPoint startPoint = allPoints.get(0);
 						Collections.sort(allPoints, destComparator);
-						GeoPoint dropPoint = allPoints.get(0);
+						 GeoPoint dropPoint = allPoints.get(0);
+						
+						 GeoPoint dropPoint = nearPoint;
 
 						pool.setGeoPoints(null);
 
