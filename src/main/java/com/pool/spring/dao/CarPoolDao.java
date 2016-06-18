@@ -27,6 +27,14 @@ import com.pool.spring.model.UserCalendarDay;
 @Repository("carPoolDao")
 public class CarPoolDao extends AbstractDao {
 	
+	private static String FETCH_POINTS ="from com.pool.spring.model.GeoPoint point1 where   (point1.longitude < (:maxLongitude) "+ 
+           " and point1.longitude > (:minLongitude)  "+ 
+           " and point1.latitude > (:minLattitude) "+ 
+           " and point1.latitude <(:maxLattitude) "+ 
+           " and point1.carPoolId in (:carPoolIds))"+ 
+           " and point1.approxTimeToReach > (:minPickUpTime)  "+ 
+           " and point1.approxTimeToReach < (:maxPickUpTime)";
+	
 	
 	public List fetchGeoPointsByPoolId(Long poolId) {
 		Session session = null;
@@ -816,7 +824,7 @@ public class CarPoolDao extends AbstractDao {
 		List<GeoPoint> points = null;
 		try {
 			session = this.openSession();
-			Query queryPoints = session.getNamedQuery("fetchPoints");
+			Query queryPoints = session.createQuery(FETCH_POINTS);
 			queryPoints.setParameter("minLongitude", delta.getMinLongitude());
 			queryPoints.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPoints.setParameter("minLattitude", delta.getMinLattitude());
@@ -839,7 +847,7 @@ public class CarPoolDao extends AbstractDao {
 		List<GeoPoint> points = null;
 		try {
 			session = this.openSession();
-			Query queryPoints = session.getNamedQuery("fetchPoints");
+			Query queryPoints = session.createQuery(FETCH_POINTS);
 			queryPoints.setParameter("minLongitude", delta.getMinLongitude());
 			queryPoints.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPoints.setParameter("minLattitude", delta.getMinLattitude());

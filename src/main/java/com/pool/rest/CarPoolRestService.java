@@ -620,8 +620,8 @@ public class CarPoolRestService {
 			firstName = Validator.validateName("firstName", firstName);
 			lastName = Validator.validateName("lastName", lastName);
 			email = Validator.validateEmail("email", email);
-			streetAddress = Validator.validateString("streetAddress",
-					streetAddress);
+//			streetAddress = Validator.validateString("streetAddress",
+//					streetAddress);
 			state = Validator.validateName("state", state);
 			city = Validator.validateName("city", city);
 			sex = Validator.validateGender("sex", sex);
@@ -1089,7 +1089,7 @@ public class CarPoolRestService {
 						Collections.sort(allPoints, destComparator);
 						 GeoPoint dropPoint = allPoints.get(0);
 						
-						 GeoPoint dropPoint = nearPoint;
+						  dropPoint = nearPoint;
 
 						pool.setGeoPoints(null);
 

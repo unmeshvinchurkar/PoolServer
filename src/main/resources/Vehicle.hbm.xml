@@ -8,7 +8,7 @@
 			<column name="VehicleId" />
 			<generator class="increment" />
 		</id>
-		<property name="ownerId" type="long">
+		<property name="ownerId" type="java.lang.Long">
 			<column name="owner_id" />
 		</property>
 		<property name="registrationNo" type="string">

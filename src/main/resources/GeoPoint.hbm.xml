@@ -28,16 +28,5 @@
 		</property>
 	</class>
 
-	<query name="fetchPoints">
-        <![CDATA[from com.pool.spring.model.GeoPoint point1 where 
-        (point1.longitude < (:maxLongitude) 
-           and point1.longitude > (:minLongitude)   
-           and point1.latitude > (:minLattitude) 
-           and point1.latitude <(:maxLattitude) 
-           and point1.carPoolId in (:carPoolIds))
-           and point1.approxTimeToReach > (:minPickUpTime)  
-           and point1.approxTimeToReach < (:maxPickUpTime)
-           
-           ]]>
-	</query>
+	
 </hibernate-mapping>
