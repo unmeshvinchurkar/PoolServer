@@ -349,7 +349,7 @@ public class CarPoolService {
 	}
 
 	public Carpool createCarPool(Carpool pool, List<Point> points,
-			String excludeWeekend, boolean oddEven) {
+			String excludedDaysStr, boolean oddEven) {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
@@ -382,8 +382,8 @@ public class CarPoolService {
 
 			PoolCalendarDay calendarDay = new PoolCalendarDay();
 			
-			if ( !excludeWeekend.isEmpty() ) {
-				String[] excludeDays = excludeWeekend.split(",");
+			if ( !excludedDaysStr.isEmpty() ) {
+				String[] excludeDays = excludedDaysStr.split(",");
 				for (String excludeday : excludeDays) {
 					if( excludeday.compareTo("Saturday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY )
 						calendarDay.setIsHoliday(1);
@@ -421,6 +421,7 @@ public class CarPoolService {
 		}
 
 		pool.setCalendarDays(calendarDays);
+		pool.setExcludedDays(excludedDaysStr);
 
 		return poolDao.createCarPool(pool, points);
 	}

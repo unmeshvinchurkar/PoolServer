@@ -76,5 +76,10 @@
 			<key column="car_pool_id" />
 			<one-to-many class="com.pool.spring.model.PoolCalendarDay" />
 		</set>
+		
+		<property name="excludedDays" type="string">
+			<column name="excluded_days" length="300" />
+		</property>
+		
 	</class>
 </hibernate-mapping>

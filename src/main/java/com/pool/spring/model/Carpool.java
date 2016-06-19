@@ -31,8 +31,17 @@ public class Carpool implements java.io.Serializable {
 	private Integer bucksPerKm;
 	private Integer noOfRemainingSeats;
 	private Set<PoolCalendarDay> calendarDays = null;
+	private String excludedDays;
 
 	public Carpool() {
+	}
+
+	public String getExcludedDays() {
+		return excludedDays;
+	}
+
+	public void setExcludedDays(String excludedDays) {
+		this.excludedDays = excludedDays;
 	}
 
 	public Integer getBucksPerKm() {
