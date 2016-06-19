@@ -353,16 +353,12 @@ public class CarPoolService {
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
-		long noOfSecsInDay = 24 * 60 * 60;
-
 		Long startDate = pool.getStartDate();
 		Long endDate = pool.getEndDate();
 
 		if (pool.getNoOfAvblSeats() == null) {
 			pool.setNoOfAvblSeats(1);
 		}
-
-		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
 
 		Vehicle vehicle = null;
 		boolean isEven = true;
@@ -374,35 +370,88 @@ public class CarPoolService {
 			isEven = Integer.valueOf(regNo.substring(regNo.length() - 1)) % 2 == 0;
 		}
 
-		
+		_generateHolidays(pool, isEven, oddEven, startDate, endDate,
+				excludedDaysStr);
+
+		return poolDao.createCarPool(pool, points);
+	}
+
+	public void extendPool(Carpool pool, long endDateInSecs,
+			String excludedDaysStr, boolean oddEven) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		long oldEndDateInSecs = pool.getEndDate();
+
+		Vehicle vehicle = null;
+		boolean isEven = true;
+
+		if (oddEven) {
+			vehicle = (Vehicle) poolDao.get(Vehicle.class,
+					Long.valueOf(pool.getVehicleId()));
+			String regNo = vehicle.getRegistrationNo().trim();
+			isEven = Integer.valueOf(regNo.substring(regNo.length() - 1)) % 2 == 0;
+		}
+
+		pool.setEndDate(Long.valueOf(endDateInSecs));
+
+		_generateHolidays(pool, isEven, oddEven, oldEndDateInSecs,
+				endDateInSecs, excludedDaysStr);
+
+		poolDao.updatePool(pool, null);
+	}
+	
+
+	public void updatePool(Carpool pool, List<Point> points) {
+		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
+				.getBean("carPoolDao");
+
+		poolDao.updatePool(pool, points);
+	}
+
+
+	private void _generateHolidays(Carpool pool, boolean isEvenNo,
+			boolean oddEven, long startDate, long endDate,
+			String excludedDaysStr) {
+
+		long noOfSecsInDay = 24 * 60 * 60;
+
+		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
 		for (long day = startDate; day <= endDate; day = day + noOfSecsInDay) {
 
 			Calendar date = Calendar.getInstance();
 			date.setTimeInMillis(day * 1000);
 
 			PoolCalendarDay calendarDay = new PoolCalendarDay();
-			
-			if ( !excludedDaysStr.isEmpty() ) {
-				String[] excludeDays = excludedDaysStr.split(",");
+
+			if (pool.getExcludedDays()!=null && !pool.getExcludedDays().isEmpty()) {
+				String[] excludeDays = pool.getExcludedDays().split(",");
 				for (String excludeday : excludeDays) {
-					if( excludeday.compareTo("Saturday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY )
+					if (excludeday.compareTo("Saturday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Sunday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY )
+					else if (excludeday.compareTo("Sunday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Monday")  == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY )
+					else if (excludeday.compareTo("Monday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Tuesday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY )
+					else if (excludeday.compareTo("Tuesday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Wednesday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY )
+					else if (excludeday.compareTo("Wednesday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Thursday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY )
+					else if (excludeday.compareTo("Thursday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY)
 						calendarDay.setIsHoliday(1);
-					else if( excludeday.compareTo("Friday") == 0 && date.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY )
+					else if (excludeday.compareTo("Friday") == 0
+							&& date.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
 						calendarDay.setIsHoliday(1);
 				}
 
-				if (oddEven && vehicle != null) {
-					if (isEven && date.get(Calendar.DATE) % 2 == 0) {
+				if (oddEven) {
+					if (isEvenNo && date.get(Calendar.DATE) % 2 == 0) {
 						calendarDay.setIsHoliday(1);
 					} else {
 						calendarDay.setIsHoliday(1);
@@ -422,15 +471,6 @@ public class CarPoolService {
 
 		pool.setCalendarDays(calendarDays);
 		pool.setExcludedDays(excludedDaysStr);
-
-		return poolDao.createCarPool(pool, points);
-	}
-
-	public void updatePool(Carpool pool, List<Point> points) {
-		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
-				.getBean("carPoolDao");
-
-		poolDao.updatePool(pool, points);
 	}
 
 	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,

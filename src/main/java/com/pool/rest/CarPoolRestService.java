@@ -900,24 +900,9 @@ public class CarPoolRestService {
 				System.err.println("############### Dest area: " + destArea);
 			} else {
 				carPool = service.findPoolById(carPoolId);
-				carPool.setSrcArea(srcArea);
-				carPool.setDestArea(destArea);
-				carPool.setVehicleId(vehicleId);
-				carPool.setPath(pointList.toString());
-				carPool.setStartDate(Long.valueOf(startDateInMilis) / 1000);
-				carPool.setEndDate(Long.valueOf(endDateInMilis) / 1000);
-				carPool.setStartTime(Long.parseLong(startTimeInSec));
 
-				if (pointList != null && pointList.size() > 0) {
-					carPool.setDestLattitude(pointList
-							.get(pointList.size() - 1).getLattitude());
-					carPool.setDestLongitude(pointList
-							.get(pointList.size() - 1).getLongitude());
-					carPool.setSrcLattitude(pointList.get(0).getLattitude());
-					carPool.setSrcLongitude(pointList.get(0).getLongitude());
-				}
-
-				service.updatePool(carPool, pointList);
+				service.extendPool(carPool, Long.valueOf(endDateInMilis) / 1000,
+						excludeDays,  Boolean.valueOf(oddEven));
 			}
 
 		} catch (Exception e) {

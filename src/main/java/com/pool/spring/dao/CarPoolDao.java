@@ -587,7 +587,7 @@ public class CarPoolDao extends AbstractDao {
 			pool.setDestLongitude(points.get(points.size() - 1).getLongitude());
 			pool.setSrcLattitude(points.get(0).getLattitude());
 			pool.setSrcLongitude(points.get(0).getLongitude());
-			pool.setExptdEndTime(new Date().getTime() / 1000);
+			pool.setExptdEndTime(pool.getEndDate());
 			pool.setCreateDate(new Date().getTime() / 1000);
 			session.save(pool);
 			session.flush();
