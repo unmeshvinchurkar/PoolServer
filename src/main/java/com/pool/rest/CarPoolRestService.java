@@ -142,6 +142,46 @@ public class CarPoolRestService {
 	}
 
 	@GET
+	@Path("/getUserProfileStatus")
+	public Response getUserProfileStatus() {
+		_validateSession();
+		HttpSession session = request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		CarPoolService service = new CarPoolService();
+
+		boolean complete = true;
+		String status = "partial";
+
+		if (user.getAddress() == null || user.getBirthDate() == null
+				|| user.getCity() == null) {
+			complete = false;
+		} else if (user.getContactNo() == null || user.getCountry() == null
+				|| user.getEmail() == null) {
+			complete = false;
+		} else if (user.getFirstName() == null || user.getGender() == null
+				|| user.getLastName() == null) {
+			complete = false;
+		} else if (user.getPin() == null || user.getState() == null) {
+			complete = false;
+		}
+
+		if (!complete) {
+			status = "incomplete";
+		} else {
+
+			Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
+
+			if (user.getDrivingLicense() != null && vh != null) {
+				status = "complete";
+			}
+		}
+
+		return Response.status(Response.Status.OK).entity(status).build();
+	}
+	
+	
+
+	@GET
 	@Path("/getNotifications")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getNotifications() {
@@ -595,54 +635,54 @@ public class CarPoolRestService {
 		} catch (UnsupportedEncodingException e1) {
 		}
 
-		if (!captcha.isCorrect(answer)) {
-			
-			JSONObject jsonObj = new JSONObject();
-			try {
-				jsonObj.put("errorMessage", "Incorrect capcha");
-				jsonObj.put("fieldName", "answer");
-			} catch (JSONException e) {
-			}
-
-			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(jsonObj.toString()).build();
-		}
+//		if (!captcha.isCorrect(answer)) {
+//			
+//			JSONObject jsonObj = new JSONObject();
+//			try {
+//				jsonObj.put("errorMessage", "Incorrect capcha");
+//				jsonObj.put("fieldName", "answer");
+//			} catch (JSONException e) {
+//			}
+//
+//			return Response.status(Response.Status.NOT_ACCEPTABLE)
+//					.entity(jsonObj.toString()).build();
+//		}
 
 		try {
 			
 			username = username.trim();
-			lastName = lastName.trim();
-			email = email.trim();
+			//lastName = lastName.trim();
+		//	email = email.trim();
 			
 			EsapiUtils.verifyPasswordStrength(password, username);
 
 			username = Validator.validateEmail("username", username);
-			firstName = Validator.validateName("firstName", firstName);
-			lastName = Validator.validateName("lastName", lastName);
-			email = Validator.validateEmail("email", email);
+		//	firstName = Validator.validateName("firstName", firstName);
+		//	lastName = Validator.validateName("lastName", lastName);
+			email = Validator.validateEmail("email", username);
 //			streetAddress = Validator.validateString("streetAddress",
 //					streetAddress);
-			state = Validator.validateName("state", state);
-			city = Validator.validateName("city", city);
-			sex = Validator.validateGender("sex", sex);
+		//	//state = Validator.validateName("state", state);
+		//	city = Validator.validateName("city", city);
+		//	sex = Validator.validateGender("sex", sex);
 			answer = Validator.validateString("answer", answer);
-			pin = Validator.validatePin("pin", pin);
+		//	pin = Validator.validatePin("pin", pin);
 
 			User usr = new User();
 			usr.setUsername(username);
 			usr.setPasswd(password);
-			usr.setCity(city);
+//			usr.setCity(city);
 			usr.setEmail(email);
-			usr.setPin(Integer.valueOf(pin));
-			usr.setFirstName(firstName);
-			usr.setLastName(lastName);
-			usr.setState(state);
-			usr.setGender(sex);
-			usr.setAddress(streetAddress);
-			usr.setPasswd(password);
+//			usr.setPin(Integer.valueOf(pin));
+//			usr.setFirstName(firstName);
+//			usr.setLastName(lastName);
+//			usr.setState(state);
+//			usr.setGender(sex);
+//			usr.setAddress(streetAddress);
+//			usr.setPasswd(password);
 			usr.setBirthDate(Long.valueOf(birthDate) / 1000);
-			usr.setCountry(country);
-			usr.setContactNo(contactNo);
+//			usr.setCountry(country);
+//			usr.setContactNo(contactNo);
 			UserService service = new UserService();
 			service.createUser(usr);
 
