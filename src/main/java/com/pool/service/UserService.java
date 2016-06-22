@@ -20,9 +20,9 @@ public class UserService {
 
 		User user = usrDao.findUserByUserName(username);
 
-		if (user == null || !user.getPasswd().equals(password)) {
-			return null;
-		}
+//		if (user == null || !user.getPasswd().equals(password)) {
+//			return null;
+//		}
 		return user;
 	}
 

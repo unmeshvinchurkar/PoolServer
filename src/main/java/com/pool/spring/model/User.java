@@ -21,11 +21,20 @@ public class User implements java.io.Serializable {
 	private String gender;
 	private String drivingLicense;
 	private Long birthDate;
+	private String facebookId;
 	private String profileImagePath;
 	private Set<Carpool> carpools = new HashSet<Carpool>(0);
 	private Set<Vehicle> vehicles = new HashSet<Vehicle>(0);
 
 	public User() {
+	}
+
+	public String getFacebookId() {
+		return facebookId;
+	}
+
+	public void setFacebookId(String facebookId) {
+		this.facebookId = facebookId;
 	}
 
 	public String getProfileImagePath() {

@@ -1,12 +1,17 @@
 package com.pool.rest;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -178,8 +183,6 @@ public class CarPoolRestService {
 
 		return Response.status(Response.Status.OK).entity(status).build();
 	}
-	
-	
 
 	@GET
 	@Path("/getNotifications")
@@ -600,31 +603,31 @@ public class CarPoolRestService {
 
 	@FormParam("lastName") String lastName,
 
-	@FormParam("email") String email, 
-	
+	@FormParam("email") String email,
+
 	@FormParam("state") String state,
 
 	@FormParam("sex") String sex,
 
 	@FormParam("streetAddress") String streetAddress,
 
-	@FormParam("city") String city, 
-	
+	@FormParam("city") String city,
+
 	@FormParam("pin") String pin,
 
-	@FormParam("country") String country, 
-	
+	@FormParam("country") String country,
+
 	@FormParam("answer") String answer,
-	
-	@FormParam("contactNo") String contactNo, 
+
+	@FormParam("contactNo") String contactNo,
 
 	@FormParam("birthDate") String birthDate) {
 
 		Captcha captcha = (Captcha) request.getSession().getAttribute(
 				Captcha.NAME);
-		
+
 		JSONObject errorObj = new JSONObject();
-		
+
 		try {
 			errorObj.put("errorMessage", "Error while saving details");
 		} catch (JSONException e2) {
@@ -635,54 +638,54 @@ public class CarPoolRestService {
 		} catch (UnsupportedEncodingException e1) {
 		}
 
-//		if (!captcha.isCorrect(answer)) {
-//			
-//			JSONObject jsonObj = new JSONObject();
-//			try {
-//				jsonObj.put("errorMessage", "Incorrect capcha");
-//				jsonObj.put("fieldName", "answer");
-//			} catch (JSONException e) {
-//			}
-//
-//			return Response.status(Response.Status.NOT_ACCEPTABLE)
-//					.entity(jsonObj.toString()).build();
-//		}
+		// if (!captcha.isCorrect(answer)) {
+		//
+		// JSONObject jsonObj = new JSONObject();
+		// try {
+		// jsonObj.put("errorMessage", "Incorrect capcha");
+		// jsonObj.put("fieldName", "answer");
+		// } catch (JSONException e) {
+		// }
+		//
+		// return Response.status(Response.Status.NOT_ACCEPTABLE)
+		// .entity(jsonObj.toString()).build();
+		// }
 
 		try {
-			
+
 			username = username.trim();
-			//lastName = lastName.trim();
-		//	email = email.trim();
-			
+			// lastName = lastName.trim();
+			// email = email.trim();
+
 			EsapiUtils.verifyPasswordStrength(password, username);
 
 			username = Validator.validateEmail("username", username);
-		//	firstName = Validator.validateName("firstName", firstName);
-		//	lastName = Validator.validateName("lastName", lastName);
+			// firstName = Validator.validateName("firstName", firstName);
+			// lastName = Validator.validateName("lastName", lastName);
 			email = Validator.validateEmail("email", username);
-//			streetAddress = Validator.validateString("streetAddress",
-//					streetAddress);
-		//	//state = Validator.validateName("state", state);
-		//	city = Validator.validateName("city", city);
-		//	sex = Validator.validateGender("sex", sex);
+			// streetAddress = Validator.validateString("streetAddress",
+			// streetAddress);
+			// //state = Validator.validateName("state", state);
+			// city = Validator.validateName("city", city);
+			// sex = Validator.validateGender("sex", sex);
 			answer = Validator.validateString("answer", answer);
-		//	pin = Validator.validatePin("pin", pin);
+			// pin = Validator.validatePin("pin", pin);
 
 			User usr = new User();
 			usr.setUsername(username);
 			usr.setPasswd(password);
-//			usr.setCity(city);
+			// usr.setCity(city);
 			usr.setEmail(email);
-//			usr.setPin(Integer.valueOf(pin));
-//			usr.setFirstName(firstName);
-//			usr.setLastName(lastName);
-//			usr.setState(state);
-//			usr.setGender(sex);
-//			usr.setAddress(streetAddress);
-//			usr.setPasswd(password);
+			// usr.setPin(Integer.valueOf(pin));
+			// usr.setFirstName(firstName);
+			// usr.setLastName(lastName);
+			// usr.setState(state);
+			// usr.setGender(sex);
+			// usr.setAddress(streetAddress);
+			// usr.setPasswd(password);
 			usr.setBirthDate(Long.valueOf(birthDate) / 1000);
-//			usr.setCountry(country);
-//			usr.setContactNo(contactNo);
+			// usr.setCountry(country);
+			// usr.setContactNo(contactNo);
 			UserService service = new UserService();
 			service.createUser(usr);
 
@@ -709,26 +712,68 @@ public class CarPoolRestService {
 
 	@POST
 	@Path("/login")
-	public Response login(@FormParam("username") String username,
-			@FormParam("password") String password) {
+	public Response login(@FormParam("email") String email,
+			@FormParam("birthday") String birthday,
+			@FormParam("gender") String gender,
+			@FormParam("facebookId") String facebookId,
+			@FormParam("pictureUrl") String pictureUrl,
+		    @FormParam("name") String name) {
 
 		try {
+			System.out.println("********************* Login: " + email);
 
-			System.out.println("********************* Login: " + username);
-			System.out.println("********************* password: " + password);
-
-			username = Validator.validateEmail("username", username);
-
+			email = Validator.validateEmail("email", email);
 			UserService service = new UserService();
-			User usr = service.getUser(username, password);
-			if (usr != null) {
-				HttpSession session = request.getSession(true);
-				session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
-			} else {
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-		}
+			User usr = service.getUser(email, null);
 
+			if (usr == null) {
+				usr = new User();
+			}
+				
+				usr.setUsername(email);
+				usr.setPasswd("facebook");
+				usr.setEmail(email);
+				usr.setFacebookId(facebookId);
+				usr.setGender(gender.equalsIgnoreCase("male") ? "M" : "F");
+				String b[] = birthday.split("/");
+
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.MONTH, Integer.valueOf(b[0]) - 1);
+				cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(b[1]));
+				cal.set(Calendar.YEAR, Integer.valueOf(b[2]));
+				usr.setBirthDate(cal.getTimeInMillis() / 1000);
+				usr.setFirstName(name.substring(0, name.indexOf(" ")));
+				usr.setLastName(name.substring(name.indexOf(" ") + 1));
+				InputStream in = null;
+				try {
+					URL picUrl = new URL(pictureUrl);
+					URLConnection yc = picUrl.openConnection();
+
+					in = yc.getInputStream();
+					_saveImage(null, usr, in);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						in.close();
+					} catch (Exception e) {
+					}
+				}
+				
+				try {
+					if (usr == null) {
+						service.createUser(usr);
+					}
+					else{
+						new CarPoolService().saveOrUpdate(usr);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			HttpSession session = request.getSession(true);
+			session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
+		}
 		catch (FieldValidationException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
@@ -749,7 +794,7 @@ public class CarPoolRestService {
 	@Path("/logout")
 	public Response logout() {
 
-		_validateSession();
+		//_validateSession();
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 			session.invalidate();
@@ -902,7 +947,7 @@ public class CarPoolRestService {
 		User user = (User) session.getAttribute("USER");
 		CarPoolService service = new CarPoolService();
 
-		//String doExcludeWeekend = excludeDays;
+		// String doExcludeWeekend = excludeDays;
 		boolean isOddEven = (oddEven != null && oddEven.equals("true")) ? true
 				: false;
 
@@ -941,8 +986,9 @@ public class CarPoolRestService {
 			} else {
 				carPool = service.findPoolById(carPoolId);
 
-				service.extendPool(carPool, Long.valueOf(endDateInMilis) / 1000,
-						excludeDays,  Boolean.valueOf(oddEven));
+				service.extendPool(carPool,
+						Long.valueOf(endDateInMilis) / 1000, excludeDays,
+						Boolean.valueOf(oddEven));
 			}
 
 		} catch (Exception e) {
@@ -1104,17 +1150,16 @@ public class CarPoolRestService {
 								destPoint.getLattitude());
 						List<GeoPoint> allPoints = service
 								.fetchGeoPointsByPoolId(pool.getCarPoolId());
-						
-						
 
-						GeoPoint nearPoint = PoolUtils.findNearestPoint(destPoint.getLattitude().toString(),
-								destPoint.getLongitude().toString(), allPoints);
+						GeoPoint nearPoint = PoolUtils.findNearestPoint(
+								destPoint.getLattitude().toString(), destPoint
+										.getLongitude().toString(), allPoints);
 
 						GeoPoint startPoint = allPoints.get(0);
 						Collections.sort(allPoints, destComparator);
-						 GeoPoint dropPoint = allPoints.get(0);
-						
-						  dropPoint = nearPoint;
+						GeoPoint dropPoint = allPoints.get(0);
+
+						dropPoint = nearPoint;
 
 						pool.setGeoPoints(null);
 
@@ -1128,10 +1173,11 @@ public class CarPoolRestService {
 						poolJson.put("pickupLongitude", geoPoint.getLongitude());
 						poolJson.put("dropLattitude", dropPoint.getLatitude());
 						poolJson.put("dropLongitude", dropPoint.getLongitude());
-						poolJson.put("pickupDistance", ((float) (geoPoint
-								
+						poolJson.put("pickupDistance",
+								((float) (geoPoint
+
 								.getDistanceToReach() - startPoint
-								.getDistanceToReach())) / 1000.00);
+										.getDistanceToReach())) / 1000.00);
 						poolJson.put(
 								"tripCost",
 								((float) (dropPoint.getDistanceToReach() - geoPoint
@@ -1212,7 +1258,7 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).entity(array.toString())
 				.build();
 	}
-
+	
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -1223,14 +1269,26 @@ public class CarPoolRestService {
 		_validateSession();
 		HttpSession session = request.getSession(false);
 		User usr = (User) session.getAttribute("USER");
-
 		CarPoolService service = new CarPoolService();
 
-		String fileName = fileDetail.getFileName();
+		service.saveOrUpdate(usr);
+
+		String output = "File uploaded successfully";
+		JSONObject json = new JSONObject();
+		try {
+			json.put("msg", output);
+		} catch (JSONException e) {
+		}
+
+		return Response.status(200).entity(json.toString()).build();
+	}
+
+	private void _saveImage(String fileName, User usr,
+			InputStream uploadedInputStream) {
 		String fileType = ".jpg";
 		File profileImagePath = null;
 
-		if (fileName.indexOf(".") > 0) {
+		if (fileName != null && fileName.indexOf(".") > 0) {
 			fileType = fileName.substring(fileName.indexOf("."));
 		}
 
@@ -1254,18 +1312,6 @@ public class CarPoolRestService {
 		_writeToFile(uploadedInputStream, path + newFileName);
 
 		usr.setProfileImagePath(newFileName);
-
-		service.saveOrUpdate(usr);
-
-		String output = "File uploaded successfully";
-
-		JSONObject json = new JSONObject();
-		try {
-			json.put("msg", output);
-		} catch (JSONException e) {
-		}
-
-		return Response.status(200).entity(json.toString()).build();
 	}
 
 	// save uploaded file
