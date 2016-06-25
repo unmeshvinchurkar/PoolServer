@@ -1,6 +1,9 @@
 package com.pool.rest;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
@@ -30,6 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -744,12 +749,33 @@ public class CarPoolRestService {
 			usr.setBirthDate(cal.getTimeInMillis() / 1000);
 			usr.setFirstName(name.substring(0, name.indexOf(" ")));
 			usr.setLastName(name.substring(name.indexOf(" ") + 1));
+			/*
+			
 			InputStream in = null;
 			try {
 				URL picUrl = new URL(pictureUrl);
-				URLConnection yc = picUrl.openConnection();
+			//	URLConnection yc = picUrl.openConnection();yc.connect();
 
-				in = yc.getInputStream();
+				//in = yc.getInputStream();
+				
+				
+				byte[] imagedata = DatatypeConverter.parseBase64Binary(pictureUrl.substring(pictureUrl.indexOf(",") + 1));
+				in =new ByteArrayInputStream(imagedata);
+				
+				BufferedImage imm = ImageIO.read(picUrl);
+				
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				//use another encoding if JPG is innappropriate for you
+				ImageIO.write(imm, "jpg", baos );
+				
+				baos.flush();
+				byte[] immAsBytes = baos.toByteArray();
+				baos.close();
+				
+				in = new ByteArrayInputStream(immAsBytes);
+				
+				
+				 //in = new ByteArrayInputStream(pictureUrl.getBytes()); 
 				_saveImage(null, usr, in);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -758,7 +784,7 @@ public class CarPoolRestService {
 					in.close();
 				} catch (Exception e) {
 				}
-			}
+			}*/
 
 			try {
 				if (usr == null) {
