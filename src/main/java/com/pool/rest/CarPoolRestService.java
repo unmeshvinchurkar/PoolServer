@@ -557,11 +557,11 @@ public class CarPoolRestService {
 			@FormParam("city") String city, @FormParam("pin") String pin,
 			@FormParam("country") String country,
 			@FormParam("contactNo") String contactNo,
-			@FormParam("contactNo") String userId) {
+			@FormParam("userId") String userId) {
 
 		try {
-			streetAddress = Validator.validateString("streetAddress",
-					streetAddress);
+//			streetAddress = Validator.validateString("streetAddress",
+//					streetAddress);
 			state = Validator.validateName("state", state);
 			city = Validator.validateName("city", city);
 			pin = Validator.validatePin("pin", pin);
