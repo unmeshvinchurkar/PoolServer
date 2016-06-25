@@ -21,7 +21,10 @@
 
 		<property name="email" type="string">
 			<column name="email" not-null="true" />
-		</property>
+		</property>		
+		<property name="facebookId" type="string">
+			<column name="facebook_id" />
+		</property>		
 		<property name="firstName" type="string">
 			<column name="First_Name" />
 		</property>
