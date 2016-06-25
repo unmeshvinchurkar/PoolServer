@@ -556,7 +556,8 @@ public class CarPoolRestService {
 			@FormParam("streetAddress") String streetAddress,
 			@FormParam("city") String city, @FormParam("pin") String pin,
 			@FormParam("country") String country,
-			@FormParam("contactNo") String contactNo) {
+			@FormParam("contactNo") String contactNo,
+			@FormParam("contactNo") String userId) {
 
 		try {
 			streetAddress = Validator.validateString("streetAddress",
@@ -567,18 +568,20 @@ public class CarPoolRestService {
 			Long.parseLong(contactNo);
 
 			_validateSession();
+			
 			HttpSession session = request.getSession(false);
-
 			CarPoolService service = new CarPoolService();
 			User usr = (User) session.getAttribute("USER");
 
-			usr.setCity(city);
-			usr.setPin(Integer.valueOf(pin));
-			usr.setState(state);
-			usr.setAddress(streetAddress);
-			usr.setCountry(country);
-			usr.setContactNo(contactNo);
-			service.saveOrUpdate(usr);
+			if (userId != null && userId.equals(usr.getUserId().toString())) {
+				usr.setCity(city);
+				usr.setPin(Integer.valueOf(pin));
+				usr.setState(state);
+				usr.setAddress(streetAddress);
+				usr.setCountry(country);
+				usr.setContactNo(contactNo);
+				service.saveOrUpdate(usr);
+			}
 
 		} catch (FieldValidationException e) {
 			e.printStackTrace();
