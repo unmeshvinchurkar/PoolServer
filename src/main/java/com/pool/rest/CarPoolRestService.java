@@ -717,7 +717,7 @@ public class CarPoolRestService {
 			@FormParam("gender") String gender,
 			@FormParam("facebookId") String facebookId,
 			@FormParam("pictureUrl") String pictureUrl,
-		    @FormParam("name") String name) {
+			@FormParam("name") String name) {
 
 		try {
 			System.out.println("********************* Login: " + email);
@@ -729,52 +729,50 @@ public class CarPoolRestService {
 			if (usr == null) {
 				usr = new User();
 			}
-				
-				usr.setUsername(email);
-				usr.setPasswd("facebook");
-				usr.setEmail(email);
-				usr.setFacebookId(facebookId);
-				usr.setGender(gender.equalsIgnoreCase("male") ? "M" : "F");
-				String b[] = birthday.split("/");
 
-				Calendar cal = Calendar.getInstance();
-				cal.set(Calendar.MONTH, Integer.valueOf(b[0]) - 1);
-				cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(b[1]));
-				cal.set(Calendar.YEAR, Integer.valueOf(b[2]));
-				usr.setBirthDate(cal.getTimeInMillis() / 1000);
-				usr.setFirstName(name.substring(0, name.indexOf(" ")));
-				usr.setLastName(name.substring(name.indexOf(" ") + 1));
-				InputStream in = null;
-				try {
-					URL picUrl = new URL(pictureUrl);
-					URLConnection yc = picUrl.openConnection();
+			usr.setUsername(email);
+			usr.setPasswd("facebook");
+			usr.setEmail(email);
+			usr.setFacebookId(facebookId);
+			usr.setGender(gender.equalsIgnoreCase("male") ? "M" : "F");
+			String b[] = birthday.split("/");
 
-					in = yc.getInputStream();
-					_saveImage(null, usr, in);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						in.close();
-					} catch (Exception e) {
-					}
-				}
-				
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.MONTH, Integer.valueOf(b[0]) - 1);
+			cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(b[1]));
+			cal.set(Calendar.YEAR, Integer.valueOf(b[2]));
+			usr.setBirthDate(cal.getTimeInMillis() / 1000);
+			usr.setFirstName(name.substring(0, name.indexOf(" ")));
+			usr.setLastName(name.substring(name.indexOf(" ") + 1));
+			InputStream in = null;
+			try {
+				URL picUrl = new URL(pictureUrl);
+				URLConnection yc = picUrl.openConnection();
+
+				in = yc.getInputStream();
+				_saveImage(null, usr, in);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
 				try {
-					if (usr == null) {
-						service.createUser(usr);
-					}
-					else{
-						new CarPoolService().saveOrUpdate(usr);
-					}
+					in.close();
 				} catch (Exception e) {
-					e.printStackTrace();
 				}
-			
+			}
+
+			try {
+				if (usr == null) {
+					service.createUser(usr);
+				} else {
+					new CarPoolService().saveOrUpdate(usr);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			HttpSession session = request.getSession(true);
 			session.setAttribute(PoolConstants.USER_SESSION_ATTR, usr);
-		}
-		catch (FieldValidationException e) {
+		} catch (FieldValidationException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity(e.getMessage()).build();
@@ -794,7 +792,7 @@ public class CarPoolRestService {
 	@Path("/logout")
 	public Response logout() {
 
-		//_validateSession();
+		// _validateSession();
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 			session.invalidate();
@@ -1258,7 +1256,7 @@ public class CarPoolRestService {
 		return Response.status(Response.Status.OK).entity(array.toString())
 				.build();
 	}
-	
+
 	@POST
 	@Path("/upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -1334,6 +1332,20 @@ public class CarPoolRestService {
 			} catch (IOException e) {
 			}
 		}
+	}
+
+	@GET
+	@Path("/isLoggedIn")
+	public Response isLoggedIn() {
+
+		HttpSession session = request.getSession(false);
+		Boolean loggedIn = false;
+
+		if (session != null) {
+			loggedIn = true;
+
+		}
+		return Response.status(Response.Status.OK).entity(loggedIn?"true":"false").build();
 	}
 
 	private void _validateSession() {
