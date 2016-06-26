@@ -1004,6 +1004,7 @@ public class CarPoolRestService {
 				carPool.setNoOfAvblSeats(Integer.valueOf(totalSeats));
 				carPool.setNoOfRemainingSeats(Integer.valueOf(totalSeats));
 				carPool.setBucksPerKm(Integer.valueOf(bucksPerKm));
+				carPool.setExcludedDays(excludeDays);
 
 				carPool = service.createCarPool(carPool, pointList,
 						excludeDays, isOddEven);

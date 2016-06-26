@@ -415,7 +415,7 @@ public class CarPoolService {
 			String excludedDaysStr) {
 
 		long noOfSecsInDay = 24 * 60 * 60;
-
+		pool.setExcludedDays(excludedDaysStr);
 		Set<PoolCalendarDay> calendarDays = new HashSet<PoolCalendarDay>();
 		for (long day = startDate; day <= endDate; day = day + noOfSecsInDay) {
 
@@ -470,7 +470,7 @@ public class CarPoolService {
 		}
 
 		pool.setCalendarDays(calendarDays);
-		pool.setExcludedDays(excludedDaysStr);
+		
 	}
 
 	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,
