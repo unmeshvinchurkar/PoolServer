@@ -1,0 +1,16 @@
+<div>
+
+	<div class="container">
+		<div id="msg_div" class=" alert alert-danger" style="display:none">
+		</div>
+		<br />
+	</div>
+	<div>
+		<div>
+			<table id="poolTable" data-role="datatable" class="display">
+			</table>
+		</div>
+
+		<br />
+	</div>
+</div>

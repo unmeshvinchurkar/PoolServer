@@ -1,0 +1,97 @@
+<div>
+	<a id="editDetails" href="javascript:void(0);">Edit Details</a>
+
+	<div class="container" style="width:60%;">
+
+		<div id="msg_div" class="alert alert-success" style="display:none">Successfully
+			saved vehicle details !!
+		</div>
+
+		<form class="form-horizontal" role="form" action='' id="vehicleForm"
+			name="vehicleForm" method="POST">
+
+			<div class="form-group">
+				<label class="control-label" for="manufacturer">Manufacturer
+				</label>
+				<select readonly="true" class="form-control" id="manufacturer"
+					name="manufacturer">
+					<option value="Select" selected="selected">Select</option>
+					<option value="Chevrolet">Chevrolet</option>
+					<option value="Fiat">Fiat</option>
+					<option value="Force">Force</option>
+					<option value="Ford">Ford</option>
+					<option value="Honda">Honda</option>
+					<option value="Hyundai">Hyundai</option>
+					<option value="Mahindra">Mahindra</option>
+					<option value="Maruti">Maruti</option>
+					<option value="Mitsubishi">Mitsubishi</option>
+					<option value="Nissan">Nissan</option>
+					<option value="Premier">Premier</option>
+					<option value="Renault">Renault</option>
+					<option value="Reva">Reva</option>
+					<option value="Skoda">Skoda</option>
+					<option value="Tata">Tata</option>
+					<option value="Toyota">Toyota</option>
+					<option value="Volkswagen">Volkswagen</option>
+					<option value="Volvo">Volvo</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label" for="modelname">Model Name
+				</label>
+
+				<input readonly="true" type="text" id="modelname" name="modelname"
+					placeholder="" class="form-control" />
+			</div>
+
+
+			<div class="form-group">
+				<label class="control-label" for="fueltype">Fuel Type</label>
+				<select readonly="true" class="form-control" id="fueltype"
+					name="fueltype">
+					<option value="PETROL">PETROL</option>
+					<option value="DIESEL">DIESEL</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label" for="color">Color</label>
+
+				<select readonly="true" type="text" id="color" name="color"
+					placeholder="" class="form-control">
+					<option value="Red">Red</option>Option>
+					<option value="White">White</option>Option>
+					<option value="Black">Black</option>Option>
+					<option value="Blue">Blue</option>Option>
+					<option value="Golden">Golden</option>Option>
+					<option value="Silver">Silver</option>Option>
+					<option value="Grey">Grey</option>Option>
+					<option value="Yellow">Yellow</option>Option>
+					<option value="Brown">Brown</option>Option>
+					<option value="Purple">Purple</option>Option>
+					<option value="Green">Green</option>Option>
+					<option value="Other">Other</option>Option>
+				</select>
+					
+				<p class="help-block"></p>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label" for="registrationNumber">Registration Number</label>
+
+				<input readonly="true" type="text" id="registrationNumber"
+					name="registrationNumber" placeholder="" class="form-control" />
+				<p class="help-block"></p>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label" for="drivingLicense">Driving License</label>
+
+				<input readonly="true" type="text" id="drivingLicense" name="drivingLicense"
+					placeholder="" class="form-control" />
+				<p class="help-block"></p>
+			</div>
+		</form>
+	</div>
+</div>

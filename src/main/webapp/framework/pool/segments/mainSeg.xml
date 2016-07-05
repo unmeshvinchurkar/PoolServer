@@ -1,0 +1,41 @@
+<div style="height:100%;position:relative;">
+	<div class="toolbar" style="text-align:right">
+		<a id="logOut" style="margin-right:20px;" href="#logOut">Logout</a>
+	</div>
+
+	<div class="mainTabs" style="height:100%">
+		<div class="tabs" style="height:100%">
+			<ul class="tab-links">
+				<li>
+					<a id="myProfile" href="#myProfile">My Profile</a>
+				</li>
+				<li class="active">
+					<a id="myPools" href="#myPools">My Pools</a>
+				</li>
+				<li>
+					<a id="createPool" href="#createPool">Create Pool</a>
+				</li>
+				<li>
+					<a id="searchPool" href="#searchPool">Search Pool</a>
+				</li>
+				<li>
+					<a id="manageVehicles" href="#manageVehicles">Register Vehicle</a>
+				</li>
+				<li>
+					<a id="poolCalendar" href="#poolCalendar">Pool Calendar</a>
+				</li>
+				<li>
+					<a id="myRequests" href="#myRequests">My Requests</a>
+				</li>
+				<li>
+					<a id="notifications" href="#notifications">Notifications</a>
+				</li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="rightContent" class="tab active">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

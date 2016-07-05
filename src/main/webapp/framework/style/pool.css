@@ -1,0 +1,71 @@
+#profileImg {
+	height: 240px;
+	width: 300px;
+	cursor: pointer;
+}
+
+.profile-image {
+	height: 177px;
+	width: 199px;
+	cursor: pointer;
+}
+
+.profile-image-loading {
+	height: 30px !important;
+	width: 20px !important;
+	cursor: pointer;
+	margin-top: 101px;
+}
+
+.hidden {
+	display: none;
+}
+
+#profile .active {
+	display: block;
+	position: absolute;
+	top: -100px;
+	visibility: hidden;
+	
+}
+
+/* Display browse button on hover*/
+#profile a {
+	display: table;
+	width: 300px;
+	height: 240px;
+	vertical-align: middle;
+	text-align: center;
+	position: relative;
+}
+
+#profile span {
+	display: none;
+}
+
+#profile a:hover span {
+	width: 300px;
+	height: 240px;
+	line-height: 240px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	display: block;
+	text-align: center;
+	background: rgba(67, 81, 96, 0.7);
+}
+
+#profile span b {
+	font-size: 1.5em;
+	font-weight: normal;
+	padding: 8px 12px;
+	border-radius: 5px;
+	background: #6bbe70;
+	color: #fff;
+	font-family: sans-serif;
+}
+
+
+/*
+img {background: #e7e7e7; border: none; vertical-align: bottom;}
+*/

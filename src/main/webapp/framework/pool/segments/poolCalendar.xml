@@ -1,0 +1,11 @@
+<div style="position:relative">
+	<div>
+		<div>
+			<div>
+				<table id="poolTable" data-role="datatable" class="display">
+				</table>
+			</div>
+			<br />
+		</div>
+	</div>
+</div>

@@ -1,0 +1,147 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <meta charset="utf-8"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>Car Pool</title>
+
+<!--
+<link  rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" />
+-->
+
+<!--
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+-->
+
+<!--
+<link rel="stylesheet" href="vendorlib/jquery/jquery-ui.css" />
+-->
+
+  
+<!--
+<script type="text/javascript" src="vendorlib/jquery/jquery-ui.js"></script>
+-->
+
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+
+<link rel="stylesheet" type="text/css" 	href="vendorlib/jquery/jquery.dataTables.css" />
+
+<link rel="stylesheet" type="text/css" 	href="vendorlib/jquery/dataTables.jqueryui.css" />
+
+<script type="text/javascript" src="vendorlib/jquery/jquery-1.11.3.js"></script>
+
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="vendorlib/bootstrap/bootstrap.css"/>
+<link rel="stylesheet" href="vendorlib/bootstrap/bootstrap-theme.css" />
+<script type="text/javascript" src="vendorlib/bootstrap/bootstrap.js"></script>
+<script type="text/javascript" src="vendorlib/bootstrap/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="vendorlib/bootstrap/bootstrap-multiselect.css" type="text/css"/>
+
+
+<script type="text/javascript" src="vendorlib/validate/validate.js"></script>
+
+<script type="text/javascript" src="vendorlib/jquery/jquery.dataTables.js"></script>
+
+<link rel="stylesheet" href="vendorlib/jquery/jquery.timepicker.css">
+
+<script type="text/javascript" 	src="vendorlib/jquery/jquery.timepicker.js"></script>
+
+
+<link rel="stylesheet" href="vendorlib/fullcalendar/fullcalendar.css"/>
+<script type="text/javascript"
+	src="vendorlib/fullcalendar/moment.min.js"></script>
+<script type="text/javascript"
+	src="vendorlib/fullcalendar/fullcalendar.js"></script>
+<script type="text/javascript" src="vendorlib/fullcalendar/lang-all.js"></script>
+
+
+
+
+
+<link rel="stylesheet" href="framework/style/pool.css"/>
+
+<link rel="stylesheet" type="text/css"
+	href="framework/pool/poolScreens/style/createPoolStyle.css" />
+<link rel="stylesheet" type="text/css"
+	href="framework/pool/poolScreens/style/map.css" />
+
+<link rel="stylesheet" type="text/css"
+	href="framework/pool/poolScreens/style/login.css" />
+
+<script type="text/javascript" src="framework/pool/PROJECT.js"></script>
+<script type="text/javascript" src="framework/pool/PoolConstants.js"></script>
+<script type="text/javascript" src="framework/pool/util/Lang.js"></script>
+<script type="text/javascript" src="framework/pool/util/PoolUtil.js"></script>
+
+<!-- 
+<script type="text/javascript" src="framework/pool/util/Browser.js"></script>
+-->
+<script type="text/javascript" src="framework/pool/util/Hashtable.js"></script>
+<script type="text/javascript"
+	src="framework/pool/util/SegmentLoader.js"></script>
+
+<script type="text/javascript"
+	src="framework/pool/poolScreens/AbstractScreen.js"></script>
+
+<script type="text/javascript"
+	src="framework/pool/poolScreens/CreateUpdatePoolScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/SearchPoolScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/SearchPoolResultScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/LoginScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/MyRequestsScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/MyNotificationsScreen.js"></script>
+
+<script type="text/javascript"
+	src="framework/pool/poolScreens/MyPoolScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/MainScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/UserRegistrationScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/ManageVehiclesScreen.js"></script>
+<script type="text/javascript"
+	src="framework/pool/poolScreens/PoolCalendarScreen.js"></script>
+	<script type="text/javascript"
+	src="framework/pool/poolScreens/UserProfileScreen.js"></script>
+	<script type="text/javascript"
+	src="framework/pool/poolScreens/ChangePasswordScreen.js"></script>
+<script type="text/javascript" src="framework/pool/ScreenNavigator.js"></script>
+
+<!--
+<script
+	src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+	
+	-->
+	
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDM9TTxSkYXKz6F1XtOod-Nr8Q_wlRaNs4&libraries=places"></script>
+
+
+<script type="text/javascript">
+	$(document).ready(initialize);
+
+	function initialize() {
+
+		var login = new PROJECT.pool.poolScreens.LoginScreen();
+		login.render();
+	}
+</script>
+</head>
+
+<body id="poolBody">
+	<div id="headerDiv"></div>
+	<div id="containerDiv" style="height: 100%"></div>
+</body>
+</html>
