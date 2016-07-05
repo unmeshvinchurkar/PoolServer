@@ -29,8 +29,7 @@
 	<servlet>
 		<servlet-name>SimpleCaptcha</servlet-name>
 		<servlet-class>nl.captcha.servlet.SimpleCaptchaServlet</servlet-class>
-		<!-- The width and height params are optional; if unspecified they default 
-			to 200 and 50 respectively. -->
+		
 		<init-param>
 			<param-name>width</param-name>
 			<param-value>200</param-value>
