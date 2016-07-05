@@ -14,8 +14,7 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" >
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
@@ -34,7 +33,7 @@
 				<value>Vehicle.hbm.xml</value>
 				<value>PoolSubscription.hbm.xml</value>
 				<value>PoolCalendarDay.hbm.xml</value>
-				<value>UserCalendarDay.hbm.xml</value>				
+				<value>UserCalendarDay.hbm.xml</value>
 				<value>Request.hbm.xml</value>
 				<value>RequestType.hbm.xml</value>
 				<value>Notification.hbm.xml</value>
@@ -43,8 +42,7 @@
 		</property>
 
 		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.connection.url">${hibernate.connection.url}</prop>
+			<props>				
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${hibernate.show_sql:false}</prop>
 				<prop key="hibernate.format_sql">${hibernate.format_sql:false}</prop>

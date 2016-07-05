@@ -9,36 +9,51 @@
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
-		<!-- <dependency> <groupId>ldapjdk</groupId> <artifactId>ldapjdk</artifactId> 
-			<scope>system</scope> <version>1.0</version> <systemPath>${basedir}\lib\ldapjdk.jar</systemPath> 
-			</dependency> <repositories> <repository> <id>my-local-repo</id> <url>file://${basedir}/my-repo</url> 
-			</repository> </repositories> -->
-
-		<dependency>
-			<groupId>com.carpool.code</groupId>
-			<artifactId>simplecaptcha</artifactId>
-			<version>1.2.1</version>
-		</dependency>
-
-		<!-- <dependency> <groupId>com.octo.captcha</groupId> <artifactId>jcaptcha</artifactId> 
+				<!-- <dependency> <groupId>com.octo.captcha</groupId> <artifactId>jcaptcha</artifactId> 
 			<version>1.0</version> </dependency> -->
 
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.7.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.39</version>
+		</dependency>
+		<!-- Parent POM defines ${appengine.sdk.version} (updates frequently). -->
+		
+
+		<!-- <dependency> <groupId>com.github.jsimone</groupId> <artifactId>webapp-runner</artifactId> 
+			<version>7.0.22</version> <scope>provided</scope> </dependency> <dependency> 
+			<groupId>org.postgresql</groupId> <artifactId>postgresql</artifactId> <version>9.4.1208</version> 
+			</dependency> -->
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-json</artifactId>
-			<version>1.9</version>
+			<version>1.5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-bundle</artifactId>
-			<version>1.9</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.9</version>
+			<version>1.5</version>
 		</dependency>
 
 		<dependency>
@@ -60,24 +75,20 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>1.9</version>
+			<version>1.5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-multipart</artifactId>
-			<version>1.9</version>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.39</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -116,6 +127,45 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
+					<warName>${project.artifactId}</warName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>webapp-runner</includeArtifactIds>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
+				<version>2.3</version> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>copy</goal> </goals> <configuration> <artifactItems> <artifactItem> 
+				<groupId>com.github.jsimone</groupId> <artifactId>webapp-runner</artifactId> 
+				<version>8.0.30.2</version> <destFileName>webapp-runner.jar</destFileName> 
+				</artifactItem> </artifactItems> </configuration> </execution> </executions> 
+				</plugin> -->
+
+			<!-- <plugin> <groupId>com.heroku.sdk</groupId> <artifactId>heroku-maven-plugin</artifactId> 
+				<version>1.0.3</version> <configuration> <appName>ecocarpools</appName> </configuration> 
+				</plugin> -->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
@@ -129,13 +179,12 @@
 				<executions>
 					<execution>
 						<id>copy-resources</id>
-						<!-- here the phase you need -->
-						<phase>validate</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>C:\apache\apache-tomcat-8.0.23\webapps\PoolServer</outputDirectory>
+							<outputDirectory>C:\apache\apache-tomcat-7.0.62\webapps\PoolServer</outputDirectory>
 							<resources>
 								<resource>
 									<directory>./target/PoolServer-1.0</directory>

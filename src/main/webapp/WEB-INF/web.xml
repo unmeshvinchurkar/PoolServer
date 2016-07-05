@@ -25,7 +25,7 @@
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
-
+<!--
 	<servlet>
 		<servlet-name>SimpleCaptcha</servlet-name>
 		<servlet-class>nl.captcha.servlet.SimpleCaptchaServlet</servlet-class>
@@ -46,5 +46,10 @@
 		<servlet-name>SimpleCaptcha</servlet-name>
 		<url-pattern>/simpleImg</url-pattern>
 	</servlet-mapping>
+-->
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
 
 </web-app>

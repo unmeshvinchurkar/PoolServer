@@ -41,7 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.esapi.errors.AuthenticationCredentialsException;
 
-import nl.captcha.Captcha;
+//import nl.captcha.Captcha;
 
 import com.pool.DistanceComparator;
 import com.pool.Point;
@@ -631,8 +631,8 @@ public class CarPoolRestService {
 
 	@FormParam("birthDate") String birthDate) {
 
-		Captcha captcha = (Captcha) request.getSession().getAttribute(
-				Captcha.NAME);
+//		Captcha captcha = (Captcha) request.getSession().getAttribute(
+//				Captcha.NAME);
 
 		JSONObject errorObj = new JSONObject();
 
