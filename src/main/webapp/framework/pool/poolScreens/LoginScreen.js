@@ -60,7 +60,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 							console
 									.log('User cancelled login or did not fully authorize.');
 						}
-					});
+					},  {scope:'email'});
 		}		
 
 		function _fetchUserDetails(aToken) {
@@ -155,6 +155,11 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			params["gender"] = response.gender;
 			params["facebookId"] = response.id;
 			params["name"] = response.name;
+			
+			params["pictureUrl"] = "un";
+			
+			objRef.fireCommand(PoolConstants.LOGIN_COMMAND, [ params,
+			                          						_login, _loginFailed ]);
 
 			var img = new Image();
 			img.setAttribute('crossOrigin', 'anonymous');
@@ -170,9 +175,9 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var dataURL = canvas.toDataURL("image/png");
 
 				params["pictureUrl"] = dataURL;
-
-				objRef.fireCommand(PoolConstants.LOGIN_COMMAND, [ params,
-						_login, _loginFailed ]);
+//
+//				objRef.fireCommand(PoolConstants.LOGIN_COMMAND, [ params,
+//						_login, _loginFailed ]);
 				// alert(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
 			};
 

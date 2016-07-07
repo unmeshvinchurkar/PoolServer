@@ -28,6 +28,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		var _validator = null;
 		var _readOnly = readOnly;
 		var _userId =  null;
+		var _birthDay = null;
 
 		/* Public Properties */
 		objRef.render = render;
@@ -67,6 +68,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var date = new Date(1970, 0, 1);
 				date.setSeconds(data["birthDate"]);
 				$("#birthDay").val(PoolUtil.convertDateToString(date));
+				_birthDay = data["birthDate"];
 			}
 
 			$("#pin").val(data["pin"]);
@@ -136,6 +138,17 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 					}
 				});
 
+				if (!_birthDay) {
+					$("#birthDay").removeAttr("readonly");
+					$("#birthDay").datepicker({
+						showOtherMonths : true,
+						selectOtherMonths : true,
+						changeYear : true,
+						defaultDate : new Date(),
+						yearRange : "1920:2016"
+					});
+				}
+
 				$("#editDetails").html("Cancel Edit");
 
 				$("#userDetailsForm").append(
@@ -152,6 +165,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				$(":file").on('change', _onFilechange);
 
 			} else {
+				$("#birthDay").attr("readonly", true);
 				editedFields.attr("readonly", true);
 				$("#editDetails").html("Edit Details");
 				$("#save").remove();
@@ -233,6 +247,13 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			params["state"] = $("#state").val();
 			params["country"] = $("#country").val();
 			params["userId"] = _userId;
+			
+			if (!_birthDay) {
+				var birthDay = $("#birthDay").datepicker("getDate");
+				if (birthDay) {
+					params["birthDate"] = birthDay.getTime();
+				}
+			}
 
 			objRef.fireCommand(PoolConstants.EDIT_USER_COMMAND, [ params,
 					_saveSuccess, _saveError ]);

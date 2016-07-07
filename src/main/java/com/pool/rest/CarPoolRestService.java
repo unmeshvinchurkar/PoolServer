@@ -557,18 +557,19 @@ public class CarPoolRestService {
 			@FormParam("city") String city, @FormParam("pin") String pin,
 			@FormParam("country") String country,
 			@FormParam("contactNo") String contactNo,
-			@FormParam("userId") String userId) {
+			@FormParam("userId") String userId,
+			@FormParam("birthDate") String birthDate) {
 
 		try {
-//			streetAddress = Validator.validateString("streetAddress",
-//					streetAddress);
+			// streetAddress = Validator.validateString("streetAddress",
+			// streetAddress);
 			state = Validator.validateName("state", state);
 			city = Validator.validateName("city", city);
 			pin = Validator.validatePin("pin", pin);
 			Long.parseLong(contactNo);
 
 			_validateSession();
-			
+
 			HttpSession session = request.getSession(false);
 			CarPoolService service = new CarPoolService();
 			User usr = (User) session.getAttribute("USER");
@@ -580,6 +581,9 @@ public class CarPoolRestService {
 				usr.setAddress(streetAddress);
 				usr.setCountry(country);
 				usr.setContactNo(contactNo);
+				if (birthDate != null && usr.getBirthDate() != null) {
+					usr.setBirthDate(Long.valueOf(birthDate) / 1000);
+				}
 				service.saveOrUpdate(usr);
 			}
 
@@ -631,8 +635,8 @@ public class CarPoolRestService {
 
 	@FormParam("birthDate") String birthDate) {
 
-//		Captcha captcha = (Captcha) request.getSession().getAttribute(
-//				Captcha.NAME);
+		// Captcha captcha = (Captcha) request.getSession().getAttribute(
+		// Captcha.NAME);
 
 		JSONObject errorObj = new JSONObject();
 
@@ -743,51 +747,52 @@ public class CarPoolRestService {
 			usr.setEmail(email);
 			usr.setFacebookId(facebookId);
 			usr.setGender(gender.equalsIgnoreCase("male") ? "M" : "F");
-			String b[] = birthday.split("/");
+			
+			String b[] = null;
+			if (birthday != null && !birthday.equalsIgnoreCase("undefined")) {
+				b = birthday.split("/");
+			}
 
-			Calendar cal = Calendar.getInstance();
-			cal.set(Calendar.MONTH, Integer.valueOf(b[0]) - 1);
-			cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(b[1]));
-			cal.set(Calendar.YEAR, Integer.valueOf(b[2]));
-			usr.setBirthDate(cal.getTimeInMillis() / 1000);
+			if (b != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.MONTH, Integer.valueOf(b[0]) - 1);
+				cal.set(Calendar.DAY_OF_MONTH, Integer.valueOf(b[1]));
+				cal.set(Calendar.YEAR, Integer.valueOf(b[2]));
+				usr.setBirthDate(cal.getTimeInMillis() / 1000);
+			}		
+			
 			usr.setFirstName(name.substring(0, name.indexOf(" ")));
 			usr.setLastName(name.substring(name.indexOf(" ") + 1));
 			/*
-			
-			InputStream in = null;
-			try {
-				URL picUrl = new URL(pictureUrl);
-			//	URLConnection yc = picUrl.openConnection();yc.connect();
-
-				//in = yc.getInputStream();
-				
-				
-				byte[] imagedata = DatatypeConverter.parseBase64Binary(pictureUrl.substring(pictureUrl.indexOf(",") + 1));
-				in =new ByteArrayInputStream(imagedata);
-				
-				BufferedImage imm = ImageIO.read(picUrl);
-				
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				//use another encoding if JPG is innappropriate for you
-				ImageIO.write(imm, "jpg", baos );
-				
-				baos.flush();
-				byte[] immAsBytes = baos.toByteArray();
-				baos.close();
-				
-				in = new ByteArrayInputStream(immAsBytes);
-				
-				
-				 //in = new ByteArrayInputStream(pictureUrl.getBytes()); 
-				_saveImage(null, usr, in);
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					in.close();
-				} catch (Exception e) {
-				}
-			}*/
+			 * 
+			 * InputStream in = null; try { URL picUrl = new URL(pictureUrl); //
+			 * URLConnection yc = picUrl.openConnection();yc.connect();
+			 * 
+			 * //in = yc.getInputStream();
+			 * 
+			 * 
+			 * byte[] imagedata =
+			 * DatatypeConverter.parseBase64Binary(pictureUrl.
+			 * substring(pictureUrl.indexOf(",") + 1)); in =new
+			 * ByteArrayInputStream(imagedata);
+			 * 
+			 * BufferedImage imm = ImageIO.read(picUrl);
+			 * 
+			 * ByteArrayOutputStream baos = new ByteArrayOutputStream(); //use
+			 * another encoding if JPG is innappropriate for you
+			 * ImageIO.write(imm, "jpg", baos );
+			 * 
+			 * baos.flush(); byte[] immAsBytes = baos.toByteArray();
+			 * baos.close();
+			 * 
+			 * in = new ByteArrayInputStream(immAsBytes);
+			 * 
+			 * 
+			 * //in = new ByteArrayInputStream(pictureUrl.getBytes());
+			 * _saveImage(null, usr, in); } catch (Exception e) {
+			 * e.printStackTrace(); } finally { try { in.close(); } catch
+			 * (Exception e) { } }
+			 */
 
 			try {
 				if (usr == null) {
@@ -820,11 +825,15 @@ public class CarPoolRestService {
 	@POST
 	@Path("/logout")
 	public Response logout() {
-
-		// _validateSession();
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			session.invalidate();
+		try {
+			// _validateSession();
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.invalidate();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return Response.status(Response.Status.OK).build();
 	}
@@ -1368,14 +1377,18 @@ public class CarPoolRestService {
 	@Path("/isLoggedIn")
 	public Response isLoggedIn() {
 
-		HttpSession session = request.getSession(false);
 		Boolean loggedIn = false;
+		try {
+			HttpSession session = request.getSession(false);
 
-		if (session != null) {
-			loggedIn = true;
+			if (session != null) {
+				loggedIn = true;
 
+			}
+		} catch (Exception e) {
 		}
-		return Response.status(Response.Status.OK).entity(loggedIn?"true":"false").build();
+		return Response.status(Response.Status.OK)
+				.entity(loggedIn ? "true" : "false").build();
 	}
 
 	private void _validateSession() {
