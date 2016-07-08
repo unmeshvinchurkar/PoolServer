@@ -112,7 +112,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			$.ajax({
 				type : "POST",
 				url : _URL_PREFIX + commandName,
-				async : false,
+				async : true,
 				data : formData,
 				success : successFun,
 				error : errorFun,
