@@ -277,24 +277,30 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (_isReadOnly) {
 				_makeReadOnly();
 			}
+			
+			_getLocation();
 
-			if (!_isReadOnly) {
-				_getLocation();
-			} else {
-				var pos = {};
-				pos.coords = {};
-				pos.coords.latitude = 20.5937;
-				pos.coords.longitude = 78.9629;
-				_showPosition(pos);
-			}
+//			if (!_isReadOnly) {
+//				_getLocation();
+//			} else {
+//				var pos = {};
+//				pos.coords = {};
+//				pos.coords.latitude = 20.5937;
+//				pos.coords.longitude = 78.9629;
+//				_showPosition(pos);
+//			}
 		}
 
 		function _getLocation() {
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(_showPosition);
-			} else {
-				//"Geolocation is not supported by this browser.";
-			}
+			$.getJSON('https://geoip-db.com/json/geoip.php?jsonp=?').done(
+					function(location) {
+
+						_map.setCenter({
+							lat : location.latitude,
+							lng : location.longitude
+						});
+						_map.setZoom(7);
+					});
 		}
 
 		function _showPosition(position) {

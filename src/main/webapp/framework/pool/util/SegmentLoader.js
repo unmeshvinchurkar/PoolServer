@@ -65,14 +65,14 @@ PROJECT.namespace("PROJECT.pool.util");
 			} else {
 				_callback(_segmentData);
 				_segmentData = null;
-				_callback = null;
+				//_callback = null;
 			}			
 		}
 
 		function _loadSegment(responseData, status) {
 			_callback(responseData);
 			_getSegmentCache()[location] = responseData;
-			_callback = null;
+			//_callback = null;
 		}
 
 		function _getSegmentCache() {
