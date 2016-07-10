@@ -66,9 +66,7 @@ PROJECT.namespace("PROJECT.pool.util");
 				_callback(_segmentData);
 				_segmentData = null;
 				_callback = null;
-			}
-
-			
+			}			
 		}
 
 		function _loadSegment(responseData, status) {

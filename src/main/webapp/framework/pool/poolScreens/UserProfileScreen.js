@@ -119,7 +119,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				},
 				{
 					name : 'drivingLicenseNo',
-					rules : 'required|max_length[20]'
+					rules : 'alpha|max_length[20]'
 				}], function(errors, event) {
 
 					$("small[id$='_error']").remove();

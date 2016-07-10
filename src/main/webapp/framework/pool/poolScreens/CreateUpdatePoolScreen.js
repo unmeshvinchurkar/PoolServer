@@ -76,7 +76,10 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			_container = $('#' + _containerElemId);
 			_container.html(htmlData);
 
-			objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [ {},
+			var params = {};
+			params["isOwner"] = true;
+
+			objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [ params,
 					handleProfileSuccess, function() {
 					} ]);
 
@@ -92,7 +95,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 							.html(
 									"Please complete your profile details before creating pool.");
 					_isReadOnly = true;
-					_init() ;
+					_init();
 				}
 			}
 
@@ -115,7 +118,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 								"Please go to <strong>Register Vehicle</strong> tab and register vehicle for creating pool");
 
 			}
-		}		
+		}
 
 		function _showVehicleDetails(data) {
 
@@ -240,8 +243,6 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				_map.controls[google.maps.ControlPosition.TOP_CENTER]
 						.push(input1);
 
-				
-
 				_autocomplete = new google.maps.places.Autocomplete(input);
 				_autocomplete.bindTo('bounds', _map);
 
@@ -267,7 +268,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				_map.controls[google.maps.ControlPosition.TOP_RIGHT]
 						.push(resetMap);
 				$(resetMap).click(_clearMap);
-			} 
+			}
 
 			if (_carPoolId) {
 				_loadPoolData(_carPoolId);
@@ -287,14 +288,13 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				_showPosition(pos);
 			}
 		}
-		
 
 		function _getLocation() {
-		    if (navigator.geolocation) {
-		        navigator.geolocation.getCurrentPosition(_showPosition);
-		    } else {
-		       //"Geolocation is not supported by this browser.";
-		    }
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(_showPosition);
+			} else {
+				//"Geolocation is not supported by this browser.";
+			}
 		}
 
 		function _showPosition(position) {
@@ -314,11 +314,11 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (_isReadOnly && !_carPoolId) {
 				$(_toDateElem).attr("disabled", "disabled");
 				$("#savePoolButton").remove();
-			}	
-			
+			}
 
-			$(".multiselect-container input:checkbox").attr("disabled", "disabled");
-			
+			$(".multiselect-container input:checkbox").attr("disabled",
+					"disabled");
+
 			$("#pac-input").remove();
 			$("#pac-input1").remove();
 
@@ -330,10 +330,10 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				_autocomplete1.unbindAll();
 				google.maps.event.clearInstanceListeners(_autocomplete1);
 			}
-			
+
 			$("#savePoolButton").html("Update");
 			$("#resetMap").remove();
-			
+
 			_isReadOnly = true;
 		}
 
@@ -346,16 +346,17 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var excludedDays = data.excludedDays;
 
 				if (excludedDays && excludedDays.trim()) {
-					
+
 					$("#excludeDays").multiselect("enable");
-					$(".multiselect-container input:checkbox").removeAttr("disabled");
-					
-					
-					var days = excludedDays.split(",");					
+					$(".multiselect-container input:checkbox").removeAttr(
+							"disabled");
+
+					var days = excludedDays.split(",");
 					$("#excludeDays").val(days);
 					$("#excludeDays").multiselect("refresh");
-					
-					$(".multiselect-container input:checkbox").attr("disabled", "disabled")
+
+					$(".multiselect-container input:checkbox").attr("disabled",
+							"disabled")
 				}
 
 				if (data.noOfRemainingSeats) {
@@ -402,7 +403,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 				_srcMarker = _createMarker(srcLoc, "START");
 
-				_destMarker = _createMarker(destLoc, "END");  
+				_destMarker = _createMarker(destLoc, "END");
 
 				var bounds = new google.maps.LatLngBounds(srcLoc, destLoc);
 				_map.fitBounds(bounds);
@@ -590,7 +591,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 		function _placeMarker(location, labelStr) {
 
-			var marker = _createMarker(location,"")
+			var marker = _createMarker(location, "")
 
 			if (!_srcMarker) {
 				_srcMarker = marker;
@@ -632,9 +633,9 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				$("#pac-input1").val('');
 			}
 		}
-		
-		function _clearPath(){
-			
+
+		function _clearPath() {
+
 			_directionRenderer.set('directions', null);
 			if (_poolPath) {
 				_poolPath.setMap(null);
@@ -691,9 +692,9 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			_srcMarker.setMap(null);
 			_destMarker.setMap(null);
 
-			_srcMarker = _createMarker(startLoc,"START");
+			_srcMarker = _createMarker(startLoc, "START");
 
-			_destMarker = _createMarker(endLoc,"END"); 
+			_destMarker = _createMarker(endLoc, "END");
 
 			_srcAddress = _route.legs[0].start_address;
 			_destAddress = _route.legs[_route.legs.length - 1].end_address;
@@ -707,11 +708,10 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				return;
 			}
 			var timeinSeconds = $(_startTimeElem).timepicker(
-			'getSecondsFromMidnight');
+					'getSecondsFromMidnight');
 
 			if (timeinSeconds == null) {
-				objRef.errorMsg("msg_div",
-						"Please mention your start time.");
+				objRef.errorMsg("msg_div", "Please mention your start time.");
 				return;
 			}
 
@@ -841,7 +841,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (!place) {
 				return;
 			}
-			
+
 			if (!place.geometry) {
 				window
 						.alert("Autocomplete's returned place contains no geometry");
@@ -861,14 +861,14 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			var placeLoc = place.geometry.location;
 
 			if (isSrc) {
-				if(_srcMarker){
+				if (_srcMarker) {
 					_srcMarker.setMap(null);
 				}
-				
+
 				_srcMarker = _createMarker(placeLoc, "START");
 			} else {
-				
-				if(_destMarker){
+
+				if (_destMarker) {
 					_destMarker.setMap(null);
 				}
 				_destMarker = _createMarker(placeLoc, "END");

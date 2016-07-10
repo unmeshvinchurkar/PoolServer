@@ -153,7 +153,7 @@ public class CarPoolRestService {
 
 	@GET
 	@Path("/getUserProfileStatus")
-	public Response getUserProfileStatus() {
+	public Response getUserProfileStatus(@QueryParam("isOwner") String isOwner) {
 		_validateSession();
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
@@ -179,9 +179,14 @@ public class CarPoolRestService {
 			status = "incomplete";
 		} else {
 
-			Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
+			if (isOwner != null && isOwner.equalsIgnoreCase("true")) {
 
-			if (user.getDrivingLicense() != null && vh != null) {
+				Vehicle vh = service.getVehicleByOwnerId(user.getUserId());
+
+				if (user.getDrivingLicense() != null && vh != null) {
+					status = "complete";
+				}
+			} else {
 				status = "complete";
 			}
 		}

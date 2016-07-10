@@ -81,8 +81,11 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (elementId.startsWith("_join")) {
 				var poolId = elementId.split(":")[1];
 
-				objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [ {},
-						handleProfileSuccess, function() {
+				var params = {};
+				params["isOwner"] = false;
+
+				objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [
+						params, handleProfileSuccess, function() {
 						} ]);
 
 				function handleProfileSuccess(data) {
