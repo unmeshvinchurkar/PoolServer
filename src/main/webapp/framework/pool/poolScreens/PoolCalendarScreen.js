@@ -445,9 +445,9 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 						$(this).addClass('selected');
 					}
 
-					if (_callBackFun) {
-						_callBackFun(this, $(this).hasClass('selected'));
-					}
+//					if (_callBackFun) {
+//						_callBackFun(this, $(this).hasClass('selected'));
+//					}
 				});
 			}
 
