@@ -736,18 +736,29 @@ public class CarPoolDao extends AbstractDao {
 	 * @return Long
 	 */
 	public List<Long> searchPools(String lattitude, String longitude,
-			com.pool.DeltaLatLong delta, Long startTime, Long userId) {
+			com.pool.DeltaLatLong delta, Long startTime, Long userId, boolean anyTime) {
 
 		List<Long> carpoolIds = null;
 		Session session = null;
 		try {
 
 			session = this.openSession();
+			
+			StringBuffer qb= new StringBuffer(200);
+			qb.append("select pool.carPoolId from Carpool pool where pool.ownerId!=(:userId) and ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or ");
+			qb.append(" (pool.destLongitude < (:maxLongitude) and  pool.destLongitude > (:minLongitude) ");
+			qb.append(" and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and");
+			
+			if (!anyTime) {
+				qb.append(" pool.startTime <= (:startTime) and ");
+			}
+			
+			qb.append(" (pool.deleted != :deleted or pool.deleted is NULL) and ");
+			qb.append(" pool.noOfRemainingSeats>=(:noOfRemainingSeats) and ");
+			qb.append(" pool.endDate > (:endDate) ");
+			
 			Query queryPool = session
-					.createQuery("select pool.carPoolId from Carpool pool where pool.ownerId!=(:userId) and ((pool.srcLongitude <(:maxLongitude) and pool.srcLongitude > (:minLongitude) and pool.srcLattitude > (:minLattitude) and  pool.srcLattitude < (:maxLattitude)) or "
-							+ " (pool.destLongitude < (:maxLongitude) and  pool.destLongitude > (:minLongitude) "
-							+ "  and pool.destLattitude < (:maxLattitude) and  pool.destLattitude > (:minLattitude))) and pool.startTime <= (:startTime) and (pool.deleted != :deleted or pool.deleted is NULL)and pool.noOfRemainingSeats>=(:noOfRemainingSeats) and pool.endDate > (:endDate)  ");
-
+					.createQuery(qb.toString());
 			queryPool.setParameter("minLongitude", delta.getMinLongitude());
 			queryPool.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPool.setParameter("minLattitude", delta.getMinLattitude());
@@ -758,7 +769,10 @@ public class CarPoolDao extends AbstractDao {
 
 			queryPool.setParameter("endDate",
 					Long.valueOf((new Date().getTime()) / 1000));
+			
+			if (!anyTime) {
 			queryPool.setParameter("startTime", startTime);
+			}
 			carpoolIds = queryPool.list();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -823,20 +837,38 @@ public class CarPoolDao extends AbstractDao {
 	 * @return List<Points>
 	 */
 	public List<GeoPoint> findNearestPoints(DeltaLatLong delta,
-			List<Long> carpoolIds, Long startTime) {
+			List<Long> carpoolIds, Long startTime,  boolean anyTime) {
 
 		Session session = null;
 		List<GeoPoint> points = null;
+		
+		String q ="from com.pool.spring.model.GeoPoint point1 where   (point1.longitude < (:maxLongitude) "+ 
+		           " and point1.longitude > (:minLongitude)  "+ 
+		           " and point1.latitude > (:minLattitude) "+ 
+		           " and point1.latitude <(:maxLattitude) "+ 
+		           " and point1.carPoolId in (:carPoolIds))";
+		
+		
 		try {
+
+			if (!anyTime) {
+				q = q + " and point1.approxTimeToReach > (:minPickUpTime)  "
+						+ " and point1.approxTimeToReach < (:maxPickUpTime)";
+			}
+			
 			session = this.openSession();
-			Query queryPoints = session.createQuery(FETCH_POINTS);
+			Query queryPoints = session.createQuery(q);
 			queryPoints.setParameter("minLongitude", delta.getMinLongitude());
 			queryPoints.setParameter("maxLongitude", delta.getMaxLongitude());
 			queryPoints.setParameter("minLattitude", delta.getMinLattitude());
 			queryPoints.setParameter("maxLattitude", delta.getMaxLattitude());
 			queryPoints.setParameterList("carPoolIds", carpoolIds);
+			
+			if (!anyTime) {
 			queryPoints.setParameter("minPickUpTime", startTime - 10 * 60);
 			queryPoints.setParameter("maxPickUpTime", startTime + 20 * 60);
+			}
+			
 			points = queryPoints.list();
 		} finally {
 			session.close();

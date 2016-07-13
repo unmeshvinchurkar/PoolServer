@@ -19,6 +19,11 @@
 				<label class="control-label" for="startTime">Pickup Time:</label>
 				<input type="text" class="form-control" id="startTime"/>
 			</div>
+			
+			<div class="form-group required">
+				<label class="control-label" for="anyTime">Any Time:</label>
+				<input type="checkbox" class="form-control" id="anyTime"/>
+			</div>
 
 			<button id="searchPoolsButton" type="button" class="btn btn-success">Search
 			</button>

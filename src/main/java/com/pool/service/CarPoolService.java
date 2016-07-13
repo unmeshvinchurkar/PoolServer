@@ -474,32 +474,41 @@ public class CarPoolService {
 	}
 
 	public Map<Long, GeoPoint> findNearestPools(Point srcPoint,
-			Point destPoint, Long startTime, Long userId) {
+			Point destPoint, Long startTime, Long userId, boolean anyTime) {
 
 		String lattitude = srcPoint.getLattitude().toString();
 		String longitude = srcPoint.getLongitude().toString();
 		Map<Long, GeoPoint> poolPointMap = new HashMap<Long, GeoPoint>();
 
-		Double initFixedDistance = 200.0;
+		Double initFixedDistance = 50.0;
 		DeltaLatLong screenDelta = PoolUtils.findDelta(initFixedDistance,
 				lattitude, longitude);
 
 		CarPoolDao poolDao = (CarPoolDao) SpringBeanProvider
 				.getBean("carPoolDao");
 
-		// Search Car Pools with the radius of 400km around user location
+		// Search Car Pools with the radius of 50km around user location
 		List<Long> carPoolIds = poolDao.searchPools(lattitude, longitude,
-				screenDelta, startTime, userId);
+				screenDelta, startTime, userId, anyTime);
 
 		if (carPoolIds == null || carPoolIds.size() == 0) {
 			return null;
 		}
 
-		DeltaLatLong delta = PoolUtils.findDelta(3.0, lattitude, longitude);
+		double distanceBetweenpoints = PoolUtils.calculateDistance(
+				srcPoint.getLongitude(), srcPoint.getLattitude(),
+				srcPoint.getLongitude(), srcPoint.getLattitude());
+		
+		// 2,10   50, 1000
+		
+		double withInDistance = 2.0 + (distanceBetweenpoints-10.0)*(48.0/990.0);
+		
+
+		DeltaLatLong delta = PoolUtils.findDelta(withInDistance, lattitude, longitude);
 
 		// For these pools select points on car pool within 3kms
 		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds,
-				startTime);
+				startTime, anyTime);
 
 		// Creat a Map of carpoolId and list of points fetched
 		Map<Long, List<GeoPoint>> poolId_PointMap = new HashMap<Long, List<GeoPoint>>();
@@ -514,7 +523,7 @@ public class CarPoolService {
 
 		if (poolId_PointMap.size() > 0) {
 
-			DeltaLatLong deltaDest = PoolUtils.findDelta(3.0, destPoint
+			DeltaLatLong deltaDest = PoolUtils.findDelta(withInDistance, destPoint
 					.getLattitude().toString(), destPoint.getLongitude()
 					.toString());
 
@@ -531,8 +540,7 @@ public class CarPoolService {
 			if (poolId_PointMap.size() > 0) {
 
 				// For each pool find the nearest source point. The pool with
-				// nearest
-				// point will get the priority
+				// nearest point will get the priority
 				DistanceComparator comparator = new DistanceComparator(
 						Double.valueOf(longitude), Double.valueOf(lattitude));
 

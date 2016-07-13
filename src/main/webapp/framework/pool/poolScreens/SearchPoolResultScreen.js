@@ -69,6 +69,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var params = {};
 				params["poolId"] = carpoolId;
 				params["readOnly"] = true;
+				params["preview"] = true;
 				var screen = new PROJECT.pool.poolScreens.CreateUpdatePoolScreen(
 						dialogId, params);
 				screen.render();

@@ -31,6 +31,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		var _container = null;
 		var _carPoolId = params ? params["poolId"] : null;
 		var _isReadOnly = params ? params["readOnly"] : false;
+		var _isPreview = params ? params["preview"] : false;
 
 		if (_carPoolId) {
 			_isReadOnly = true;
@@ -44,6 +45,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		objRef.destroy = destroy;
 
 		var _map;
+		var _isRendered = false;
 		var _directionsService;
 		var _directionRenderer;
 		var _markers = [];
@@ -68,8 +70,19 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		}
 
 		function render() {
-			SegmentLoader.getInstance().getSegment("createPoolSeg.xml", null,
-					_initAndLoadVehicle);
+			_isRendered = false;
+
+			if (_isPreview) {
+				SegmentLoader.getInstance().getSegment("createPoolSeg.xml",
+						null, function(htmlData) {
+							_container = $('#' + _containerElemId);
+							_container.html(htmlData);
+							_init();
+						});
+			} else {
+				SegmentLoader.getInstance().getSegment("createPoolSeg.xml",
+						null, _initAndLoadVehicle);
+			}
 		}
 
 		function _initAndLoadVehicle(htmlData) {
@@ -157,8 +170,12 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (!_isReadOnly) {
 				$("#savePoolButton").click(_handleSave);
 			} else {
-				$("#savePoolButton").html("Update");
-				$("#savePoolButton").click(_handleSave);
+				if (!_isPreview) {
+					$("#savePoolButton").html("Update");
+					$("#savePoolButton").click(_handleSave);
+				} else {
+					$("#savePoolButton").remove();
+				}
 			}
 
 			_fromDateElem = $("#fromDate");
@@ -274,11 +291,13 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				_loadPoolData(_carPoolId);
 			}
 
-			if (_isReadOnly) {
+			if (_isReadOnly || _isPreview) {
 				_makeReadOnly();
 			}
-			
-			_getLocation();
+
+			if (!_isReadOnly) {
+				_getLocation();
+			}
 
 //			if (!_isReadOnly) {
 //				_getLocation();
@@ -289,6 +308,8 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 //				pos.coords.longitude = 78.9629;
 //				_showPosition(pos);
 //			}
+			
+			_isRendered = true; 
 		}
 
 		function _getLocation() {
@@ -315,12 +336,12 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			$(_fromDateElem).attr("disabled", "disabled");
 			$(_startTimeElem).attr("disabled", "disabled");
 			$("#totalSeats").attr("disabled", "disabled");
-			$("#bucksPerKm").attr("disabled", "disabled");
-
-			if (_isReadOnly && !_carPoolId) {
+			$("#bucksPerKm").attr("disabled", "disabled");			
+			
+			if (_isPreview) {
 				$(_toDateElem).attr("disabled", "disabled");
-				$("#savePoolButton").remove();
-			}
+				$("#savePoolButton").remove();			
+			}			
 
 			$(".multiselect-container input:checkbox").attr("disabled",
 					"disabled");
@@ -562,6 +583,13 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		}
 
 		function markPoint(lattitude, longitude, userName, pickupTime) {
+
+			if (!_isRendered) {
+				setTimeout(function() {
+					markPoint(lattitude, longitude, userName, pickupTime);
+				}, 3000);
+			}
+			
 			var latLng = {};
 
 			var content = userName ? userName : "";

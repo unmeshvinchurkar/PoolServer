@@ -1144,10 +1144,12 @@ public class CarPoolRestService {
 			@QueryParam("srcLng") String srcLng,
 			@QueryParam("destLat") String destLat,
 			@QueryParam("destLng") String destLng,
-			@QueryParam("startTime") String startTime) {
+			@QueryParam("startTime") String startTime,
+			@QueryParam("anyTime") String anyTime) {
 
 		_validateSession();
 
+		boolean anyTimeB = false;
 		HttpSession session = request.getSession(false);
 		User usr = (User) session.getAttribute("USER");
 
@@ -1159,9 +1161,13 @@ public class CarPoolRestService {
 		CarPoolService service = new CarPoolService();
 
 		System.err.println("Before searching pools ***********************");
+		
+		if(anyTime!=null && anyTime.equalsIgnoreCase("true")){
+			anyTimeB = true;
+		}
 
 		Map<Long, GeoPoint> poolIdPointMap = service.findNearestPools(srcPoint,
-				destPoint, Long.parseLong(startTime), usr.getUserId());
+				destPoint, Long.parseLong(startTime), usr.getUserId(), anyTimeB);
 
 		if (poolIdPointMap != null) {
 
@@ -1198,31 +1204,32 @@ public class CarPoolRestService {
 										.getLongitude().toString(), allPoints);
 
 						GeoPoint startPoint = allPoints.get(0);
-						Collections.sort(allPoints, destComparator);
-						GeoPoint dropPoint = allPoints.get(0);
+						//Collections.sort(allPoints, destComparator);
+						//GeoPoint dropPoint = allPoints.get(0);
 
-						dropPoint = nearPoint;
+						GeoPoint dropPoint = nearPoint;
 
 						pool.setGeoPoints(null);
 
 						JSONObject map = new JSONObject();
 						JSONObject poolJson = new JSONObject(pool);
-						GeoPoint geoPoint = poolIdPointMap.get(pool
+						GeoPoint pickupPoint = poolIdPointMap.get(pool
 								.getCarPoolId());
 
-						poolJson.put("pickupTime", startTime);
-						poolJson.put("pickupLattitude", geoPoint.getLatitude());
-						poolJson.put("pickupLongitude", geoPoint.getLongitude());
+						poolJson.put("pickupTime", pickupPoint.getApproxTimeToReach());						
+						//poolJson.put("pickupTime", startTime);
+						poolJson.put("pickupLattitude", pickupPoint.getLatitude());
+						poolJson.put("pickupLongitude", pickupPoint.getLongitude());
 						poolJson.put("dropLattitude", dropPoint.getLatitude());
 						poolJson.put("dropLongitude", dropPoint.getLongitude());
 						poolJson.put("pickupDistance",
-								((float) (geoPoint
+								((float) (pickupPoint
 
 								.getDistanceToReach() - startPoint
 										.getDistanceToReach())) / 1000.00);
 						poolJson.put(
 								"tripCost",
-								((float) (dropPoint.getDistanceToReach() - geoPoint
+								((float) (dropPoint.getDistanceToReach() - pickupPoint
 										.getDistanceToReach()) * pool
 										.getBucksPerKm()) / 1000.0);
 

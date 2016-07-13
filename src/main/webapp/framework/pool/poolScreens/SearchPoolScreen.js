@@ -271,10 +271,16 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				return;
 			}
 
+			var anyTime = false;
+
+			if ($("#anyTime").is(":checked")) {
+				anyTime = true;
+			}
+
 			var timeinSeconds = $(_startTimeElem).timepicker(
 					'getSecondsFromMidnight');
 
-			if (timeinSeconds == null) {
+			if (timeinSeconds == null && !anyTime) {
 				objRef.errorMsg("msg_div", "Please mention your pick up time.");
 				return;
 			}
@@ -289,6 +295,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			params["destLat"] = _destMarker.getPosition().lat();
 			params["destLng"] = _destMarker.getPosition().lng();
 			params["startTime"] = timeinSeconds;
+			params["anyTime"] = anyTime;
 			
 			_disableSearch();
 
