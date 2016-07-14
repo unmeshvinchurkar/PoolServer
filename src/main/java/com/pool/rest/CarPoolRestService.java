@@ -1222,6 +1222,11 @@ public class CarPoolRestService {
 
 								.getDistanceToReach() - startPoint
 										.getDistanceToReach())) / 1000.00);
+						
+						poolJson.put("tripDistance", ((float) (dropPoint
+								.getDistanceToReach() - pickupPoint
+										.getDistanceToReach())) / 1000.00);
+						
 						poolJson.put(
 								"tripCost",
 								((float) (dropPoint.getDistanceToReach() - pickupPoint
