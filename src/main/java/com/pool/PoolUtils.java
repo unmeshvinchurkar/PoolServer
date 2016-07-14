@@ -18,7 +18,7 @@ public class PoolUtils {
 
 	// Radius of earth in Kms
 	private static final double R = 6371;
-	
+
 	public static DeltaLatLong findDelta(double fixedDistance,
 			String lattitude, String longitude) {
 
@@ -57,7 +57,7 @@ public class PoolUtils {
 		GeoPoint point = null;
 
 		for (GeoPoint p : points) {
-			double d = calculateDistance(Double.valueOf(longitude),
+			double d = getDistanceFromLatLonInKm(Double.valueOf(longitude),
 					Double.valueOf(lattitude), p.getLongitude(),
 					p.getLatitude());
 
@@ -71,6 +71,23 @@ public class PoolUtils {
 		}
 
 		return point;
+	}
+
+	public static double getDistanceFromLatLonInKm(Double lat1, Double lon1,
+			Double lat2, Double lon2) {
+		int R = 6371; // Radius of the earth in km
+		Double dLat = deg2rad(lat2 - lat1); // deg2rad below
+		Double dLon = deg2rad(lon2 - lon1);
+		Double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+				+ Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2))
+				* Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		Double d = R * c; // Distance in km
+		return d;
+	}
+
+	public static Double deg2rad(Double deg) {
+		return deg * (Math.PI / 180);
 	}
 
 	public static double calculateDistance(Double srcLng, Double srcLat,

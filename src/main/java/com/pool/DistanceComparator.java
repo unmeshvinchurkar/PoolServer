@@ -16,15 +16,15 @@ public class DistanceComparator implements Comparator<GeoPoint> {
 
 	public int compare(GeoPoint a, GeoPoint b) {
 
-		double d1 = PoolUtils.calculateDistance(this.longitude,
+		double d1 = PoolUtils.getDistanceFromLatLonInKm(this.longitude,
 				this.lattitude, a.getLongitude(), a.getLatitude());
 		double d2 = PoolUtils.calculateDistance(this.longitude,
 				this.lattitude, b.getLongitude(), b.getLatitude());
 
-		if (d1 >= d2) {
-			return -1;
-		} else {
+		if (Math.abs(d1) > Math.abs(d2)) {
 			return 1;
+		} else {
+			return -1;
 		} // returning 0 would merge keys
 	}
 }

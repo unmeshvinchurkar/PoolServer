@@ -920,12 +920,13 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				position : placeLoc,
 				map : _map,
 				label : name,
-				draggable : true
+				draggable : !_isPreview
 			});
 
-			google.maps.event.addListener(marker, 'dragend',
-					_markerDraggedEventHandler);
-
+			if (!_isPreview) {
+				google.maps.event.addListener(marker, 'dragend',
+						_markerDraggedEventHandler);
+			}
 			return marker;
 		}
 

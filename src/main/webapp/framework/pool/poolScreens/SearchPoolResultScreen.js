@@ -23,6 +23,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		var SegmentLoader = PROJECT.pool.util.SegmentLoader;
 		var PoolConstants = PROJECT.pool.PoolConstants;
 		var PoolCommands = PROJECT.pool.PoolCommands;
+		var PoolUtil = PROJECT.pool.util.PoolUtil.getInstance();
 
 		var _containerElemId = containerElemId
 
@@ -47,7 +48,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			_poolTable.addRows(_searchResult);
 		}
 
-		function _openDialog(carpoolId, pickupLattitude, pickupLongitude) {
+		function _openDialog(carpoolId, pickupLattitude, pickupLongitude, pickupTime, dropLat, dropLong) {
 			SegmentLoader.getInstance().getSegment("mapDialog.xml", null,
 					initDialog);
 
@@ -73,7 +74,9 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var screen = new PROJECT.pool.poolScreens.CreateUpdatePoolScreen(
 						dialogId, params);
 				screen.render();
-				screen.markPoint(pickupLattitude, pickupLongitude);
+				screen.markPoint(pickupLattitude, pickupLongitude, null,
+						PoolUtil.convertSecondsToTime(pickupTime));
+				screen.markPoint(dropLat, dropLong, "Drop Point");
 			}
 		}
 
@@ -104,7 +107,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			} else if (elementId.startsWith("_open")) {
 				var poolId = elementId.split(":")[1];
 				_openDialog(poolId, rowData["pickupLattitude"],
-						rowData["pickupLongitude"]);
+						rowData["pickupLongitude"], rowData["pickupTime"], rowData["destLattitude"], rowData["destLongitude"] );
 			}
 		}
 

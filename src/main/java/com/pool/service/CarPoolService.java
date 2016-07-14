@@ -495,16 +495,17 @@ public class CarPoolService {
 			return null;
 		}
 
-		double distanceBetweenpoints = PoolUtils.calculateDistance(
+		double distanceBetweenpoints = PoolUtils.getDistanceFromLatLonInKm(
 				srcPoint.getLongitude(), srcPoint.getLattitude(),
-				srcPoint.getLongitude(), srcPoint.getLattitude());
-		
-		// 2,10   50, 1000
-		
-		double withInDistance = 2.0 + (distanceBetweenpoints-10.0)*(48.0/990.0);
-		
+				destPoint.getLongitude(), destPoint.getLattitude());
 
-		DeltaLatLong delta = PoolUtils.findDelta(withInDistance, lattitude, longitude);
+		// 2,10 50, 1000
+
+		double withInDistance = 2.0 + (distanceBetweenpoints - 10.0)
+				* (48.0 / 990.0);
+
+		DeltaLatLong delta = PoolUtils.findDelta(withInDistance, lattitude,
+				longitude);
 
 		// For these pools select points on car pool within 3kms
 		List<GeoPoint> points = poolDao.findNearestPoints(delta, carPoolIds,
@@ -523,9 +524,9 @@ public class CarPoolService {
 
 		if (poolId_PointMap.size() > 0) {
 
-			DeltaLatLong deltaDest = PoolUtils.findDelta(withInDistance, destPoint
-					.getLattitude().toString(), destPoint.getLongitude()
-					.toString());
+			DeltaLatLong deltaDest = PoolUtils.findDelta(withInDistance,
+					destPoint.getLattitude().toString(), destPoint
+							.getLongitude().toString());
 
 			// For these pools select points on car pool within 3kms
 			Set<Long> destPoolIds = poolDao.findDestinationPools(deltaDest,

@@ -1192,10 +1192,7 @@ public class CarPoolRestService {
 						pool.setCalendarDays(null);
 						// pool.setGeoPoints(null);
 
-						// Get the nearest drop point
-						DistanceComparator destComparator = new DistanceComparator(
-								destPoint.getLongitude(),
-								destPoint.getLattitude());
+						
 						List<GeoPoint> allPoints = service
 								.fetchGeoPointsByPoolId(pool.getCarPoolId());
 
@@ -1204,11 +1201,7 @@ public class CarPoolRestService {
 										.getLongitude().toString(), allPoints);
 
 						GeoPoint startPoint = allPoints.get(0);
-						//Collections.sort(allPoints, destComparator);
-						//GeoPoint dropPoint = allPoints.get(0);
-
 						GeoPoint dropPoint = nearPoint;
-
 						pool.setGeoPoints(null);
 
 						JSONObject map = new JSONObject();
