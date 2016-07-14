@@ -270,7 +270,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var screen = new PROJECT.pool.poolScreens.CreateUpdatePoolScreen(
 						dialogId, params);
 
-				if (_dialog && dialog.destroy) {
+				if (_dialog && _dialog.destroy) {
 					_dialog.destroy();
 				}
 				
