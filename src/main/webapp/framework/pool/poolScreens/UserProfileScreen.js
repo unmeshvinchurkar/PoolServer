@@ -119,7 +119,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				},
 				{
 					name : 'drivingLicenseNo',
-					rules : 'alpha|max_length[20]'
+					rules : 'alpha_numeric|max_length[20]'
 				}], function(errors, event) {
 
 					$("small[id$='_error']").remove();
@@ -247,6 +247,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			params["state"] = $("#state").val();
 			params["country"] = $("#country").val();
 			params["userId"] = _userId;
+			params["drivingLicenseNo"] = $("#drivingLicenseNo");
 			
 			if (!_birthDay) {
 				var birthDay = $("#birthDay").datepicker("getDate");

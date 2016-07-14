@@ -101,7 +101,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 										"You can't join pool.Please complete your profile details.");
 
 					} else {
-						_raiseJoinRequest(poolId, rowData);
+						_raiseJoinRequest(elementId, rowData);
 					}
 				}
 			} else if (elementId.startsWith("_open")) {
@@ -111,7 +111,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			}
 		}
 
-		function _raiseJoinRequest(poolId, rowData) {
+		function _raiseJoinRequest(elementId, rowData) {
 
 			var poolId = elementId.split(":")[1];
 

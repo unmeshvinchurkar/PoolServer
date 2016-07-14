@@ -563,7 +563,8 @@ public class CarPoolRestService {
 			@FormParam("country") String country,
 			@FormParam("contactNo") String contactNo,
 			@FormParam("userId") String userId,
-			@FormParam("birthDate") String birthDate) {
+			@FormParam("birthDate") String birthDate,
+			@FormParam("drivingLicenseNo") String drivingLicenseNo) {
 
 		try {
 			// streetAddress = Validator.validateString("streetAddress",
@@ -586,7 +587,8 @@ public class CarPoolRestService {
 				usr.setAddress(streetAddress);
 				usr.setCountry(country);
 				usr.setContactNo(contactNo);
-				if (birthDate != null && usr.getBirthDate() != null) {
+				usr.setDrivingLicense(drivingLicenseNo);
+				if (birthDate != null && usr.getBirthDate() == null) {
 					usr.setBirthDate(Long.valueOf(birthDate) / 1000);
 				}
 				service.saveOrUpdate(usr);
