@@ -14,6 +14,12 @@ public class UserService {
 		return vehicleDao.getVehicleByOwnerId(userId);
 	}
 
+	public Vehicle getVehicleByCarPoolId(Long carPoolId) {
+		VehicleDao vehicleDao = (VehicleDao) SpringBeanProvider
+				.getBean("vehicleDao");
+		return vehicleDao.getVehicleByCarpoolId(carPoolId);
+	}
+
 	public User getUser(String username, String password) {
 
 		UserDao usrDao = (UserDao) SpringBeanProvider.getBean("userDao");

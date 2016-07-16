@@ -267,6 +267,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 				var params = {};
 				params["poolId"] = carpoolId;
 				params["readOnly"] = true;
+				params["preview"] = true;
 				var screen = new PROJECT.pool.poolScreens.CreateUpdatePoolScreen(
 						dialogId, params);
 
@@ -295,7 +296,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 				setTimeout(function() {
 					screen.markPoint(pickupLattitude, pickupLongitude, "",pickupTime );
-					screen.markPoint(destLattitude, destLongitude );
+					screen.markPoint(destLattitude, destLongitude, "Drop Point" );
 				}, 3000);
 
 				

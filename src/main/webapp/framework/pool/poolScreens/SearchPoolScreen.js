@@ -145,15 +145,14 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		}
 
 		function _getLocation() {
-			$.getJSON('https://geoip-db.com/json/geoip.php?jsonp=?').done(
-					function(location) {
-
-						_map.setCenter({
-							lat : location.latitude,
-							lng : location.longitude
-						});
-						_map.setZoom(7);
-					});
+			try {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(_showPosition);
+				} else {
+					// "Geolocation is not supported by this browser.";
+				}
+			} catch (e) {
+			}
 		}
 
 		function _showPosition(position) {

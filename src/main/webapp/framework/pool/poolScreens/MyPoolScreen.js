@@ -86,7 +86,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 		}
 
-		function _onClick(elementId, poolTable) {
+		function _onClick(elementId, rowData) {
 			
 			if (elementId.startsWith("_owner")) {
 				var ownerId = elementId.split(":")[1];				
@@ -110,6 +110,11 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			} else {
 				var params = {};
 				params["poolId"] = elementId;
+				
+				if(!rowData["isOwner"]){
+					params["preview"] = true;
+				}
+				
 				objRef.navigateTo(PoolConstants.CREATE_UPDATE_POOL_SCREEN,
 						params);
 			}
@@ -302,7 +307,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 													function() {
 														_callBackFun($(this)
 																.attr("id"),
-																that);
+																aData);
 													});
 
 									return nRow;

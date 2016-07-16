@@ -72,45 +72,46 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		function render() {
 			_isRendered = false;
 
-			if (_isPreview) {
-				SegmentLoader.getInstance().getSegment("createPoolSeg.xml",
-						null, function(htmlData) {
-							_container = $('#' + _containerElemId);
-							_container.html(htmlData);
-							_init();
-						});
-			} else {
-				SegmentLoader.getInstance().getSegment("createPoolSeg.xml",
-						null, _initAndLoadVehicle);
-			}
+			SegmentLoader.getInstance().getSegment("createPoolSeg.xml", null,
+					_initAndLoadVehicle);
 		}
 
 		function _initAndLoadVehicle(htmlData) {
 			_container = $('#' + _containerElemId);
 			_container.html(htmlData);
 
-			var params = {};
-			params["isOwner"] = true;
+			// When not in preview mode check vehicle details
+			if (!_isPreview) {
 
-			objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [ params,
-					handleProfileSuccess, function() {
-					} ]);
+				var params = {};
+				params["isOwner"] = true;
 
-			function handleProfileSuccess(data1) {
-				var status = data1;
-				if (status == "complete") {
-					// Fetch Vehicle details
-					objRef.get(PoolConstants.GET_VEHICLE_COMMAND, [ {},
-							handleVehicleSuccess, handleVehicleFailure ]);
-				} else {
-					$("#msg_div").css("display", "block");
-					$("#msg_div")
-							.html(
-									"Please complete your profile details before creating pool.");
-					_isReadOnly = true;
-					_init();
+				objRef.get(PoolConstants.GET_USER_PROFILE_STATUS_COMMAND, [
+						params, handleProfileSuccess, function() {
+						} ]);
+
+				function handleProfileSuccess(data1) {
+					var status = data1;
+					if (status == "complete") {
+						// Fetch Vehicle details
+						objRef.get(PoolConstants.GET_VEHICLE_COMMAND, [ {},
+								handleVehicleSuccess, handleVehicleFailure ]);
+					} else {
+						$("#msg_div").css("display", "block");
+						$("#msg_div")
+								.html(
+										"Please complete your profile details before creating pool.");
+						_isReadOnly = true;
+						_init();
+					}
 				}
-			}
+			} else {
+				var params = {};
+				params["carPoolId"] = _carPoolId;
+				// Fetch Vehicle details
+				objRef.get(PoolConstants.GET_VEHICLE_COMMAND, [ params,
+						handleVehicleSuccess, handleVehicleFailure ]);
+			}			
 
 			function handleVehicleSuccess(data) {
 				_init();
@@ -161,6 +162,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 						$("#dialogId").remove();
 					}
 				});
+				screen.setCarPoolId(_carPoolId);
 				screen.render();
 			}
 		}
@@ -222,9 +224,11 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			$(_toDateElem).datepicker("setDate", new Date());
 
 			$(_startTimeElem).timepicker('setTime', new Date());
+			
+			
 			_directionRenderer = new google.maps.DirectionsRenderer({
 				suppressMarkers : true,
-				draggable : true
+				draggable : !_isReadOnly
 			});
 
 			if (!_isReadOnly) {
@@ -298,30 +302,20 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			if (!_isReadOnly) {
 				_getLocation();
 			}
-
-//			if (!_isReadOnly) {
-//				_getLocation();
-//			} else {
-//				var pos = {};
-//				pos.coords = {};
-//				pos.coords.latitude = 20.5937;
-//				pos.coords.longitude = 78.9629;
-//				_showPosition(pos);
-//			}
 			
 			_isRendered = true; 
+
 		}
 
 		function _getLocation() {
-			$.getJSON('https://geoip-db.com/json/geoip.php?jsonp=?').done(
-					function(location) {
-
-						_map.setCenter({
-							lat : location.latitude,
-							lng : location.longitude
-						});
-						_map.setZoom(7);
-					});
+			try {
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(_showPosition);
+				} else {
+					// "Geolocation is not supported by this browser.";
+				}
+			} catch (e) {
+			}
 		}
 
 		function _showPosition(position) {
@@ -509,18 +503,26 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 							.replace("{tripCost}", data["tripCost"]);
 					rowHtml = rowHtml.replace("{pickupDistance}",
 							data["pickupDistance"] + " km");
+					
+					if(!_isPreview){
 					rowHtml = rowHtml.replace("{remove}", "<a id='"
 							+ data["userId"]
 							+ "'  href='javascript:void(0)'>Remove</a>");
+					}
+					else{						
+						rowHtml = rowHtml.replace("{remove}" ,"");						
+					}
 
 					$(tableBody).append(rowHtml);
 				}
 
+				if (!_isPreview) {
+					$(table).on("click", "a", _removeUser);
+				}
+
 				$(table).on("click", "img", function() {
 					_showUserDetails(this.id)
-				});
-
-				$(table).on("click", "a", _removeUser);
+				});	
 			}
 		}
 

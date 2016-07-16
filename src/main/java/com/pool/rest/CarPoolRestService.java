@@ -887,13 +887,19 @@ public class CarPoolRestService {
 	@GET
 	@Path("/getVehicle")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getVehicle() {
+	public Response getVehicle(@QueryParam("carPoolId") String carPoolId) {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
 		User user = (User) session.getAttribute("USER");
 		UserService service = new UserService();
-		Vehicle v = service.getVehicle(user.getUserId());
+		Vehicle v = null;
+
+		if (carPoolId == null) {
+			v = service.getVehicle(user.getUserId());
+		} else {
+			v = service.getVehicleByCarPoolId(Long.valueOf(carPoolId));
+		}
 
 		if (v != null) {
 			JSONObject jsonObj = new JSONObject(v);

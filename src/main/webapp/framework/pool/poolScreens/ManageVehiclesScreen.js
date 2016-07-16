@@ -29,9 +29,15 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		var _doesVehicleExist = false;
 		var _noEdit = readOnly ? true : false;
 		var _editedFields = null;
+		var _carpoolId = null;
 
 		/* Public Properties */
 		objRef.render = render;
+		objRef.setCarPoolId = setCarPoolId;
+		
+		function setCarPoolId(carpoolId){
+			_carpoolId = carpoolId;			
+		}
 
 		function render() {
 			SegmentLoader.getInstance().getSegment("manageVehiclesSeg.xml",
@@ -53,7 +59,15 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 		function _loadVehicleData() {
 
-			objRef.fetch("getVehicle", fillData);
+			var params = {};
+
+			if (_carpoolId) {
+				params["carPoolId"] = _carpoolId;
+			}
+
+			objRef.get(PoolConstants.GET_VEHICLE_COMMAND, [ params, fillData ]);
+
+			// objRef.fetch("getVehicle", fillData);
 
 			function fillData(data) {
 				if (data) {
