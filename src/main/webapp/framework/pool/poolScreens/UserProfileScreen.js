@@ -27,7 +27,6 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		var _userId = userId;
 		var _validator = null;
 		var _readOnly = readOnly;
-		var _userId =  null;
 		var _birthDay = null;
 
 		/* Public Properties */

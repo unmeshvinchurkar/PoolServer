@@ -891,14 +891,16 @@ public class CarPoolRestService {
 		_validateSession();
 
 		HttpSession session = request.getSession(false);
-		User user = (User) session.getAttribute("USER");
+		User user = null;
 		UserService service = new UserService();
 		Vehicle v = null;
 
 		if (carPoolId == null) {
 			v = service.getVehicle(user.getUserId());
+			user = (User) session.getAttribute("USER");
 		} else {
 			v = service.getVehicleByCarPoolId(Long.valueOf(carPoolId));
+			user = service.getUserById(v.getOwnerId().toString());
 		}
 
 		if (v != null) {

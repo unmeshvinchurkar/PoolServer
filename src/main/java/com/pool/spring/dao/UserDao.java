@@ -43,7 +43,7 @@ public class UserDao extends AbstractDao {
 		User usr = null;
 		try {
 			session = this.openSession();
-			usr = (User) session.get(User.class, userId);
+			usr = (User) session.get(User.class, Long.valueOf(userId));
 
 		} finally {
 			session.close();
