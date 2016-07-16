@@ -283,7 +283,9 @@ public class CarPoolRestService {
 		Carpool carPool = cService.findPoolById(req.getCarPoolId().toString());
 
 		Notification note = new Notification();
+		note.setSeen(0);		
 		note.setCarPoolId(req.getCarPoolId());
+		note.setToUserId(req.getFromUserId());
 		note.setCreateDate((new Date()).getTime() / 1000);
 		note.setFromUserId(req.getToUserId());
 		note.setNotificationTypeId(PoolConstants.NOTI_JOIN_REQUEST_ACCEPTED_ID);
