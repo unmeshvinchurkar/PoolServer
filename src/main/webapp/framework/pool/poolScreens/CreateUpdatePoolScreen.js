@@ -380,7 +380,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 							"disabled")
 				}
 
-				if (data.noOfRemainingSeats) {
+				if (data.noOfRemainingSeats!=undefined) {
 					$("#totalSeats").val(data.noOfRemainingSeats);
 				}
 

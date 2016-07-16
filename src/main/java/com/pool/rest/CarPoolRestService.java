@@ -896,8 +896,8 @@ public class CarPoolRestService {
 		Vehicle v = null;
 
 		if (carPoolId == null) {
-			v = service.getVehicle(user.getUserId());
 			user = (User) session.getAttribute("USER");
+			v = service.getVehicle(user.getUserId());
 		} else {
 			v = service.getVehicleByCarPoolId(Long.valueOf(carPoolId));
 			user = service.getUserById(v.getOwnerId().toString());
