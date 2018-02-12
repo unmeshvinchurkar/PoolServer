@@ -75,7 +75,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			_container = $('#' + _containerElemId);
 			_container.html(data);
 
-			var arguments = [];
+		
 			var params = {};
 			params["carPoolId"] = objRef.getCarPoolId();
 			params["year"] = date.getFullYear();
@@ -91,7 +91,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			var month = $('#calendar').fullCalendar('getDate').get("month");
 			var year = $('#calendar').fullCalendar('getDate').get("year");
 
-			var arguments = [];
+			
 			var params = {};
 			params["carPoolId"] = objRef.getCarPoolId();
 			params["year"] = year;
@@ -107,7 +107,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			var month = $('#calendar').fullCalendar('getDate').get("month");
 			var year = $('#calendar').fullCalendar('getDate').get("year");
 
-			var arguments = [];
+			
 			var params = {};
 			params["carPoolId"] = objRef.getCarPoolId();
 			params["year"] = year;
@@ -282,22 +282,22 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 	
 
 		function _markHoliday(carPoolId, timeInSec, successFunction) {
-			var arguments = [];
+			var argumentss = [];
 			var params = {};
 			params["carPoolId"] = carPoolId;
 			params["timeInSec"] = timeInSec;
-			arguments.push(params);
-			arguments.push(successFunction);
-			objRef.post(PoolConstants.MARK_HOLIDAY_COMMAND, arguments);
+			argumentss.push(params);
+			argumentss.push(successFunction);
+			objRef.post(PoolConstants.MARK_HOLIDAY_COMMAND, argumentss);
 		}
 
 		function _unmarkHoliday(carPoolId, timeInSec) {
-			var arguments = [];
+			var argumentss = [];
 			var params = {};
 			params["carPoolId"] = carPoolId;
 			params["timeInSec"] = timeInSec;
-			arguments.push(params);
-			objRef.post(PoolConstants.UNMARK_HOLIDAY_COMMAND, arguments);
+			argumentss.push(params);
+			objRef.post(PoolConstants.UNMARK_HOLIDAY_COMMAND, argumentss);
 		}
 
 		function CarPoolTable(id) {

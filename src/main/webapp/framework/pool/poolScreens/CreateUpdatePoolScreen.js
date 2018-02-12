@@ -248,7 +248,8 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 
 			var mapOptions = {
 				zoom : 13,
-				mapTypeId : google.maps.MapTypeId.ROADMAP
+				mapTypeId : google.maps.MapTypeId.ROADMAP,
+				center: {lat: 12.9715987, lng: 77.5945627}
 			};
 			_map = new google.maps.Map(document.getElementById('map-canvas'),
 					mapOptions);
@@ -310,7 +311,7 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 		function _getLocation() {
 			try {
 				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(_showPosition);
+				//	navigator.geolocation.getCurrentPosition(_showPosition);
 				} else {
 					// "Geolocation is not supported by this browser.";
 				}

@@ -77,22 +77,22 @@ PROJECT.namespace("PROJECT.pool.poolScreens");
 			});
 		}
 
-		function get(commandName, arguments) {
-			if (!arguments) {
-				arguments = [];
+		function get(commandName, argumentss) {
+			if (!argumentss) {
+				argumentss = [];
 			}
-			arguments.unshift(commandName);
-			arguments.unshift("GET");
-			_fireCommand.apply(objRef, arguments);
+			argumentss.unshift(commandName);
+			argumentss.unshift("GET");
+			_fireCommand.apply(objRef, argumentss);
 		}
 
-		function post(commandName, arguments) {
-			if (!arguments) {
-				arguments = [];
+		function post(commandName, argumentss) {
+			if (!argumentss) {
+				argumentss = [];
 			}
-			arguments.unshift(commandName);
-			arguments.unshift("POST");
-			_fireCommand.apply(objRef, arguments);
+			argumentss.unshift(commandName);
+			argumentss.unshift("POST");
+			_fireCommand.apply(objRef, argumentss);
 		}
 
 		function _fireCommand(type, commandName, params, successFun, errorFun) {
