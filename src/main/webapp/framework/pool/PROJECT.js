@@ -1,17 +1,4 @@
-//
-// $Id: PROJECT.js 288583 2015-05-21 07:37:14Z advbuild $
-//
-// Copyright (1997-2015),Fair Isaac Corporation. All Rights Reserved.
-//
-//
 
-/**
- * PROJECT is global namespace object use by application framework.
- * The PROJECT object is the single object used in global context.
- * 
- * @class PROJECT
- * 
- */
 var PROJECT;
 
 if (PROJECT && (typeof PROJECT != "object")) {
@@ -65,25 +52,7 @@ if (PROJECT && (typeof PROJECT != "object")) {
 	};
 })();
 
-/**
- * This API creates namespace in the application. Namespace for a class should
- * be same as the folder structure in which the class file resides. For e.g. if we
- * create a namespace �PROJECT.rma.module.projectexplorer� then we should have a
- * folder structure similar to it. Namespace/Folder name should always be
- * written in all-lowercase ASCII letters (PROJECT is an exception). For example �
- * <ul>
- * <li> �PROJECT.rma.module.PE� is invalid. </li>
- * <li> �PROJECT.rma.module.pe� is valid. </li>
- * <li> �PROJECT.rma.module.ProjectExplorer� is invalid.</li>
- * <li> �PROJECT.rma.module.projectexplorer� is valid.</li>
- * </ul>
- * Be careful when naming packages. Reserved words may work in some browsers and
- * not others.
- * 
- * @function {public static} namespace
- * @param {String}
- *            name - name of the namespace
- */
+
 PROJECT.namespace = function(name) {
 	// Check name for validity. It must exist, and must not begin or
 	// end with a period or contain two periods in a row.
