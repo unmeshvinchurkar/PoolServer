@@ -1,17 +1,7 @@
-//
-// $Id: Browser.js 288583 2015-05-21 07:37:14Z advbuild $
-//
-// Copyright (1997-2015),Fair Isaac Corporation. All Rights Reserved.
-//
+
 PROJECT.namespace("PROJECT.pool.util");
 
-/**
- * Class to provide browser related API, depends upon jQuery
- * <code>$.browser</code>
- * 
- * @class PROJECT.util.Browser
- */
-// using jquery
+
 PROJECT.pool.util.Browser = {
 
 	/**
