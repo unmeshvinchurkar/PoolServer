@@ -1,9 +1,3 @@
-//
-// $Id: NdApplicationContextProvider.java 269030 2012-07-12 14:12:56Z brangara $
-//
-// Copyright (1997-2012),Fair Isaac Corporation. All Rights Reserved.
-//
-//
 
 package com.pool.spring;
 
